@@ -77,6 +77,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.completedButton.setText(QCoreApplication.translate("MainWindow", u"Task Completed", None))
         self.deleteButton.setText(QCoreApplication.translate("MainWindow", u"Delete Task", None))
-        self.addButton.setText(QCoreApplication.translate("MainWindow", u"Push button", None))
+        self.addButton.setText(QCoreApplication.translate("MainWindow", u"Add Task", None))
     # retranslateUi
 

@@ -42,7 +42,7 @@
     <item>
      <widget class="PushButton" name="addButton">
       <property name="text">
-       <string>Push button</string>
+       <string>Add Task</string>
       </property>
      </widget>
     </item>
