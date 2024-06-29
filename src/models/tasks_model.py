@@ -1,8 +1,16 @@
+import os
+
 from PySide6.QtCore import QAbstractListModel, Qt
-from qfluentwidgets import FluentIcon
+from PySide6.QtGui import QImage
+from qfluentwidgets import FluentIcon, Theme
 
 
-tick = FluentIcon.ACCEPT
+tick_icon = FluentIcon.ACCEPT.icon()
+# tick_pixmap = tick_icon.pixmap(32, 32)
+tick = tick_icon
+
+# basedir = os.path.dirname(__file__)
+# tick = QImage(os.path.join(basedir, "tick.png"))
 
 class TasksModel(QAbstractListModel):
     def __init__(self):

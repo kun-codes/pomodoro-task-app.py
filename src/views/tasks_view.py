@@ -1,10 +1,15 @@
 import json
+import os
 
 from PySide6.QtWidgets import QMainWindow
 
-from tasks_model import TasksModel
-from src.tasks_ui import Ui_MainWindow
+from src.models.tasks_model import TasksModel
+from src.ui.converted.tasks_ui import Ui_MainWindow
 
+TASKS_FILE_LOCATION = "../data/data.json"
+
+if not os.path.exists(TASKS_FILE_LOCATION):
+    os.makedirs(os.path.dirname(TASKS_FILE_LOCATION))
 
 class TasksView(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -15,6 +20,7 @@ class TasksView(QMainWindow, Ui_MainWindow):
         # self.setStyleSheet("TasksView{background: rgb(255,255,255)}")
 
         self.model = TasksModel()
+        self.load()
         self.todoView.setModel(self.model)
 
         self.addButton.pressed.connect(self.add)
@@ -54,11 +60,11 @@ class TasksView(QMainWindow, Ui_MainWindow):
 
     def load(self):
         try:
-            with open("data.json", "r") as f:
+            with open(TASKS_FILE_LOCATION, "r") as f:
                 self.model.tasks = json.load(f)
         except Exception:
             pass
 
     def save(self):
-        with open("data.json", "w") as f:
+        with open(TASKS_FILE_LOCATION, "w") as f:
             data = json.dump(self.model.tasks, f)
