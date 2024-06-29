@@ -17,7 +17,7 @@ class TasksView(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         # setTheme(Theme.LIGHT)
 
-        # self.setStyleSheet("TasksView{background: rgb(255,255,255)}")
+        self.setStyleSheet("TasksView{background: rgb(255,255,255)}")
 
         self.model = TasksModel()
         self.load()
