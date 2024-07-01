@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 from qfluentwidgets import CardWidget
-from src.prefabs.taskCard import TaskCard as TaskCardUi
+from prefabs.taskCard import TaskCard as TaskCardUi
 
 # The Empty Box which is showed as a preview while dragging
 class DragTargetIndicator(TaskCardUi):

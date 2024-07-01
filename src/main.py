@@ -2,8 +2,8 @@ import sys
 
 from PySide6.QtWidgets import QWidget, QApplication
 
-from src.views.tasks_view import TaskListView
-from src.models.drag_and_drop import DragWidget, DragItem
+from views.tasks_view import TaskListView
+from models.drag_and_drop import DragWidget, DragItem
 # from src.ui.converted.task_card_ui import Ui_Form as TaskCardUi
 
 from qfluentwidgets import FluentIcon, FluentWindow, setTheme, Theme

@@ -3,9 +3,9 @@ from PySide6.QtWidgets import QWidget, QApplication, QSizePolicy
 
 from qfluentwidgets import FluentIcon, MessageBoxBase, TitleLabel
 
-from src.ui_py.ui_tasks_list_view import Ui_TaskView
-from src.prefabs.addTaskDialog import AddTaskDialog
-from src.models.drag_and_drop import DragWidget
+from ui_py.ui_tasks_list_view import Ui_TaskView
+from prefabs.addTaskDialog import AddTaskDialog
+from models.drag_and_drop import DragWidget
 
 
 class TaskListView(QWidget, Ui_TaskView):
