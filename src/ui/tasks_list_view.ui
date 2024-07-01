@@ -70,40 +70,6 @@
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="TitleLabel" name="todoTasksLabel">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Todo Tasks</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="CardWidget" name="todoTasksCard">
-         <layout class="QVBoxLayout" name="verticalLayout_2"/>
-        </widget>
-       </item>
-       <item>
-        <widget class="TitleLabel" name="completedTasksLabel">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Completed Tasks</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="CardWidget" name="CardWidget"/>
-       </item>
       </layout>
      </widget>
     </widget>
@@ -121,17 +87,6 @@
    <extends>QScrollArea</extends>
    <header>qfluentwidgets</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>CardWidget</class>
-   <extends>QFrame</extends>
-   <header>qfluentwidgets</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>TitleLabel</class>
-   <extends>QLabel</extends>
-   <header>qfluentwidgets</header>
   </customwidget>
  </customwidgets>
  <resources/>

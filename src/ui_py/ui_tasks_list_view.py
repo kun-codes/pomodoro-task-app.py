@@ -18,7 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
     QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
-from qfluentwidgets import (CardWidget, ScrollArea, TitleLabel, ToolButton)
+from qfluentwidgets import (ScrollArea, ToolButton)
 
 class Ui_TaskView(object):
     def setupUi(self, TaskView):
@@ -54,35 +54,6 @@ class Ui_TaskView(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.todoTasksLabel = TitleLabel(self.scrollAreaWidgetContents)
-        self.todoTasksLabel.setObjectName(u"todoTasksLabel")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.todoTasksLabel.sizePolicy().hasHeightForWidth())
-        self.todoTasksLabel.setSizePolicy(sizePolicy)
-
-        self.verticalLayout.addWidget(self.todoTasksLabel)
-
-        self.todoTasksCard = CardWidget(self.scrollAreaWidgetContents)
-        self.todoTasksCard.setObjectName(u"todoTasksCard")
-        self.verticalLayout_2 = QVBoxLayout(self.todoTasksCard)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-
-        self.verticalLayout.addWidget(self.todoTasksCard)
-
-        self.completedTasksLabel = TitleLabel(self.scrollAreaWidgetContents)
-        self.completedTasksLabel.setObjectName(u"completedTasksLabel")
-        sizePolicy.setHeightForWidth(self.completedTasksLabel.sizePolicy().hasHeightForWidth())
-        self.completedTasksLabel.setSizePolicy(sizePolicy)
-
-        self.verticalLayout.addWidget(self.completedTasksLabel)
-
-        self.CardWidget = CardWidget(self.scrollAreaWidgetContents)
-        self.CardWidget.setObjectName(u"CardWidget")
-
-        self.verticalLayout.addWidget(self.CardWidget)
-
         self.ScrollArea.setWidget(self.scrollAreaWidgetContents)
 
         self.gridLayout.addWidget(self.ScrollArea, 0, 0, 1, 1)
@@ -95,7 +66,5 @@ class Ui_TaskView(object):
 
     def retranslateUi(self, TaskView):
         TaskView.setWindowTitle(QCoreApplication.translate("TaskView", u"Form", None))
-        self.todoTasksLabel.setText(QCoreApplication.translate("TaskView", u"Todo Tasks", None))
-        self.completedTasksLabel.setText(QCoreApplication.translate("TaskView", u"Completed Tasks", None))
     # retranslateUi
 
