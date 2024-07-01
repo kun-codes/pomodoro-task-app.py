@@ -3,7 +3,7 @@ from qfluentwidgets import CardWidget, BodyLabel, FluentIcon
 
 # TaskCard is a simple card widget that displays a task along with an icon of its own
 class TaskCard(CardWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, taskName=""):
         super().__init__(parent=parent)
         self.setAcceptDrops(True)
 
@@ -15,6 +15,7 @@ class TaskCard(CardWidget):
 
         self.taskLabel = BodyLabel(self)
         self.taskLabel.setObjectName("taskLabel")
+        self.taskLabel.setText(taskName)
 
         self.layout = QHBoxLayout(self)
 
@@ -25,8 +26,7 @@ class TaskCard(CardWidget):
 
 if __name__ == "__main__":
     app = QApplication([])
-    w = TaskCard()
-    w.taskLabel.setText("Hello World")
+    w = TaskCard(taskName="Hello World")
     w.show()
 
     app.exec()
