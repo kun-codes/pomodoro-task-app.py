@@ -1,6 +1,9 @@
 # ignore ./data folder
 /data/
 
+# ignore ./test folder
+/test/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
