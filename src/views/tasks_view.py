@@ -15,22 +15,24 @@ class TaskListView(QWidget, Ui_TaskView):
 
         label_size_policy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
 
-        self.todoTasksLabel = TitleLabel("Todo Tasks")
+        self.todoTasksLabel = TitleLabel()
+        self.todoTasksLabel.setText("Todo Tasks")
         self.todoTasksLabel.setSizePolicy(label_size_policy)
         self.scrollAreaWidgetContents.layout().addWidget(self.todoTasksLabel)
 
         # Add the todoTasksCard to the taskListView
-        self.todoTasksCard = DragWidget()
+        self.todoTasksCard = DragWidget(Qt.Orientation.Vertical)
         self.scrollAreaWidgetContents.layout().addWidget(self.todoTasksCard)
         self.todoTasksCard.setObjectName("todoTasksCard")
         self.todoTasksCard.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        self.completedTasksLabel = TitleLabel("Completed Tasks")
+        self.completedTasksLabel = TitleLabel()
+        self.completedTasksLabel.setText("Completed Tasks")
         self.completedTasksLabel.setSizePolicy(label_size_policy)
         self.scrollAreaWidgetContents.layout().addWidget(self.completedTasksLabel)
 
         # Add the completedTasksCard to the taskListView
-        self.completedTasksCard = DragWidget()
+        self.completedTasksCard = DragWidget(Qt.Orientation.Vertical)
         self.scrollAreaWidgetContents.layout().addWidget(self.completedTasksCard)
         self.completedTasksCard.setObjectName("completedTasksCard")
         self.completedTasksCard.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
