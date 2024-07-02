@@ -1,6 +1,7 @@
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
-from PySide6.QtWidgets import QHBoxLayout, QApplication
-from qfluentwidgets import CardWidget, BodyLabel, FluentIcon, isDarkTheme
+from PySide6.QtWidgets import QHBoxLayout, QApplication, QSizePolicy
+from qfluentwidgets import CardWidget, BodyLabel, FluentIcon, isDarkTheme, SimpleCardWidget
 
 
 # TaskCard is a simple card widget that displays a task along with an icon of its own
@@ -25,11 +26,13 @@ class TaskCard(CardWidget):
         self.layout.addWidget(self.taskLabel)
 
         self.setObjectName("taskCard")
+        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
 
-    # Experimental
-    def drag(self, event):
-        self.setBackgroundColor(QColor(255, 255, 255, 13 if isDarkTheme() else 170))
-        event.accept()
+    # # Experimental
+    # def drag(self, event):
+    #     self.setBackgroundColor(QColor(255, 255, 255, 13 if isDarkTheme() else 170))
+    #     event.accept()
+
 
 
 if __name__ == "__main__":
