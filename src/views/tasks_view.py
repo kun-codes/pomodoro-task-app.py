@@ -22,6 +22,8 @@ class TaskListView(QWidget, Ui_TaskView):
         # Add the todoTasksCard to the taskListView
         self.todoTasksCard = DragWidget()
         self.scrollAreaWidgetContents.layout().addWidget(self.todoTasksCard)
+        self.todoTasksCard.setObjectName("todoTasksCard")
+        self.todoTasksCard.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.completedTasksLabel = TitleLabel("Completed Tasks")
         self.completedTasksLabel.setSizePolicy(label_size_policy)
@@ -30,6 +32,8 @@ class TaskListView(QWidget, Ui_TaskView):
         # Add the completedTasksCard to the taskListView
         self.completedTasksCard = DragWidget()
         self.scrollAreaWidgetContents.layout().addWidget(self.completedTasksCard)
+        self.completedTasksCard.setObjectName("completedTasksCard")
+        self.completedTasksCard.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
 
 
         # set icons of buttons
