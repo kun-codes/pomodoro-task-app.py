@@ -8,20 +8,21 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from qfluentwidgets import CardWidget
-from prefabs.taskCard import TaskCard as TaskCardUi
+from qfluentwidgets import CardWidget, FluentWindow, FluentIcon
+from prefabs.taskCard import TaskCard
+
 
 # The Empty Box which is showed as a preview while dragging
-class DragTargetIndicator(TaskCardUi):
+class DragTargetIndicator(TaskCard):
     def __init__(self, parent=None):
         super().__init__(parent)
 
 
 # Individual draggable item
-class DragItem(TaskCardUi):
-    def __init__(self, text):
-        super().__init__()
-        self.taskLabel.setText(text)
+class DragItem(TaskCard):
+    def __init__(self, parent=None, task_name=""):
+        super().__init__(parent=parent, task_name=task_name)
+        # self.taskLabel.setText(text)
         # Store data separately from display label, but use label for default.
         self.data = self.taskLabel.text()
 
@@ -34,12 +35,13 @@ class DragItem(TaskCardUi):
             mime = QMimeData()
             drag.setMimeData(mime)
 
+            task_label = self.taskLabel.text()
             pixmap = QPixmap(self.size())
             self.render(pixmap)
             drag.setPixmap(pixmap)
 
             drag.exec(Qt.DropAction.MoveAction)
-            self.show() # Show this widget again, if it's dropped outside.
+            self.show()  # Show this widget again, if it's dropped outside.
 
 
 class DragWidget(CardWidget):
@@ -148,14 +150,15 @@ class DragWidget(CardWidget):
 #         self.drag = DragWidget(orientation=Qt.Orientation.Vertical)
 #         self.drag.setObjectName("Upper_list")
 #         for n, l in enumerate(["A1", "B1", "C1", "D1"]):
-#             item = DragItem(l)
+#             item = DragItem(task_name=l)
 #             item.set_data(n)  # Store the data.
 #             self.drag.add_item(item)
 #
 #         self.drag_2 = DragWidget(orientation=Qt.Orientation.Vertical)
 #         self.drag_2.setObjectName("Lower_list")
+#         # for n, l in enumerate(["A3", "B3", "C3", "D3"]):
 #         for n, l in enumerate(["A3", "B3", "C3", "D3"]):
-#             item = DragItem(l)
+#             item = DragItem(task_name=l)
 #             item.set_data(n)  # Store the data.
 #             self.drag_2.add_item(item)
 #         # Print out the changed order.
@@ -172,8 +175,21 @@ class DragWidget(CardWidget):
 #         self.setCentralWidget(container)
 #
 #
+# class FluentTestWindow(FluentWindow):
+#     def __init__(self):
+#         super().__init__()
+#         self.testInterface = MainWindow()
+#         self.testInterface.setObjectName("Test Interface")
+#
+#         self.initNavigation()
+#
+#     def initNavigation(self):
+#         # Add sub interface
+#         self.addSubInterface(self.testInterface, FluentIcon.ADD, 'Tasks')
+#
+#
 # app = QApplication([])
-# w = MainWindow()
+# w = FluentTestWindow()
 # w.show()
 #
 # app.exec()
