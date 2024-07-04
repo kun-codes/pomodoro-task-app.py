@@ -93,7 +93,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="PillToolButton" name="restartButton">
+         <widget class="PillToolButton" name="stopButton">
           <property name="minimumSize">
            <size>
             <width>68</width>

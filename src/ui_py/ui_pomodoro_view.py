@@ -68,13 +68,13 @@ class Ui_PomodoroView(object):
 
         self.horizontalLayout.addItem(self.leftHorizontalSpacer)
 
-        self.restartButton = PillToolButton(self.CardWidget)
-        self.restartButton.setObjectName(u"restartButton")
-        self.restartButton.setMinimumSize(QSize(68, 68))
-        self.restartButton.setIconSize(QSize(21, 21))
-        self.restartButton.setChecked(False)
+        self.stopButton = PillToolButton(self.CardWidget)
+        self.stopButton.setObjectName(u"stopButton")
+        self.stopButton.setMinimumSize(QSize(68, 68))
+        self.stopButton.setIconSize(QSize(21, 21))
+        self.stopButton.setChecked(False)
 
-        self.horizontalLayout.addWidget(self.restartButton)
+        self.horizontalLayout.addWidget(self.stopButton)
 
         self.pauseResumeButton = PillToolButton(self.CardWidget)
         self.pauseResumeButton.setObjectName(u"pauseResumeButton")
