@@ -2,6 +2,7 @@ import sys
 from enum import Enum
 from PySide6.QtCore import QTimer, Signal, QObject
 from PySide6.QtWidgets import QApplication
+from loguru import logger
 
 # Duration in minutes
 BREAK_DURATION = 10
@@ -35,8 +36,8 @@ class PomodoroTimer(QObject):
         return self.timer_state
 
     def updateSessionProgress(self):
-        # print(f"Session Progress (before): {self.session_progress}")
-        # print(f"Timer State (before): {self.timer_state}")
+        logger.debug(f"Session Progress (before): {self.session_progress}")
+        logger.debug(f"Timer State (before): {self.timer_state}")
         if self.timer_state == TimerState.WORK:
             if self.session_progress < WORK_INTERVALS - 0.5:
                 self.session_progress += 0.5
@@ -51,27 +52,26 @@ class PomodoroTimer(QObject):
         if self.getTimerState() == TimerState.NOTHING:
             self.updateSessionProgress()
             self.timer_state = TimerState.WORK
-            # print("***Starting work session after nothing state")
             self.pomodoro_timer.start(WORK_DURATION * 60 * 1000)
+            logger.debug("***Starting work session after nothing state")
         elif self.getTimerState() == TimerState.WORK and self.session_progress < WORK_INTERVALS - 0.5:
             self.updateSessionProgress()
             self.timer_state = TimerState.BREAK
-            # print("***Starting break session")
             self.pomodoro_timer.start(BREAK_DURATION * 60 * 1000)
+            logger.debug("***Starting break session")
         elif self.getTimerState() == TimerState.WORK and self.session_progress == WORK_INTERVALS - 0.5:
             self.updateSessionProgress()
             self.timer_state = TimerState.LONG_BREAK
-            # print("***Starting long break session")
             self.pomodoro_timer.start(LONG_BREAK_DURATION * 60 * 1000)
+            logger.debug("***Starting long break session")
         elif self.getTimerState() == TimerState.BREAK:
             self.updateSessionProgress()
             self.timer_state = TimerState.WORK
-            # print("***Starting work session after break")
             self.pomodoro_timer.start(WORK_DURATION * 60 * 1000)
+            logger.debug("***Starting work session after break")
 
-        # print(f"Session Progress (after): {self.session_progress}")
-        # print(f"Timer State (after): {self.timer_state}")
-        # print()
+        logger.debug(f"Session Progress (after): {self.session_progress}")
+        logger.debug(f"Timer State (after): {self.timer_state}")
 
     def sessionEnded(self):
         if self.timer_state == TimerState.WORK and self.session_progress < WORK_INTERVALS - 0.5:
@@ -83,8 +83,9 @@ class PomodoroTimer(QObject):
         elif self.timer_state == TimerState.LONG_BREAK:
             self.pomodoroSessionEnded()
 
+        logger.debug(f"Remaining time: {self.timer_duration/1000}")
     def pomodoroSessionEnded(self):
-        print("Pomodoro Session Ended")
+        logger.debug("Pomodoro Session Ended")
         self.pomodoro_timer.stop()
         self.timer_state = TimerState.NOTHING
 
