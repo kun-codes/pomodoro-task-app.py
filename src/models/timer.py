@@ -70,11 +70,11 @@ class PomodoroTimer(QObject):
 
     def sessionEnded(self):
         if self.timer_state == TimerState.WORK and self.session_progress < WORK_INTERVALS - 0.5:
-            self.startSession()  # Start the break
+            self.startDuration()  # Start the break
         elif self.timer_state == TimerState.WORK and self.session_progress == WORK_INTERVALS - 0.5:
-            self.startSession()  # Start the long break
+            self.startDuration()  # Start the long break
         elif self.timer_state == TimerState.BREAK:
-            self.startSession()  # Start the work session
+            self.startDuration()  # Start the work session
         elif self.timer_state == TimerState.LONG_BREAK:
             self.pomodoroSessionEnded()
 
@@ -89,8 +89,7 @@ if __name__ == '__main__':
     class TestPomodoro:
         def __init__(self):
             self.pomodoro_timer = PomodoroTimer()
-
-            self.pomodoro_timer.startSession()
+            self.pomodoro_timer.startDuration()
 
 
     app = QApplication(sys.argv)
