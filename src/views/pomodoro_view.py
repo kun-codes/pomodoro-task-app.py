@@ -24,13 +24,25 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         # self.restartButton.setIcon(FluentIcon.UPDATE)
         self.pomodoro_timer_obj.timerStateChangedSignal.connect(self.initProgressRing)
 
-    def editButtonProperties(self):
-        self.restartButton.setIcon(FluentIcon.UPDATE)
-        self.pauseResumeButton.setIcon(FluentIcon.PAUSE)
+    def initProgressRingProperties(self):
+        self.ProgressRing.setTextVisible(True)
+        progress_ring_label_font = QFont()
+        # progress_ring_label_font.setFamilies([u"Microsoft YaHei UI"])
+        # TODO: make progress ring label font same as the one used in labels
+        progress_ring_label_font.setPointSize(14)
+        progress_ring_label_font.setBold(False)
+        self.ProgressRing.setFont(progress_ring_label_font)
+        self.ProgressRing.setFormat("Formatted Text")
+
+
+    def initButtonProperties(self):
+        self.stopButton.setIcon(FluentIcon.CLOSE)
+        self.pauseResumeButton.setIcon(FluentIcon.PLAY)
         self.skipButton.setIcon(FluentIcon.CHEVRON_RIGHT)
 
-        self.restartButton.setCheckable(False)
-        self.pauseResumeButton.setCheckable(False)
+        self.stopButton.setCheckable(False)
+        self.pauseResumeButton.setCheckable(True)
+        self.pauseResumeButton.setChecked(True)
         self.skipButton.setCheckable(False)
 
     def stopButtonClicked(self):
