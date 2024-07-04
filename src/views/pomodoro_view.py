@@ -33,7 +33,21 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.pauseResumeButton.setCheckable(False)
         self.skipButton.setCheckable(False)
 
+    def stopButtonClicked(self):
         logger.debug("Restart Button Clicked")
+        self.pomodoro_timer_obj.stopSession()
+        self.pauseResumeButton.setChecked(True)
+        self.pauseResumeButton.setIcon(FluentIcon.PLAY)
+
+    def pauseResumeButtonClicked(self):
+        if self.pauseResumeButton.isChecked():
+            self.pauseResumeButton.setIcon(FluentIcon.PLAY)
+            self.pomodoro_timer_obj.pauseDuration()
+        else:
+            self.pauseResumeButton.setIcon(FluentIcon.PAUSE)
+            self.pomodoro_timer_obj.startDuration()
+
+    def initProgressRing(self, currentTimerState: TimerState):
         logger.debug("Init Progress Ring")
         logger.info("Skip Button Clicked")
 
