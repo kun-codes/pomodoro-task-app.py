@@ -1,4 +1,6 @@
 from loguru import logger
+
+from PySide6.QtGui import QFont
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QWidget, QSpacerItem, QSizePolicy, QHBoxLayout
 from qfluentwidgets import FluentIcon, PillPushButton

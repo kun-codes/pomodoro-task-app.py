@@ -9,10 +9,10 @@ from constants import BREAK_DURATION, WORK_DURATION, LONG_BREAK_DURATION, WORK_I
 
 # Enum which tells what state the timer is in
 class TimerState(Enum):
-    NOTHING = 1
-    WORK = 2
-    BREAK = 3
-    LONG_BREAK = 4
+    NOTHING = "Begin Timer"
+    WORK = "Work"
+    BREAK = "Break"
+    LONG_BREAK = "Long Break"
 
 
 class PomodoroTimer(QObject):  # Inherit from QObject to support signals
