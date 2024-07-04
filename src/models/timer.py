@@ -4,12 +4,7 @@ from PySide6.QtCore import QTimer, Signal, QObject
 from PySide6.QtWidgets import QApplication
 from loguru import logger
 
-# Duration in minutes
-BREAK_DURATION = 10
-WORK_DURATION = 50
-LONG_BREAK_DURATION = 25
-WORK_INTERVALS = 2
-
+from constants import BREAK_DURATION, WORK_DURATION, LONG_BREAK_DURATION, WORK_INTERVALS
 
 # Enum which tells what state the timer is in
 class TimerState(Enum):
