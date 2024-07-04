@@ -49,10 +49,27 @@ class PomodoroView(QWidget, Ui_PomodoroView):
 
     def initProgressRing(self, currentTimerState: TimerState):
         logger.debug("Init Progress Ring")
-        logger.info("Skip Button Clicked")
+        self.ProgressRing.setMinimum(0)
 
-    def restartButtonClicked(self):
-        print("Restart Button Clicked")
+        if currentTimerState == TimerState.WORK:
+            self.ProgressRing.setMaximum(WORK_DURATION * 60 * 1000)
+        elif currentTimerState == TimerState.BREAK:
+            self.ProgressRing.setMaximum(BREAK_DURATION * 60 * 1000)
+        elif currentTimerState == TimerState.LONG_BREAK:
+            self.ProgressRing.setMaximum(LONG_BREAK_DURATION * 60 * 1000)
+        elif currentTimerState == TimerState.NOTHING:
+            self.ProgressRing.setMaximum(0)
+
+        self.ProgressRing.setValue(self.ProgressRing.maximum())
+
+    def updateProgressRing(self):
+        self.ProgressRing.setValue(self.ProgressRing.value() - 1000)
+
+    def skipButtonClicked(self):
+        # TODO: Implement skip button functionality
+        logger.info("Skip Button Clicked")
+        # self.pomodoro_timer.skipDuration()
+
 
 
 
