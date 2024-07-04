@@ -3,6 +3,7 @@ import sys
 from PySide6.QtWidgets import QWidget, QApplication
 
 from views.tasks_view import TaskListView
+from views.pomodoro_view import PomodoroView
 from models.drag_and_drop import DragWidget, DragItem
 # from src.ui.converted.task_card_ui import Ui_Form as TaskCardUi
 
@@ -15,6 +16,9 @@ class MainWindow(FluentWindow):
         self.task_interface = TaskListView()
         self.task_interface.setObjectName('task_interface')
 
+        self.pomodoro_interface = PomodoroView()
+        self.pomodoro_interface.setObjectName('pomodoro_interface')
+
         self.initNavigation()
         self.initWindow()
         self.populateTasks()
@@ -22,6 +26,7 @@ class MainWindow(FluentWindow):
     def initNavigation(self):
         # Add sub interface
         self.addSubInterface(self.task_interface, FluentIcon.ADD, 'Tasks')
+        self.addSubInterface(self.pomodoro_interface, FluentIcon.STOP_WATCH, 'Pomodoro')
 
     def initWindow(self):
         self.resize(1000, 800)
