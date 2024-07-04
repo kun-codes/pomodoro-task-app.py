@@ -1,28 +1,34 @@
 from loguru import logger
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QWidget, QSpacerItem, QSizePolicy, QHBoxLayout
-
 from qfluentwidgets import FluentIcon, PillPushButton
 
 from ui_py.ui_pomodoro_view import Ui_PomodoroView
+from models.timer import PomodoroTimer, TimerState
+from constants import WORK_DURATION, BREAK_DURATION, LONG_BREAK_DURATION, WORK_INTERVALS
+
 
 class HorizontalSpacer(QSpacerItem):
     def __init__(self):
         super().__init__(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
 
 class PomodoroView(QWidget, Ui_PomodoroView):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
 
-        self.editButtonProperties()
+        self.initButtonProperties()
+        self.initProgressRingProperties()
 
-        self.restartButton.clicked.connect(self.restartButtonClicked)
 
-        # self.pauseResumeButton.setIcon(FluentIcon.PAUSE)
-        # self.skipButton.setIcon(FluentIcon.CHEVRON_RIGHT)
-        # self.restartButton.setIcon(FluentIcon.UPDATE)
+        self.stopButton.clicked.connect(self.stopButtonClicked)
+        self.pauseResumeButton.clicked.connect(self.pauseResumeButtonClicked)
+        self.skipButton.clicked.connect(self.skipButtonClicked)
+
+        self.pomodoro_timer_obj = PomodoroTimer()
         self.pomodoro_timer_obj.timerStateChangedSignal.connect(self.initProgressRing)
+        self.pomodoro_timer_obj.pomodoro_timer.timeout.connect(self.updateProgressRing)
 
     def initProgressRingProperties(self):
         self.ProgressRing.setTextVisible(True)
