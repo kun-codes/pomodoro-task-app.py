@@ -114,7 +114,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
     def decreaseRemainingTime(self):
         self.timer_duration -= 1000
 
-        if self.timer_duration <= 0:
+        if self.timer_duration < 0:
             self.durationEnded()
             return
 
