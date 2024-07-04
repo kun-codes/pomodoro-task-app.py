@@ -14,7 +14,10 @@ class TimerState(Enum):
     LONG_BREAK = 4
 
 
-class PomodoroTimer(QObject):
+class PomodoroTimer(QObject):  # Inherit from QObject to support signals
+    # first argument for current timer state
+    timerStateChangedSignal = Signal(TimerState)
+
     def __init__(self):
         super().__init__()
         self.timer_state = TimerState.NOTHING
@@ -64,6 +67,7 @@ class PomodoroTimer(QObject):
             self.timer_state = TimerState.WORK
             self.pomodoro_timer.start(WORK_DURATION * 60 * 1000)
             logger.debug("***Starting work session after break")
+            self.timerStateChangedSignal.emit(self.timer_state)
 
         logger.debug(f"Session Progress (after): {self.session_progress}")
         logger.debug(f"Timer State (after): {self.timer_state}")
@@ -83,6 +87,8 @@ class PomodoroTimer(QObject):
         logger.debug("Pomodoro Session Ended")
         self.pomodoro_timer.stop()
         self.timer_state = TimerState.NOTHING
+        self.timerStateChangedSignal.emit(self.timer_state)
+        logger.debug(f"Session Progress: {self.session_progress}")
 
 
 if __name__ == '__main__':

@@ -21,6 +21,7 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         # self.pauseResumeButton.setIcon(FluentIcon.PAUSE)
         # self.skipButton.setIcon(FluentIcon.CHEVRON_RIGHT)
         # self.restartButton.setIcon(FluentIcon.UPDATE)
+        self.pomodoro_timer_obj.timerStateChangedSignal.connect(self.initProgressRing)
 
     def editButtonProperties(self):
         self.restartButton.setIcon(FluentIcon.UPDATE)
