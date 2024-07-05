@@ -18,6 +18,7 @@ class TimerState(Enum):
 class PomodoroTimer(QObject):  # Inherit from QObject to support signals
     # first argument for current timer state
     timerStateChangedSignal = Signal(TimerState)
+    sessionEndedSignal = Signal()
 
     def __init__(self):
         super().__init__()
@@ -112,7 +113,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
 
     # for decreasing the remaining time by 1 second since timer timeout is always 1000 milliseconds that is 1 second
     def decreaseRemainingTime(self):
-        self.timer_duration -= 1000
+        logger.debug(f"Remaining time (in seconds): {self.getRemainingTime() / 1000}")
 
         self.remaining_time -= 1000
 
@@ -141,6 +142,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         self.session_progress = 0
         self.timer_state = TimerState.NOTHING
         self.timerStateChangedSignal.emit(self.timer_state)
+        self.sessionEndedSignal.emit()
         logger.debug(f"Session Progress: {self.session_progress}")
 
     # def skipDuration(self):
