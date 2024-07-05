@@ -102,13 +102,22 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         elif self.timer_state == TimerState.LONG_BREAK:
             self.pomodoroSessionEnded()
 
+    def skipDuration(self):
+        if self.remaining_time == 0 and not self.pomodoro_timer.isActive():
+            raise NotImplementedError("Skipping duration when timer is not doing anything isn't implemented currently")
+            logger.info("Skipping duration when timer is doing nothing")
+        else:
+            logger.info("Skipping duration when timer is doing something")
+            self.remaining_time = 0
+            self.durationEnded()
+
     # for setting the duration of the timer
     def setTimerDuration(self, duration):
         self.remaining_time = duration
 
     # for decreasing the remaining time by 1 second since timer timeout is always 1000 milliseconds that is 1 second
     def decreaseRemainingTime(self):
-        logger.debug(f"Remaining time (in seconds): {self.getRemainingTime() / 1000}")
+        # logger.debug(f"Remaining time (in seconds): {self.getRemainingTime() / 1000}")
 
         self.remaining_time -= 1000
 
