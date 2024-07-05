@@ -59,34 +59,29 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             logger.info("Resuming timer")
             self.pomodoro_timer.start(1000)
         else:
+            self.updateSessionProgress()
+            
             if self.getTimerState() == TimerState.NOTHING:
-                self.updateSessionProgress()
+                self.setTimerDuration(WORK_DURATION * 60 * 1000)
                 self.timer_state = TimerState.WORK
                 logger.info("Starting work session after nothing state")
-                self.setTimerDuration(WORK_DURATION * 60 * 1000)
-                self.pomodoro_timer.start(1000)
 
             elif self.getTimerState() == TimerState.WORK and self.session_progress < WORK_INTERVALS - 0.5:
-                self.updateSessionProgress()
                 self.setTimerDuration(BREAK_DURATION * 60 * 1000)
                 self.timer_state = TimerState.BREAK
                 logger.info("Starting break session")
-                self.pomodoro_timer.start(1000)
 
             elif self.getTimerState() == TimerState.WORK and self.session_progress == WORK_INTERVALS - 0.5:
-                self.updateSessionProgress()
                 self.setTimerDuration(LONG_BREAK_DURATION * 60 * 1000)
                 self.timer_state = TimerState.LONG_BREAK
                 logger.info("Starting long break session")
-                self.pomodoro_timer.start(1000)
 
             elif self.getTimerState() == TimerState.BREAK:
-                self.updateSessionProgress()
                 self.setTimerDuration(WORK_DURATION * 60 * 1000)
                 self.timer_state = TimerState.WORK
                 logger.info("Starting work session after break")
-                self.pomodoro_timer.start(1000)
 
+            self.pomodoro_timer.start(1000)
             self.timerStateChangedSignal.emit(self.timer_state)
 
             logger.debug(f"Session Progress (after): {self.session_progress}")
