@@ -21,7 +21,6 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.setupUi(self)
 
         self.initButtonProperties()
-        self.initProgressRingProperties()
 
 
         self.stopButton.clicked.connect(self.stopButtonClicked)
@@ -31,6 +30,9 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.pomodoro_timer_obj = PomodoroTimer()
         self.pomodoro_timer_obj.timerStateChangedSignal.connect(self.initProgressRing)
         self.pomodoro_timer_obj.pomodoro_timer.timeout.connect(self.updateProgressRing)
+        self.pomodoro_timer_obj.sessionEndedSignal.connect(self.resetPauseResumeButton)
+
+        self.initProgressRingProperties()
 
     def initProgressRingProperties(self):
         self.ProgressRing.setTextVisible(True)
@@ -40,7 +42,7 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         progress_ring_label_font.setPointSize(14)
         progress_ring_label_font.setBold(False)
         self.ProgressRing.setFont(progress_ring_label_font)
-        self.ProgressRing.setFormat("Formatted Text")
+        self.ProgressRing.setFormat(self.pomodoro_timer_obj.getTimerState().value)
 
 
     def initButtonProperties(self):
@@ -56,8 +58,6 @@ class PomodoroView(QWidget, Ui_PomodoroView):
     def stopButtonClicked(self):
         logger.debug("Restart Button Clicked")
         self.pomodoro_timer_obj.stopSession()
-        self.pauseResumeButton.setChecked(True)
-        self.pauseResumeButton.setIcon(FluentIcon.PLAY)
 
     def pauseResumeButtonClicked(self):
         if self.pauseResumeButton.isChecked():
@@ -80,15 +80,32 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         elif currentTimerState == TimerState.NOTHING:
             self.ProgressRing.setMaximum(0)
 
+        self.ProgressRing.setFormat(currentTimerState.value)
+
         self.ProgressRing.setValue(self.ProgressRing.maximum())
 
     def updateProgressRing(self):
-        self.ProgressRing.setValue(self.ProgressRing.value() - 1000)
+        minutes, seconds = self.convert_milliseconds(self.pomodoro_timer_obj.getRemainingTime())
+        currentTimerState = self.pomodoro_timer_obj.getTimerState().value
+        self.ProgressRing.setFormat(f"{currentTimerState}\n{minutes:02d}:{seconds:02d}")
+
+        self.ProgressRing.setValue(self.pomodoro_timer_obj.getRemainingTime())
 
     def skipButtonClicked(self):
         # TODO: Implement skip button functionality
         logger.info("Skip Button Clicked")
         # self.pomodoro_timer.skipDuration()
+
+    def resetPauseResumeButton(self):
+        self.pauseResumeButton.setChecked(True)
+        self.pauseResumeButton.setIcon(FluentIcon.PLAY)
+
+    def convert_milliseconds(self, milliseconds):
+        seconds, milliseconds = divmod(milliseconds, 1000)
+        minutes, seconds = divmod(seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        return int(minutes), int(seconds)
+        # return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 
 
