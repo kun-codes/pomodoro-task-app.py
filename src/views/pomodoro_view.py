@@ -93,8 +93,7 @@ class PomodoroView(QWidget, Ui_PomodoroView):
 
     def skipButtonClicked(self):
         # TODO: Implement skip button functionality
-        logger.info("Skip Button Clicked")
-        # self.pomodoro_timer.skipDuration()
+        self.pomodoro_timer_obj.skipDuration()
 
     def resetPauseResumeButton(self):
         self.pauseResumeButton.setChecked(True)
