@@ -34,21 +34,16 @@ class SpinBoxSettingCard(SettingCard):
         super().__init__(icon, title, content, parent)
         self.configItem = configItem
         self.spinBox = SpinBox(self)
-        self.valueLabel = QLabel(self)
-        # self.slider.setMinimumWidth(268)
 
         self.spinBox.setSingleStep(1)
         self.spinBox.setRange(*configItem.range)
         self.spinBox.setValue(configItem.value)
-        # self.valueLabel.setNum(configItem.value)
 
         self.hBoxLayout.addStretch(1)
-        # self.hBoxLayout.addWidget(self.valueLabel, 0, Qt.AlignRight)
         self.hBoxLayout.addSpacing(6)
         self.hBoxLayout.addWidget(self.spinBox, 0, Qt.AlignRight)
         self.hBoxLayout.addSpacing(16)
 
-        self.valueLabel.setObjectName('valueLabel')
         configItem.valueChanged.connect(self.setValue)
         self.spinBox.valueChanged.connect(self.__onValueChanged)
 
@@ -59,6 +54,4 @@ class SpinBoxSettingCard(SettingCard):
 
     def setValue(self, value):
         qconfig.set(self.configItem, value)
-        self.valueLabel.setNum(value)
-        self.valueLabel.adjustSize()
         self.spinBox.setValue(value)
