@@ -1,10 +1,3 @@
 # Application
 ORGANIZATION_NAME = "Pomodoro App"
 APPLICATION_NAME = "Pomodoro"
-
-# Duration in minutes
-BREAK_DURATION = 5 / 60
-WORK_DURATION = 10 / 60
-LONG_BREAK_DURATION = 15 / 60
-WORK_INTERVALS = 2
-
