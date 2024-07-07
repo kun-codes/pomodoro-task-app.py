@@ -5,7 +5,8 @@ from PySide6.QtCore import QTimer, Signal, QObject
 from PySide6.QtWidgets import QApplication
 from loguru import logger
 
-from constants import BREAK_DURATION, WORK_DURATION, LONG_BREAK_DURATION, WORK_INTERVALS
+from models.config import app_settings
+from config_values import ConfigValues
 
 # Enum which tells what state the timer is in
 class TimerState(Enum):
@@ -44,10 +45,10 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         logger.debug(f"Timer State (before): {self.timer_state}")
 
         if self.timer_state == TimerState.WORK:
-            if self.session_progress < WORK_INTERVALS - 0.5:
+            if self.session_progress < ConfigValues.WORK_INTERVALS - 0.5:
                 self.session_progress += 0.5
                 self.timer_state = TimerState.BREAK
-            elif self.session_progress == WORK_INTERVALS - 0.5:
+            elif self.session_progress == ConfigValues.WORK_INTERVALS - 0.5:
                 self.session_progress += 0.5
                 self.timer_state = TimerState.LONG_BREAK
         elif self.timer_state == TimerState.BREAK:
@@ -70,13 +71,16 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             if self.getTimerState() == TimerState.NOTHING:
                 logger.info("In Nothing State")
             elif self.getTimerState() == TimerState.WORK:
-                self.setTimerDuration(WORK_DURATION * 60 * 1000)
+                logger.debug(f"Work duration: {ConfigValues.WORK_DURATION}")
+                self.setTimerDuration(ConfigValues.WORK_DURATION * 60 * 1000)
                 logger.info("Starting work session")
             elif self.getTimerState() == TimerState.BREAK:
-                self.setTimerDuration(BREAK_DURATION * 60 * 1000)
+                logger.debug(f"Break duration: {ConfigValues.BREAK_DURATION}")
+                self.setTimerDuration(ConfigValues.BREAK_DURATION * 60 * 1000)
                 logger.info("Starting break session")
             elif self.getTimerState() == TimerState.LONG_BREAK:
-                self.setTimerDuration(LONG_BREAK_DURATION * 60 * 1000)
+                logger.debug(f"Long break duration: {ConfigValues.LONG_BREAK_DURATION}")
+                self.setTimerDuration(ConfigValues.LONG_BREAK_DURATION * 60 * 1000)
                 logger.info("Starting long break session")
 
             self.pomodoro_timer.start(1000)

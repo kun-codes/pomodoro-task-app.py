@@ -1,14 +1,12 @@
 from loguru import logger
 
 from PySide6.QtGui import QFont
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtWidgets import QWidget, QSpacerItem, QSizePolicy, QHBoxLayout
-from qfluentwidgets import FluentIcon, PillPushButton
+from PySide6.QtWidgets import QWidget, QSpacerItem, QSizePolicy
+from qfluentwidgets import FluentIcon
 
 from ui_py.ui_pomodoro_view import Ui_PomodoroView
 from models.timer import PomodoroTimer, TimerState
-from constants import WORK_DURATION, BREAK_DURATION, LONG_BREAK_DURATION, WORK_INTERVALS
-
+from config_values import ConfigValues
 
 class HorizontalSpacer(QSpacerItem):
     def __init__(self):
@@ -72,11 +70,14 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.ProgressRing.setMinimum(0)
 
         if currentTimerState == TimerState.WORK:
-            self.ProgressRing.setMaximum(WORK_DURATION * 60 * 1000)
+            logger.debug(f"WORK_DURATION: {ConfigValues.WORK_DURATION}")
+            self.ProgressRing.setMaximum(ConfigValues.WORK_DURATION * 60 * 1000)
         elif currentTimerState == TimerState.BREAK:
-            self.ProgressRing.setMaximum(BREAK_DURATION * 60 * 1000)
+            logger.debug(f"BREAK_DURATION: {ConfigValues.BREAK_DURATION}")
+            self.ProgressRing.setMaximum(ConfigValues.BREAK_DURATION * 60 * 1000)
         elif currentTimerState == TimerState.LONG_BREAK:
-            self.ProgressRing.setMaximum(LONG_BREAK_DURATION * 60 * 1000)
+            logger.debug(f"LONG_BREAK_DURATION: {ConfigValues.LONG_BREAK_DURATION}")
+            self.ProgressRing.setMaximum(ConfigValues.LONG_BREAK_DURATION * 60 * 1000)
         elif currentTimerState == TimerState.NOTHING:
             self.ProgressRing.setMaximum(0)
 
