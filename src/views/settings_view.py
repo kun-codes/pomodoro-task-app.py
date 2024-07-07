@@ -5,6 +5,7 @@ from ui_py.ui_settings_view import Ui_SettingsView
 
 from models.config import app_settings
 from config_values import ConfigValues
+from prefabs.SpinBoxSettingCard import SpinBoxSettingCard
 
 
 class SettingsView(QWidget, Ui_SettingsView):
@@ -42,11 +43,19 @@ class SettingsView(QWidget, Ui_SettingsView):
             "Set the long break duration in minutes",
             self.pomodoro_settings_group
         )
+        self.work_interval_card = SpinBoxSettingCard(
+            app_settings.work_intervals,
+            FluentIcon.VPN,
+            "Work Intervals",
+            "Set the number of work intervals before a long break",
+            self.pomodoro_settings_group
+        )
 
     def initLayout(self):
         self.pomodoro_settings_group.addSettingCard(self.work_duration_card)
         self.pomodoro_settings_group.addSettingCard(self.break_duration_card)
         self.pomodoro_settings_group.addSettingCard(self.long_break_duration_card)
+        self.pomodoro_settings_group.addSettingCard(self.work_interval_card)
 
 
         self.scrollAreaWidgetContents.layout().addWidget(self.pomodoro_settings_group)
@@ -55,6 +64,7 @@ class SettingsView(QWidget, Ui_SettingsView):
         app_settings.work_duration.valueChanged.connect(self.updateWorkDuration)
         app_settings.break_duration.valueChanged.connect(self.updateBreakDuration)
         app_settings.long_break_duration.valueChanged.connect(self.updateLongBreakDuration)
+        app_settings.work_intervals.valueChanged.connect(self.updateWorkIntervals)
 
     def updateBreakDuration(self):
         ConfigValues.BREAK_DURATION = app_settings.get(app_settings.break_duration)
@@ -67,6 +77,10 @@ class SettingsView(QWidget, Ui_SettingsView):
     def updateLongBreakDuration(self):
         ConfigValues.LONG_BREAK_DURATION = app_settings.get(app_settings.long_break_duration)
         logger.debug(f"Long Break Duration: {app_settings.get(app_settings.long_break_duration)}")
+
+    def updateWorkIntervals(self):
+        ConfigValues.WORK_INTERVALS = app_settings.get(app_settings.work_intervals)
+        logger.debug(f"Work Intervals: {app_settings.get(app_settings.work_intervals)}")
 
 
 if __name__ == "__main__":

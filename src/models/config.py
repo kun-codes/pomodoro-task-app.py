@@ -11,6 +11,7 @@ class Settings(QConfig):
     break_duration = RangeConfigItem("Pomodoro", "BreakDuration", 5, RangeValidator(1, 60))
     long_break_duration = RangeConfigItem("Pomodoro", "LongBreakDuration", 15,
                                           RangeValidator(1, 60))
+    work_intervals = RangeConfigItem("Pomodoro", "WorkIntervals", 2, RangeValidator(1, 4))
 
 
 QCoreApplication.setOrganizationName(ORGANIZATION_NAME)
