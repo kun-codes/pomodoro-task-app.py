@@ -1,14 +1,19 @@
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor
-from PySide6.QtWidgets import QHBoxLayout, QApplication, QSizePolicy
+from PySide6.QtGui import QColor, QPalette
+from PySide6.QtWidgets import QHBoxLayout, QApplication, QSizePolicy, QWidget
 from qfluentwidgets import CardWidget, BodyLabel, FluentIcon, isDarkTheme, SimpleCardWidget
 
 
 # TaskCard is a simple card widget that displays a task along with an icon of its own
-class TaskCard(CardWidget):
+class TaskCard(SimpleCardWidget):
     def __init__(self, parent=None, task_name=""):
         super().__init__(parent=parent)
         self.setAcceptDrops(True)
+
+        palette = QPalette()
+        transparent_colour = QColor(0, 0, 0, int(0.0 * 255))
+        palette.setColor(QPalette.ColorRole.Window, transparent_colour)
+        self.setPalette(palette)
 
         # TODO: See if icon is needed else remove it
         self.iconLabel = BodyLabel(self)

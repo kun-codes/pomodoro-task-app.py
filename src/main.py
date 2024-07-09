@@ -42,12 +42,12 @@ class MainWindow(FluentWindow):
 
     def populateTasks(self):
         for n, l in enumerate(["A1", "B1", "C1", "D1"]):
-            item = DragItem(parent=self.task_interface.todoTasksCard, task_name=l)
+            item = DragItem(task_name=l)
             item.set_data(n)  # Store the data.
             self.task_interface.todoTasksCard.add_item(item)
 
         for n, l in enumerate(["A3", "B3", "C3", "D3"]):
-            item = DragItem(parent=self.task_interface.completedTasksCard, task_name=l)
+            item = DragItem(task_name=l)
             item.set_data(n)  # Store the data.
             self.task_interface.completedTasksCard.add_item(item)
 
