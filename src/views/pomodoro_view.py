@@ -84,9 +84,12 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.ProgressRing.setValue(self.ProgressRing.maximum())
 
     def updateProgressRing(self):
-        minutes, seconds = self.convert_milliseconds(self.pomodoro_timer_obj.getRemainingTime())
+        hours, minutes, seconds = self.convert_milliseconds(self.pomodoro_timer_obj.getRemainingTime())
         currentTimerState = self.pomodoro_timer_obj.getTimerState().value
-        self.ProgressRing.setFormat(f"{currentTimerState}\n{minutes:02d}:{seconds:02d}")
+        if hours != 0:
+            self.ProgressRing.setFormat(f"{currentTimerState}\n{hours:02d}:{minutes:02d}:{seconds:02d}")
+        else:
+            self.ProgressRing.setFormat(f"{currentTimerState}\n{minutes:02d}:{seconds:02d}")
 
         self.ProgressRing.setValue(self.pomodoro_timer_obj.getRemainingTime())
 
@@ -102,7 +105,7 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         seconds, milliseconds = divmod(milliseconds, 1000)
         minutes, seconds = divmod(seconds, 60)
         hours, minutes = divmod(minutes, 60)
-        return int(minutes), int(seconds)
+        return int(hours), int(minutes), int(seconds)
         # return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 
