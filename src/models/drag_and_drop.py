@@ -144,52 +144,53 @@ class DragWidget(CardWidget):
         return data
 
 
-# class MainWindow(QMainWindow):
-#     def __init__(self):
-#         super().__init__()
-#         self.drag = DragWidget(orientation=Qt.Orientation.Vertical)
-#         self.drag.setObjectName("Upper_list")
-#         for n, l in enumerate(["A1", "B1", "C1", "D1"]):
-#             item = DragItem(task_name=l)
-#             item.set_data(n)  # Store the data.
-#             self.drag.add_item(item)
-#
-#         self.drag_2 = DragWidget(orientation=Qt.Orientation.Vertical)
-#         self.drag_2.setObjectName("Lower_list")
-#         # for n, l in enumerate(["A3", "B3", "C3", "D3"]):
-#         for n, l in enumerate(["A3", "B3", "C3", "D3"]):
-#             item = DragItem(task_name=l)
-#             item.set_data(n)  # Store the data.
-#             self.drag_2.add_item(item)
-#         # Print out the changed order.
-#         self.drag_2.orderChanged.connect(print)
-#
-#         container = QWidget()
-#         layout = QVBoxLayout()
-#         # layout.addStretch(1)
-#         layout.addWidget(self.drag)
-#         layout.addStretch(1)
-#         layout.addWidget(self.drag_2)
-#         container.setLayout(layout)
-#
-#         self.setCentralWidget(container)
-#
-#
-# class FluentTestWindow(FluentWindow):
-#     def __init__(self):
-#         super().__init__()
-#         self.testInterface = MainWindow()
-#         self.testInterface.setObjectName("Test Interface")
-#
-#         self.initNavigation()
-#
-#     def initNavigation(self):
-#         # Add sub interface
-#         self.addSubInterface(self.testInterface, FluentIcon.ADD, 'Tasks')
-#
-#
-# app = QApplication([])
-# w = FluentTestWindow()
-# w.show()
-#
-# app.exec()
+if __name__ == "__main__":
+    class MainWindow(QMainWindow):
+        def __init__(self):
+            super().__init__()
+            self.drag = DragWidget(orientation=Qt.Orientation.Vertical)
+            self.drag.setObjectName("Upper_list")
+            for n, l in enumerate(["A1", "B1", "C1", "D1"]):
+                item = DragItem(task_name=l)
+                item.set_data(n)  # Store the data.
+                self.drag.add_item(item)
+
+            self.drag_2 = DragWidget(orientation=Qt.Orientation.Vertical)
+            self.drag_2.setObjectName("Lower_list")
+            # for n, l in enumerate(["A3", "B3", "C3", "D3"]):
+            for n, l in enumerate(["A3", "B3", "C3", "D3"]):
+                item = DragItem(task_name=l)
+                item.set_data(n)  # Store the data.
+                self.drag_2.add_item(item)
+            # Print out the changed order.
+            self.drag_2.orderChanged.connect(print)
+
+            container = QWidget()
+            layout = QVBoxLayout()
+            # layout.addStretch(1)
+            layout.addWidget(self.drag)
+            layout.addStretch(1)
+            layout.addWidget(self.drag_2)
+            container.setLayout(layout)
+
+            self.setCentralWidget(container)
+
+
+    class FluentTestWindow(FluentWindow):
+        def __init__(self):
+            super().__init__()
+            self.testInterface = MainWindow()
+            self.testInterface.setObjectName("Test Interface")
+
+            self.initNavigation()
+
+        def initNavigation(self):
+            # Add sub interface
+            self.addSubInterface(self.testInterface, FluentIcon.ADD, 'Tasks')
+
+
+    app = QApplication([])
+    w = FluentTestWindow()
+    w.show()
+
+    app.exec()
