@@ -1,7 +1,7 @@
 import os
 
 from PySide6.QtCore import QSettings, QCoreApplication
-from qfluentwidgets import QConfig, qconfig, RangeConfigItem, RangeValidator
+from qfluentwidgets import QConfig, qconfig, RangeConfigItem, RangeValidator, ConfigItem, BoolValidator
 
 from constants import ORGANIZATION_NAME, APPLICATION_NAME
 
@@ -14,6 +14,8 @@ class Settings(QConfig):
     long_break_duration = RangeConfigItem("Pomodoro", "LongBreakDuration", 15,
                                           RangeValidator(1, 60))
     work_intervals = RangeConfigItem("Pomodoro", "WorkIntervals", 2, RangeValidator(1, 4))
+    autostart_work = ConfigItem("Pomodoro", "AutostartWork", False, BoolValidator())
+    autostart_break = ConfigItem("Pomodoro", "AutostartBreak", False, BoolValidator())
 
 
 QCoreApplication.setOrganizationName(ORGANIZATION_NAME)
