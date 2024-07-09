@@ -24,15 +24,9 @@
     <number>10</number>
    </property>
    <item row="0" column="0">
-    <widget class="ScrollArea" name="ScrollArea">
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
+    <widget class="QScrollArea" name="scrollArea">
      <property name="styleSheet">
       <string notr="true">QScrollArea{background: transparent; border: none}</string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="widgetResizable">
       <bool>true</bool>
@@ -47,7 +41,7 @@
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">QWidget{background: transparent}</string>
+       <string notr="true">QWidget#scrollAreaWidgetContents { background: transparent }</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -81,12 +75,6 @@
    <class>ToolButton</class>
    <extends>QToolButton</extends>
    <header>qfluentwidgets</header>
-  </customwidget>
-  <customwidget>
-   <class>ScrollArea</class>
-   <extends>QScrollArea</extends>
-   <header>qfluentwidgets</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

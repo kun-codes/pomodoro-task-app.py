@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
+from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QScrollArea,
     QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
-from qfluentwidgets import (ScrollArea, ToolButton)
+from qfluentwidgets import ToolButton
 
 class Ui_TaskView(object):
     def setupUi(self, TaskView):
@@ -28,16 +28,14 @@ class Ui_TaskView(object):
         self.gridLayout = QGridLayout(TaskView)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setContentsMargins(10, 10, 10, -1)
-        self.ScrollArea = ScrollArea(TaskView)
-        self.ScrollArea.setObjectName(u"ScrollArea")
-        self.ScrollArea.setAutoFillBackground(True)
-        self.ScrollArea.setStyleSheet(u"QScrollArea{background: transparent; border: none}")
-        self.ScrollArea.setFrameShape(QFrame.Shape.NoFrame)
-        self.ScrollArea.setWidgetResizable(True)
+        self.scrollArea = QScrollArea(TaskView)
+        self.scrollArea.setObjectName(u"scrollArea")
+        self.scrollArea.setStyleSheet(u"QScrollArea{background: transparent; border: none}")
+        self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
         self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 780, 581))
-        self.scrollAreaWidgetContents.setStyleSheet(u"QWidget{background: transparent}")
+        self.scrollAreaWidgetContents.setStyleSheet(u"QWidget#scrollAreaWidgetContents { background: transparent }")
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout = QHBoxLayout()
@@ -54,9 +52,9 @@ class Ui_TaskView(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.ScrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
-        self.gridLayout.addWidget(self.ScrollArea, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.scrollArea, 0, 0, 1, 1)
 
 
         self.retranslateUi(TaskView)
