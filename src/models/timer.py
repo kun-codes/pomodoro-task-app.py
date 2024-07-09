@@ -62,7 +62,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
 
     # starts the timer for the work session, break session or long break session
     def startDuration(self):
-        if self.remaining_time > 0 and not self.pomodoro_timer.isActive():
+        if self.remaining_time > 0 and not self.pomodoro_timer.isActive():  # if timer is paused
             logger.info("Resuming timer")
             self.pomodoro_timer.start(1000)
         else:

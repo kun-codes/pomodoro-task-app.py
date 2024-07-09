@@ -6,6 +6,7 @@ from views.tasks_view import TaskListView
 from views.pomodoro_view import PomodoroView
 from views.settings_view import SettingsView
 from models.drag_and_drop import DragWidget, DragItem
+from models.timer import TimerState
 # from src.ui.converted.task_card_ui import Ui_Form as TaskCardUi
 
 from qfluentwidgets import FluentIcon, FluentWindow, setTheme, Theme, NavigationItemPosition
@@ -23,9 +24,12 @@ class MainWindow(FluentWindow):
         self.settings_interface = SettingsView()
         self.settings_interface.setObjectName('settings_interface')
 
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(self.disablePomodoroSettingsDuringTimer)
+
         self.initNavigation()
         self.initWindow()
         self.populateTasks()
+
 
     def initNavigation(self):
         # Add sub interface
@@ -51,12 +55,17 @@ class MainWindow(FluentWindow):
             item.set_data(n)  # Store the data.
             self.task_interface.completedTasksCard.add_item(item)
 
+    def disablePomodoroSettingsDuringTimer(self, timerState):
+        if timerState in [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
+            self.settings_interface.pomodoro_settings_group.setDisabled(True)
+        else:
+            self.settings_interface.pomodoro_settings_group.setDisabled(False)
 
 
 if __name__ == '__main__':
     setTheme(Theme.DARK)
 
     app = QApplication(sys.argv)
-    w = MainWindow()
-    w.show()
+    mainWindow = MainWindow()
+    mainWindow.show()
     app.exec()
