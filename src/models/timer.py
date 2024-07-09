@@ -5,8 +5,8 @@ from PySide6.QtCore import QTimer, Signal, QObject
 from PySide6.QtWidgets import QApplication
 from loguru import logger
 
-from models.config import app_settings
 from config_values import ConfigValues
+
 
 # Enum which tells what state the timer is in
 class TimerState(Enum):
@@ -148,6 +148,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
     #     self.timer_duration = 0
     #     self.session_progress += 0.5
     #     self.durationEnded()
+
 
 if __name__ == '__main__':
     class TestPomodoro:

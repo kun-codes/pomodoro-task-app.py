@@ -1,15 +1,14 @@
-from PySide6.QtCore import QMimeData, Qt, Signal, QPoint
-from PySide6.QtGui import QDrag, QPixmap, QPainter, QRegion
+from PySide6.QtCore import QMimeData, Qt, Signal
+from PySide6.QtGui import QDrag
 from PySide6.QtWidgets import (
     QApplication,
     QHBoxLayout,
-    QLabel,
     QMainWindow,
     QVBoxLayout,
-    QWidget,
-    QScrollArea
+    QWidget
 )
-from qfluentwidgets import CardWidget, FluentWindow, FluentIcon, setTheme, Theme
+from qfluentwidgets import CardWidget, FluentWindow, FluentIcon
+
 from prefabs.taskCard import TaskCard
 
 
@@ -42,6 +41,7 @@ class DragItem(TaskCard):
 
             drag.exec(Qt.DropAction.MoveAction)
             self.show()  # Show this widget again, if it's dropped outside.
+
 
 class DragWidget(CardWidget):
     """

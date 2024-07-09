@@ -1,13 +1,10 @@
-import os
-
 from PySide6.QtCore import QAbstractListModel, Qt
-from PySide6.QtGui import QImage
-from qfluentwidgets import FluentIcon, Theme
-
+from qfluentwidgets import FluentIcon
 
 tick_icon = FluentIcon.ACCEPT.icon()
 # tick_pixmap = tick_icon.pixmap(32, 32)
 tick = tick_icon
+
 
 # basedir = os.path.dirname(__file__)
 # tick = QImage(os.path.join(basedir, "tick.png"))

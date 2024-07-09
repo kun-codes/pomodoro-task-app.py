@@ -1,5 +1,3 @@
-import sys
-
 from qfluentwidgets import MessageBoxBase, SubtitleLabel, LineEdit
 
 

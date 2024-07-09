@@ -8,18 +8,12 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLayout, QSizePolicy,
-    QSpacerItem, QVBoxLayout, QWidget)
+from PySide6.QtCore import (QCoreApplication, QMetaObject, QSize, Qt)
+from PySide6.QtWidgets import (QHBoxLayout, QLayout, QSizePolicy,
+                               QSpacerItem, QVBoxLayout)
 
-from qfluentwidgets import (PillToolButton, ProgressBar, ProgressRing, TitleLabel,
-    ToggleToolButton, ToolButton)
+from qfluentwidgets import (PillToolButton, ProgressRing, TitleLabel)
+
 
 class Ui_PomodoroView(object):
     def setupUi(self, PomodoroView):
@@ -92,21 +86,19 @@ class Ui_PomodoroView(object):
 
         self.horizontalLayout.addItem(self.rightHorizontalSpacer)
 
-
         self.verticalLayout_2.addLayout(self.horizontalLayout)
 
         self.bottomVerticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_2.addItem(self.bottomVerticalSpacer)
 
-
         self.retranslateUi(PomodoroView)
 
         QMetaObject.connectSlotsByName(PomodoroView)
+
     # setupUi
 
     def retranslateUi(self, PomodoroView):
         PomodoroView.setWindowTitle(QCoreApplication.translate("PomodoroView", u"Form", None))
         self.pomodoroLabel.setText(QCoreApplication.translate("PomodoroView", u"Pomodoro", None))
     # retranslateUi
-

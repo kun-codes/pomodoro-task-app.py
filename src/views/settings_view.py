@@ -1,11 +1,11 @@
-from loguru import logger
-from qfluentwidgets import ScrollArea, SettingCardGroup, RangeSettingCard, FluentIcon
 from PySide6.QtWidgets import QWidget, QApplication
-from ui_py.ui_settings_view import Ui_SettingsView
+from loguru import logger
+from qfluentwidgets import SettingCardGroup, RangeSettingCard, FluentIcon
 
-from models.config import app_settings
 from config_values import ConfigValues
+from models.config import app_settings
 from prefabs.SpinBoxSettingCard import SpinBoxSettingCard
+from ui_py.ui_settings_view import Ui_SettingsView
 
 
 class SettingsView(QWidget, Ui_SettingsView):
@@ -56,7 +56,6 @@ class SettingsView(QWidget, Ui_SettingsView):
         self.pomodoro_settings_group.addSettingCard(self.break_duration_card)
         self.pomodoro_settings_group.addSettingCard(self.long_break_duration_card)
         self.pomodoro_settings_group.addSettingCard(self.work_interval_card)
-
 
         self.scrollAreaWidgetContents.layout().addWidget(self.pomodoro_settings_group)
 

@@ -1,11 +1,10 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QApplication, QSizePolicy, QMainWindow
+from PySide6.QtWidgets import QWidget, QApplication, QSizePolicy
+from qfluentwidgets import FluentIcon, TitleLabel
 
-from qfluentwidgets import FluentIcon, MessageBoxBase, TitleLabel
-
-from ui_py.ui_tasks_list_view import Ui_TaskView
-from prefabs.addTaskDialog import AddTaskDialog
 from models.drag_and_drop import DragWidget, DragItem
+from prefabs.addTaskDialog import AddTaskDialog
+from ui_py.ui_tasks_list_view import Ui_TaskView
 
 
 class TaskListView(Ui_TaskView, QWidget):
@@ -36,7 +35,6 @@ class TaskListView(Ui_TaskView, QWidget):
         self.completedTasksCard.setObjectName("completedTasksCard")
         self.scrollAreaWidgetContents.layout().addWidget(self.completedTasksCard)
         self.completedTasksCard.layout().setAlignment(Qt.AlignmentFlag.AlignTop)
-
 
         # set icons of buttons
         self.addTaskButton.setIcon(FluentIcon.ADD)

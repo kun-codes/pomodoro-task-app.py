@@ -1,12 +1,12 @@
-from loguru import logger
-
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QWidget, QSpacerItem, QSizePolicy
+from loguru import logger
 from qfluentwidgets import FluentIcon
 
-from ui_py.ui_pomodoro_view import Ui_PomodoroView
-from models.timer import PomodoroTimer, TimerState
 from config_values import ConfigValues
+from models.timer import PomodoroTimer, TimerState
+from ui_py.ui_pomodoro_view import Ui_PomodoroView
+
 
 class HorizontalSpacer(QSpacerItem):
     def __init__(self):
@@ -19,7 +19,6 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.setupUi(self)
 
         self.initButtonProperties()
-
 
         self.stopButton.clicked.connect(self.stopButtonClicked)
         self.pauseResumeButton.clicked.connect(self.pauseResumeButtonClicked)
@@ -41,7 +40,6 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         progress_ring_label_font.setBold(False)
         self.ProgressRing.setFont(progress_ring_label_font)
         self.ProgressRing.setFormat(self.pomodoro_timer_obj.getTimerState().value)
-
 
     def initButtonProperties(self):
         self.stopButton.setIcon(FluentIcon.CLOSE)
@@ -106,8 +104,6 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         hours, minutes = divmod(minutes, 60)
         return int(minutes), int(seconds)
         # return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-
-
 
 
 if __name__ == '__main__':

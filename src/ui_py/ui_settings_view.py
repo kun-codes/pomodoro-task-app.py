@@ -8,17 +8,13 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QScrollArea, QSizePolicy, QVBoxLayout,
-    QWidget)
+from PySide6.QtCore import (QCoreApplication, QMetaObject, QRect,
+                            Qt)
+from PySide6.QtWidgets import (QScrollArea, QSizePolicy, QVBoxLayout,
+                               QWidget)
 
 from qfluentwidgets import TitleLabel
+
 
 class Ui_SettingsView(object):
     def setupUi(self, SettingsView):
@@ -44,7 +40,8 @@ class Ui_SettingsView(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.TitleLabel.sizePolicy().hasHeightForWidth())
         self.TitleLabel.setSizePolicy(sizePolicy)
-        self.TitleLabel.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+        self.TitleLabel.setAlignment(
+            Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
 
         self.verticalLayout_2.addWidget(self.TitleLabel, 0, Qt.AlignmentFlag.AlignTop)
 
@@ -52,14 +49,13 @@ class Ui_SettingsView(object):
 
         self.verticalLayout.addWidget(self.scrollArea)
 
-
         self.retranslateUi(SettingsView)
 
         QMetaObject.connectSlotsByName(SettingsView)
+
     # setupUi
 
     def retranslateUi(self, SettingsView):
         SettingsView.setWindowTitle(QCoreApplication.translate("SettingsView", u"Form", None))
         self.TitleLabel.setText(QCoreApplication.translate("SettingsView", u"Settings", None))
     # retranslateUi
-

@@ -1,6 +1,8 @@
 import os
-from qfluentwidgets import QConfig, qconfig, RangeConfigItem, RangeValidator, Theme
+
 from PySide6.QtCore import QSettings, QCoreApplication
+from qfluentwidgets import QConfig, qconfig, RangeConfigItem, RangeValidator
+
 from constants import ORGANIZATION_NAME, APPLICATION_NAME
 
 
