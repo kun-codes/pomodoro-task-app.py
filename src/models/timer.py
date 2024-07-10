@@ -32,7 +32,6 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         # whole number means that break is going on
         # would be reset to zero after every long break
 
-
         self.remaining_time = 0  # will change according to BREAK_DURATION, WORK_DURATION, LONG_BREAK_DURATION
 
         # self.pomodoro_timer.timeout.connect(self.sessionEnded)
@@ -93,12 +92,36 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         self.pomodoro_timer.stop()
 
     # handles the end of the work session, break session or long break session
-    def durationEnded(self):
+    def durationEnded(self, isSkipped=False):
+        self.pomodoro_timer.stop()
         if self.timer_state == TimerState.LONG_BREAK:
             self.pomodoroSessionEnded()
-        else:
-            self.updateSessionProgress()
-            self.startDuration()
+        elif self.timer_state == TimerState.WORK:
+            if isSkipped:
+                self.updateSessionProgress()
+                self.startDuration()
+                return
+            elif ConfigValues.AUTOSTART_BREAK:
+                logger.info("Auto-starting work session")
+                self.updateSessionProgress()
+                self.startDuration()
+            else:
+                logger.info("Waiting for user input after ending work session")
+                self.remaining_time = 0
+                self.waitForUserInputSignal.emit()
+        elif self.timer_state == TimerState.BREAK:
+            if isSkipped:
+                self.updateSessionProgress()
+                self.startDuration()
+                return
+            if ConfigValues.AUTOSTART_WORK:
+                logger.info("Auto-starting break session")
+                self.updateSessionProgress()
+                self.startDuration()
+            else:
+                logger.info("Waiting for user input after ending break session")
+                self.remaining_time = 0
+                self.waitForUserInputSignal.emit()
 
     def skipDuration(self):
         if self.remaining_time == 0 and not self.pomodoro_timer.isActive():
@@ -107,7 +130,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         else:
             logger.info("Skipping duration when timer is doing something")
             self.remaining_time = 0
-            self.durationEnded()
+            self.durationEnded(isSkipped=True)
 
     # for setting the duration of the timer
     def setTimerDuration(self, duration):
