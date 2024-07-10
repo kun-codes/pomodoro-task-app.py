@@ -68,8 +68,6 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             logger.info("Resuming timer")
             self.pomodoro_timer.start(1000)
         else:
-            self.updateSessionProgress()
-
             if self.getTimerState() == TimerState.NOTHING:
                 logger.info("In Nothing State")
             elif self.getTimerState() == TimerState.WORK:
@@ -99,6 +97,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         if self.timer_state == TimerState.LONG_BREAK:
             self.pomodoroSessionEnded()
         else:
+            self.updateSessionProgress()
             self.startDuration()
 
     def skipDuration(self):
@@ -156,6 +155,7 @@ if __name__ == '__main__':
     class TestPomodoro:
         def __init__(self):
             self.pomodoro_timer = PomodoroTimer()
+            self.pomodoro_timer.updateSessionProgress()
             self.pomodoro_timer.startDuration()
 
 
