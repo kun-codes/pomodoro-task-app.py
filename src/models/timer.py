@@ -11,7 +11,7 @@ from config_values import ConfigValues
 # Enum which tells what state the timer is in
 class TimerState(Enum):
     NOTHING = "Begin Timer"
-    WORK = "Work"
+    WORK = "Focus"
     BREAK = "Break"
     LONG_BREAK = "Long Break"
 
