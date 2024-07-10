@@ -28,6 +28,7 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.pomodoro_timer_obj.timerStateChangedSignal.connect(self.initProgressRing)
         self.pomodoro_timer_obj.pomodoro_timer.timeout.connect(self.updateProgressRing)
         self.pomodoro_timer_obj.sessionEndedSignal.connect(self.resetPauseResumeButton)
+        self.pomodoro_timer_obj.waitForUserInputSignal.connect(self.resetPauseResumeButton)
 
         self.initProgressRingProperties()
 

@@ -20,6 +20,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
     # first argument for current timer state
     timerStateChangedSignal = Signal(TimerState)
     sessionEndedSignal = Signal()
+    waitForUserInputSignal = Signal()
 
     def __init__(self):
         super().__init__()
