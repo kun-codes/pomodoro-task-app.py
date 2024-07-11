@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QWidget, QApplication
 from loguru import logger
-from qfluentwidgets import SettingCardGroup, RangeSettingCard, FluentIcon, SwitchSettingCard
+from qfluentwidgets import SettingCardGroup, RangeSettingCard, FluentIcon, SwitchSettingCard, OptionsSettingCard, \
+    setTheme
 
 from config_values import ConfigValues
 from models.config import app_settings
@@ -65,6 +66,23 @@ class SettingsView(QWidget, Ui_SettingsView):
             self.pomodoro_settings_group
         )
 
+        # Personalization Settings
+        self.personalization_settings_group = SettingCardGroup(
+            self.tr('Personalization'), self.scrollArea)
+        self.theme_card = OptionsSettingCard(
+            app_settings.themeMode,
+            FluentIcon.BRUSH,
+            self.tr('Application theme'),
+            self.tr("Change the appearance of your application"),
+            texts=[
+                self.tr('Light'), self.tr('Dark'),
+                self.tr('Use system setting')
+            ],
+            parent=self.personalization_settings_group
+        )
+
+        self.__connectSignalToSlot()
+
     def initLayout(self):
         self.pomodoro_settings_group.addSettingCard(self.work_duration_card)
         self.pomodoro_settings_group.addSettingCard(self.break_duration_card)
@@ -74,6 +92,10 @@ class SettingsView(QWidget, Ui_SettingsView):
         self.pomodoro_settings_group.addSettingCard(self.autostart_break_card)
 
         self.scrollAreaWidgetContents.layout().addWidget(self.pomodoro_settings_group)
+
+        self.personalization_settings_group.addSettingCard(self.theme_card)
+
+        self.scrollAreaWidgetContents.layout().addWidget(self.personalization_settings_group)
 
     def onValueChanged(self):
         app_settings.work_duration.valueChanged.connect(self.updateWorkDuration)
@@ -108,6 +130,8 @@ class SettingsView(QWidget, Ui_SettingsView):
         ConfigValues.AUTOSTART_BREAK = app_settings.get(app_settings.autostart_break)
         logger.debug(f"Autostart Break: {app_settings.get(app_settings.autostart_break)}")
 
+    def __connectSignalToSlot(self):
+        self.theme_card.optionChanged.connect(lambda ci: setTheme(app_settings.get(ci)))
 
 if __name__ == "__main__":
     app = QApplication()

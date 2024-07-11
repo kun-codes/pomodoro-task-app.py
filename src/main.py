@@ -65,7 +65,6 @@ class MainWindow(FluentWindow):
 
 
 if __name__ == '__main__':
-    setTheme(Theme.DARK)
 
     app = QApplication(sys.argv)
     mainWindow = MainWindow()

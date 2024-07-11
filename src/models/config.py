@@ -1,7 +1,7 @@
 import os
 
 from PySide6.QtCore import QSettings, QCoreApplication
-from qfluentwidgets import QConfig, qconfig, RangeConfigItem, RangeValidator, ConfigItem, BoolValidator
+from qfluentwidgets import QConfig, qconfig, RangeConfigItem, RangeValidator, ConfigItem, BoolValidator, Theme
 
 from constants import ORGANIZATION_NAME, APPLICATION_NAME
 
@@ -30,5 +30,6 @@ setting_temp = QSettings(QSettings.Format.IniFormat, QSettings.Scope.UserScope, 
 # replacing the extension of the settings file from .ini to .json
 root, _ = os.path.splitext(setting_temp.fileName())
 settings_file_path = root + ".json"
-# app_settings.themeMode.value = Theme.AUTO
+
+app_settings.themeMode.value = Theme.AUTO
 qconfig.load(settings_file_path, app_settings)
