@@ -33,6 +33,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         # would be reset to zero after every long break
 
         self.remaining_time = 0  # will change according to BREAK_DURATION, WORK_DURATION, LONG_BREAK_DURATION
+        self.timer_resolution = 100  # in milliseconds
 
         # self.pomodoro_timer.timeout.connect(self.sessionEnded)
         self.pomodoro_timer.timeout.connect(self.decreaseRemainingTime)
@@ -65,7 +66,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
     def setDuration(self):
         if self.remaining_time > 0 and not self.pomodoro_timer.isActive():  # if timer is paused
             logger.info("Resuming timer")
-            self.pomodoro_timer.start(1000)
+            self.pomodoro_timer.start(self.timer_resolution)
         else:  # if timer is not paused then set timer duration and start timer
             if self.getTimerState() == TimerState.NOTHING:
                 logger.info("In Nothing State")
@@ -86,7 +87,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             logger.debug(f"Timer State (after): {self.timer_state}")
 
     def startDuration(self):
-        self.pomodoro_timer.start(1000)
+        self.pomodoro_timer.start(self.timer_resolution)
 
     def pauseDuration(self):
         logger.info("Timer is paused now")
@@ -144,13 +145,13 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         if __name__ == '__main__':
             logger.debug(f"Remaining time (in seconds): {self.getRemainingTime() / 1000}")
 
-        self.remaining_time -= 1000
+        self.remaining_time -= self.timer_resolution
 
         if self.remaining_time < 0:
             self.durationEnded()
             return
 
-        self.pomodoro_timer.start(1000)
+        self.pomodoro_timer.start(self.timer_resolution)
 
     # returns remaining time in milliseconds for the duration
     def getRemainingTime(self):
