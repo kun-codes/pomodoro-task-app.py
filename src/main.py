@@ -57,6 +57,7 @@ class MainWindow(FluentWindow):
             self.task_interface.completedTasksCard.add_item(item)
 
     def disablePomodoroSettingsDuringTimer(self, timerState):
+        # TODO: show a tip to stop the timer before changing settings when timer is running
         if timerState in [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
             self.settings_interface.pomodoro_settings_group.setDisabled(True)
         else:

@@ -97,7 +97,6 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.ProgressRing.setValue(self.pomodoro_timer_obj.getRemainingTime())
 
     def skipButtonClicked(self):
-        # TODO: Implement skip button functionality
         self.pomodoro_timer_obj.skipDuration()
 
     def resetPauseResumeButton(self):

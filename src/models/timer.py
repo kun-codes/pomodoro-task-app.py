@@ -66,7 +66,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         if self.remaining_time > 0 and not self.pomodoro_timer.isActive():  # if timer is paused
             logger.info("Resuming timer")
             self.pomodoro_timer.start(1000)
-        else:
+        else:  # if timer is not paused then set timer duration and start timer
             if self.getTimerState() == TimerState.NOTHING:
                 logger.info("In Nothing State")
             elif self.getTimerState() == TimerState.WORK:
@@ -93,11 +93,14 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
 
     # handles the end of the work session, break session or long break session
     def durationEnded(self, isSkipped=False):
+        # TODO: in case autostart_break is false, change the text inside the progress ring to "break {break duration}"
+        #   instead of what appears right now that is "work 00:00"
         self.pomodoro_timer.stop()
-        if self.timer_state == TimerState.LONG_BREAK:
+        if self.timer_state == TimerState.LONG_BREAK:  # session always ends after long break
             self.pomodoroSessionEnded()
         elif self.timer_state == TimerState.WORK:
-            if isSkipped:
+            if isSkipped:  # if session is skipped then value of autostart_break is not checked as it doesn't matter
+                # and start the next duration automatically
                 self.updateSessionProgress()
                 self.startDuration()
                 return
@@ -108,7 +111,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             else:
                 logger.info("Waiting for user input after ending work session")
                 self.remaining_time = 0
-                self.waitForUserInputSignal.emit()
+                self.waitForUserInputSignal.emit()  # resets the pause resume button to its checked state
         elif self.timer_state == TimerState.BREAK:
             if isSkipped:
                 self.updateSessionProgress()
@@ -125,6 +128,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
 
     def skipDuration(self):
         if self.remaining_time == 0 and not self.pomodoro_timer.isActive():
+            # TODO: Implement skipping duration when timer is not doing anything
             raise NotImplementedError("Skipping duration when timer is not doing anything isn't implemented currently")
             logger.info("Skipping duration when timer is doing nothing")
         else:
@@ -149,7 +153,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
 
         self.pomodoro_timer.start(1000)
 
-    # returns remaining time in seconds for the duration
+    # returns remaining time in milliseconds for the duration
     def getRemainingTime(self):
         return self.remaining_time
 
