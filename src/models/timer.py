@@ -98,40 +98,30 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         if self.timer_state == TimerState.LONG_BREAK:  # session always ends after long break
             self.pomodoroSessionEnded()
         elif self.timer_state == TimerState.WORK:
+            self.updateSessionProgress()
+            self.setDuration()
             if isSkipped:  # if session is skipped then value of autostart_break is not checked as it doesn't matter
                 # and start the next duration automatically
-                self.updateSessionProgress()
-                self.setDuration()
                 self.startDuration()
                 return
             elif ConfigValues.AUTOSTART_BREAK:
                 logger.info("Auto-starting work session")
-                self.updateSessionProgress()
-                self.setDuration()
                 self.startDuration()
             else:
                 logger.info("Waiting for user input after ending work session")
-                self.remaining_time = 0
-                self.updateSessionProgress()
-                self.setDuration()
                 self.waitForUserInputSignal.emit()  # resets the pause resume button to its checked state
                 self.timerStateChangedSignal.emit(self.timer_state)
         elif self.timer_state == TimerState.BREAK:
+            self.updateSessionProgress()
+            self.setDuration()
             if isSkipped:
-                self.updateSessionProgress()
-                self.setDuration()
                 self.startDuration()
                 return
             if ConfigValues.AUTOSTART_WORK:
                 logger.info("Auto-starting break session")
-                self.updateSessionProgress()
-                self.setDuration()
                 self.startDuration()
             else:
                 logger.info("Waiting for user input after ending break session")
-                self.remaining_time = 0
-                self.updateSessionProgress()
-                self.setDuration()
                 self.waitForUserInputSignal.emit()
                 self.timerStateChangedSignal.emit(self.timer_state)
 
