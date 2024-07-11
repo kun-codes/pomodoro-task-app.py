@@ -59,6 +59,13 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         elif self.timer_state == TimerState.NOTHING:
             self.session_progress += 0.5
             self.timer_state = TimerState.WORK
+        elif self.timer_state == TimerState.LONG_BREAK:
+            self.session_progress += 0.5  # Back to work after long_break
+            self.timer_state = TimerState.WORK
+
+        self.session_progress = self.session_progress % ConfigValues.WORK_INTERVALS  # for example in case work intervals is
+        # 2 and during long break it was 2 and then after it, it becomes 2.5 which is not a valid state, so we get the
+        # remainder which is 0.5
 
         self.timerStateChangedSignal.emit(self.timer_state)
 
@@ -96,9 +103,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
     # handles the end of the work session, break session or long break session
     def durationEnded(self, isSkipped=False):
         self.pomodoro_timer.stop()
-        if self.timer_state == TimerState.LONG_BREAK:  # session always ends after long break
-            self.pomodoroSessionEnded()
-        elif self.timer_state == TimerState.WORK:
+        if self.timer_state == TimerState.WORK:
             self.updateSessionProgress()
             self.setDuration()
             if isSkipped:  # if session is skipped then value of autostart_break is not checked as it doesn't matter
@@ -106,20 +111,20 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
                 self.startDuration()
                 return
             elif ConfigValues.AUTOSTART_BREAK:
-                logger.info("Auto-starting work session")
+                logger.info("Auto-starting break session")
                 self.startDuration()
             else:
                 logger.info("Waiting for user input after ending work session")
                 self.waitForUserInputSignal.emit()  # resets the pause resume button to its checked state
                 self.timerStateChangedSignal.emit(self.timer_state)
-        elif self.timer_state == TimerState.BREAK:
+        elif self.timer_state in [TimerState.BREAK, TimerState.LONG_BREAK]:
             self.updateSessionProgress()
             self.setDuration()
             if isSkipped:
                 self.startDuration()
                 return
             if ConfigValues.AUTOSTART_WORK:
-                logger.info("Auto-starting break session")
+                logger.info("Auto-starting work session")
                 self.startDuration()
             else:
                 logger.info("Waiting for user input after ending break session")

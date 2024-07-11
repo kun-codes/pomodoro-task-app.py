@@ -36,7 +36,6 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.ProgressRing.setTextVisible(True)
         progress_ring_label_font = QFont()
         # progress_ring_label_font.setFamilies([u"Microsoft YaHei UI"])
-        # TODO: make progress ring label font same as the one used in labels
         progress_ring_label_font.setPointSize(14)
         progress_ring_label_font.setBold(False)
         self.ProgressRing.setFont(progress_ring_label_font)
