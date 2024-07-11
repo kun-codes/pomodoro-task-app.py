@@ -62,8 +62,9 @@ class PomodoroView(QWidget, Ui_PomodoroView):
             self.pomodoro_timer_obj.pauseDuration()
         else:
             self.pauseResumeButton.setIcon(FluentIcon.PAUSE)
-            if self.pomodoro_timer_obj.remaining_time <= 0:
+            if self.pomodoro_timer_obj.getTimerState() == TimerState.NOTHING:
                 self.pomodoro_timer_obj.updateSessionProgress()
+            self.pomodoro_timer_obj.setDuration()
             self.pomodoro_timer_obj.startDuration()
 
     def initProgressRing(self, currentTimerState: TimerState):
@@ -82,13 +83,19 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         elif currentTimerState == TimerState.NOTHING:
             self.ProgressRing.setMaximum(0)
 
-        self.ProgressRing.setFormat(currentTimerState.value)
-
         self.ProgressRing.setValue(self.ProgressRing.maximum())
+
+        # display current timer state value along with the full duration formatted to clock format
+        hours, minutes, seconds = self.convert_milliseconds(self.ProgressRing.maximum())
+        if hours != 0:
+            self.ProgressRing.setFormat(f"{currentTimerState.value}\n{hours:02d}:{minutes:02d}:{seconds:02d}")
+        else:
+            self.ProgressRing.setFormat(f"{currentTimerState.value}\n{minutes:02d}:{seconds:02d}")
 
     def updateProgressRing(self):
         hours, minutes, seconds = self.convert_milliseconds(self.pomodoro_timer_obj.getRemainingTime())
         currentTimerState = self.pomodoro_timer_obj.getTimerState().value
+
         if hours != 0:
             self.ProgressRing.setFormat(f"{currentTimerState}\n{hours:02d}:{minutes:02d}:{seconds:02d}")
         else:

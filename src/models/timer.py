@@ -62,7 +62,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         self.timerStateChangedSignal.emit(self.timer_state)
 
     # starts the timer for the work session, break session or long break session
-    def startDuration(self):
+    def setDuration(self):
         if self.remaining_time > 0 and not self.pomodoro_timer.isActive():  # if timer is paused
             logger.info("Resuming timer")
             self.pomodoro_timer.start(1000)
@@ -82,10 +82,11 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
                 self.setTimerDuration(ConfigValues.LONG_BREAK_DURATION * 60 * 1000)
                 logger.info("Starting long break session")
 
-            self.pomodoro_timer.start(1000)
-
             logger.debug(f"Session Progress (after): {self.session_progress}")
             logger.debug(f"Timer State (after): {self.timer_state}")
+
+    def startDuration(self):
+        self.pomodoro_timer.start(1000)
 
     def pauseDuration(self):
         logger.info("Timer is paused now")
@@ -93,8 +94,6 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
 
     # handles the end of the work session, break session or long break session
     def durationEnded(self, isSkipped=False):
-        # TODO: in case autostart_break is false, change the text inside the progress ring to "break {break duration}"
-        #   instead of what appears right now that is "work 00:00"
         self.pomodoro_timer.stop()
         if self.timer_state == TimerState.LONG_BREAK:  # session always ends after long break
             self.pomodoroSessionEnded()
@@ -102,29 +101,39 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             if isSkipped:  # if session is skipped then value of autostart_break is not checked as it doesn't matter
                 # and start the next duration automatically
                 self.updateSessionProgress()
+                self.setDuration()
                 self.startDuration()
                 return
             elif ConfigValues.AUTOSTART_BREAK:
                 logger.info("Auto-starting work session")
                 self.updateSessionProgress()
+                self.setDuration()
                 self.startDuration()
             else:
                 logger.info("Waiting for user input after ending work session")
                 self.remaining_time = 0
+                self.updateSessionProgress()
+                self.setDuration()
                 self.waitForUserInputSignal.emit()  # resets the pause resume button to its checked state
+                self.timerStateChangedSignal.emit(self.timer_state)
         elif self.timer_state == TimerState.BREAK:
             if isSkipped:
                 self.updateSessionProgress()
+                self.setDuration()
                 self.startDuration()
                 return
             if ConfigValues.AUTOSTART_WORK:
                 logger.info("Auto-starting break session")
                 self.updateSessionProgress()
+                self.setDuration()
                 self.startDuration()
             else:
                 logger.info("Waiting for user input after ending break session")
                 self.remaining_time = 0
+                self.updateSessionProgress()
+                self.setDuration()
                 self.waitForUserInputSignal.emit()
+                self.timerStateChangedSignal.emit(self.timer_state)
 
     def skipDuration(self):
         if self.remaining_time == 0 and not self.pomodoro_timer.isActive():
@@ -183,6 +192,7 @@ if __name__ == '__main__':
         def __init__(self):
             self.pomodoro_timer = PomodoroTimer()
             self.pomodoro_timer.updateSessionProgress()
+            self.pomodoro_timer.setDuration()
             self.pomodoro_timer.startDuration()
 
 
