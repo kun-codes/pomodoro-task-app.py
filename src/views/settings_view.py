@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget, QApplication
 from loguru import logger
 from qfluentwidgets import SettingCardGroup, RangeSettingCard, FluentIcon, SwitchSettingCard, OptionsSettingCard, \
-    setTheme
+    setTheme, CustomColorSettingCard, setThemeColor
 
 from config_values import ConfigValues
 from models.config import app_settings
@@ -80,6 +80,13 @@ class SettingsView(QWidget, Ui_SettingsView):
             ],
             parent=self.personalization_settings_group
         )
+        self.theme_color_card = CustomColorSettingCard(
+            app_settings.themeColor,
+            FluentIcon.PALETTE,
+            self.tr('Theme color'),
+            self.tr('Change the theme color of you application'),
+            self.personalization_settings_group
+        )
 
         self.__connectSignalToSlot()
 
@@ -94,6 +101,7 @@ class SettingsView(QWidget, Ui_SettingsView):
         self.scrollAreaWidgetContents.layout().addWidget(self.pomodoro_settings_group)
 
         self.personalization_settings_group.addSettingCard(self.theme_card)
+        self.personalization_settings_group.addSettingCard(self.theme_color_card)
 
         self.scrollAreaWidgetContents.layout().addWidget(self.personalization_settings_group)
 
@@ -132,6 +140,7 @@ class SettingsView(QWidget, Ui_SettingsView):
 
     def __connectSignalToSlot(self):
         self.theme_card.optionChanged.connect(lambda ci: setTheme(app_settings.get(ci)))
+        self.theme_color_card.colorChanged.connect(lambda c: setThemeColor(c))
 
 if __name__ == "__main__":
     app = QApplication()
