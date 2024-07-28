@@ -5,6 +5,8 @@ from qfluentwidgets import FluentIcon, TitleLabel
 from models.drag_and_drop import DragWidget, DragItem
 from prefabs.addTaskDialog import AddTaskDialog
 from ui_py.ui_tasks_list_view import Ui_TaskView
+from sqlalchemy.orm import sessionmaker
+from models.task_db import Task, TaskType, engine
 
 
 class TaskListView(Ui_TaskView, QWidget):
@@ -42,7 +44,22 @@ class TaskListView(Ui_TaskView, QWidget):
 
     def addTask(self):
         dialog = AddTaskDialog(self)
-        dialog.show()
+        # if user clicks on add task inside dialog
+        if dialog.exec():
+            task_name = dialog.taskEdit.text()
+            task_card = DragItem(parent=self.todoTasksCard, task_name=task_name)
+            self.todoTasksCard.add_item(task_card)
+
+            Session = sessionmaker(bind=engine)
+            session = Session()
+
+            session.add(task_card.task_record)
+            session.commit()
+
+
+    def addTaskCard(self, task_name: str):
+        item = DragItem(parent=self.todoTasksCard, task_name=task_name)
+        self.todoTasksCard.add_item(item)
 
 
 if __name__ == "__main__":

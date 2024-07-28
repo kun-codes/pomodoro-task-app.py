@@ -1,6 +1,7 @@
 from PySide6.QtGui import QColor, QPalette
 from PySide6.QtWidgets import QHBoxLayout, QApplication, QSizePolicy
 from qfluentwidgets import BodyLabel, FluentIcon, SimpleCardWidget
+from models.task_db import Task, TaskType
 
 
 # TaskCard is a simple card widget that displays a task along with an icon of its own
@@ -31,6 +32,8 @@ class TaskCard(SimpleCardWidget):
 
         self.setObjectName("taskCard")
         self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+
+        self.task_record = Task(task_name=task_name, task_type=TaskType.TODO)
 
     # # Experimental
     # def drag(self, event):
