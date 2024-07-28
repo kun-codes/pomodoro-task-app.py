@@ -2,6 +2,9 @@ from qfluentwidgets import MessageBoxBase, SubtitleLabel, LineEdit
 
 
 class AddTaskDialog(MessageBoxBase):
+    """
+    For the add task dialog in tasks view
+    """
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.titleLabel = SubtitleLabel("Add Task", self)

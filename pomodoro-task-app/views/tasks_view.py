@@ -10,6 +10,9 @@ from models.task_db import Task, TaskType, engine
 
 
 class TaskListView(Ui_TaskView, QWidget):
+    """
+    For tasks view of the app
+    """
     def __init__(self):
         super().__init__()
         self.setupUi(self)

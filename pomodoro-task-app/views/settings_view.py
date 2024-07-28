@@ -10,6 +10,9 @@ from ui_py.ui_settings_view import Ui_SettingsView
 
 
 class SettingsView(QWidget, Ui_SettingsView):
+    """
+    For settings view of the app
+    """
     def __init__(self):
         super().__init__()
         self.setupUi(self)

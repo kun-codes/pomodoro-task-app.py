@@ -4,8 +4,10 @@ from qfluentwidgets import BodyLabel, FluentIcon, SimpleCardWidget
 from models.task_db import Task, TaskType
 
 
-# TaskCard is a simple card widget that displays a task along with an icon of its own
 class TaskCard(SimpleCardWidget):
+    """
+    TaskCard is a simple card widget that displays a task along with an icon of its own
+    """
     def __init__(self, parent=None, task_name=""):
         super().__init__(parent=parent)
         self.setAcceptDrops(True)

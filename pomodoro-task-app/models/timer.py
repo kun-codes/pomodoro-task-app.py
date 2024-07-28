@@ -8,8 +8,10 @@ from loguru import logger
 from config_values import ConfigValues
 
 
-# Enum which tells what state the timer is in
 class TimerState(Enum):
+    """
+    Tells what state the timer is in
+    """
     NOTHING = "Begin Timer"
     WORK = "Focus"
     BREAK = "Break"
@@ -17,6 +19,10 @@ class TimerState(Enum):
 
 
 class PomodoroTimer(QObject):  # Inherit from QObject to support signals
+    """
+    Core functionality of the Pomodoro Timer
+    """
+
     # first argument for current timer state
     timerStateChangedSignal = Signal(TimerState)
     sessionEndedSignal = Signal()
@@ -41,8 +47,10 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
     def getTimerState(self):
         return self.timer_state
 
-    # increments the session tracking variable session_progress by 0.5 or resets to 0 depending on the timer state
     def updateSessionProgress(self):
+        """
+        Increments the session tracking variable session_progress by 0.5 or resets to 0 depending on the timer state
+        """
         logger.debug(f"Session Progress (before): {self.session_progress}")
         logger.debug(f"Timer State (before): {self.timer_state}")
 
@@ -69,8 +77,10 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
 
         self.timerStateChangedSignal.emit(self.timer_state)
 
-    # starts the timer for the work session, break session or long break session
     def setDuration(self):
+        """
+        Starts the timer for the work session, break session or long break session
+        """
         if self.remaining_time > 0 and not self.pomodoro_timer.isActive():  # if timer is paused
             logger.info("Resuming timer")
             self.pomodoro_timer.start(self.timer_resolution)
@@ -100,8 +110,10 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         logger.info("Timer is paused now")
         self.pomodoro_timer.stop()
 
-    # handles the end of the work session, break session or long break session
     def durationEnded(self, isSkipped=False):
+        """
+        Handles the end of the work session, break session or long break session
+        """
         self.pomodoro_timer.stop()
         if self.timer_state == TimerState.WORK:
             self.updateSessionProgress()
@@ -141,12 +153,16 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             self.remaining_time = 0
             self.durationEnded(isSkipped=True)
 
-    # for setting the duration of the timer
     def setTimerDuration(self, duration):
+        """
+        for setting the duration of the timer
+        """
         self.remaining_time = duration
 
-    # for decreasing the remaining time by 1 second since timer timeout is always 1000 milliseconds that is 1 second
     def decreaseRemainingTime(self):
+        """
+        For decreasing the remaining time by timer_resolution
+        """
         if __name__ == '__main__':
             logger.debug(f"Remaining time (in seconds): {self.getRemainingTime() / 1000}")
 
@@ -158,8 +174,10 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
 
         self.pomodoro_timer.start(self.timer_resolution)
 
-    # returns remaining time in milliseconds for the duration
     def getRemainingTime(self):
+        """
+        Returns the remaining time in milliseconds for the duration
+        """
         return self.remaining_time
 
     def pomodoroSessionEnded(self):

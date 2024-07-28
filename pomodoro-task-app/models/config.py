@@ -7,7 +7,10 @@ from constants import ORGANIZATION_NAME, APPLICATION_NAME
 
 
 class Settings(QConfig):
-    # Documentation here: https://qfluentwidgets.com/pages/components/config/#usage
+    """
+    Used for storing settings of the app.
+    Documentation for QConfig is here: https://qfluentwidgets.com/pages/components/config/#usage
+    """
 
     work_duration = RangeConfigItem("Pomodoro", "WorkDuration", 25, RangeValidator(1, 240))
     break_duration = RangeConfigItem("Pomodoro", "BreakDuration", 5, RangeValidator(1, 60))

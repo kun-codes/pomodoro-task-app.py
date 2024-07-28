@@ -14,6 +14,9 @@ class HorizontalSpacer(QSpacerItem):
 
 
 class PomodoroView(QWidget, Ui_PomodoroView):
+    """
+    For pomodoro view of the app
+    """
     def __init__(self):
         super().__init__()
         self.setupUi(self)

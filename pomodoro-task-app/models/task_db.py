@@ -18,6 +18,9 @@ Base = declarative_base()
 
 
 class Task(Base):
+    """
+    Represents a table named "tasks" in the database
+    """
     __tablename__ = 'tasks'
 
     id = Column(Integer, primary_key=True)

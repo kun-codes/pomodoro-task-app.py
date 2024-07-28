@@ -12,14 +12,19 @@ from qfluentwidgets import CardWidget, FluentWindow, FluentIcon
 from prefabs.taskCard import TaskCard
 
 
-# The Empty Box which is showed as a preview while dragging
 class DragTargetIndicator(TaskCard):
+    """
+    The placeholder box which is showed as a preview while dragging task cards
+    """
     def __init__(self, parent=None):
         super().__init__(parent)
 
 
 # Individual draggable item
 class DragItem(TaskCard):
+    """
+    A draggable task card
+    """
     def __init__(self, parent=None, task_name=""):
         super().__init__(parent=parent, task_name=task_name)
         # self.taskLabel.setText(text)
