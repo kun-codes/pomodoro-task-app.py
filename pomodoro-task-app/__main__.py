@@ -10,7 +10,7 @@ from views.settings_view import SettingsView
 from views.tasks_view import TaskListView
 
 
-# from src.ui.converted.task_card_ui import Ui_Form as TaskCardUi
+# from pomodoro-task-app.ui.converted.task_card_ui import Ui_Form as TaskCardUi
 
 
 class MainWindow(FluentWindow):
