@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "pomodoro-task-app-py"
+version = "0.1.0"
+description = ""
+authors = ["kun-codes <77796630+throwaway69420-69420@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "pomodoro_task_app"}]
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+PySide6 = "^6.7.2"
+PySide6-Fluent-Widgets = "^1.6.0"
+
+[tool.poetry.group.dev.dependencies]
+loguru = "^0.7.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
