@@ -1,3 +1,0 @@
-PySide6
-PySide6-Fluent-Widgets
-loguru
