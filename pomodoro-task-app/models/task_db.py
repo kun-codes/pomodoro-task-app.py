@@ -26,6 +26,7 @@ class Task(Base):
     id = Column(Integer, primary_key=True)
     task_name = Column(String)
     task_type = Column(SQLEnum(TaskType))
+    task_position = Column(Integer)
 
 
 Base.metadata.create_all(engine)

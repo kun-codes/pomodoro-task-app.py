@@ -45,6 +45,27 @@ class TaskListView(Ui_TaskView, QWidget):
         self.addTaskButton.setIcon(FluentIcon.ADD)
         self.addTaskButton.clicked.connect(self.addTask)
 
+        self.loadTasksFromDB()
+
+    def loadTasksFromDB(self):
+        session_maker = sessionmaker(bind=engine)
+        session = session_maker()
+
+        # loading tasks from database of todo type
+        tasks = session.query(Task).filter(Task.task_type == TaskType.TODO).all()
+        for task in tasks:
+            task_name = task.task_name
+            task_card = DragItem(parent=self.todoTasksCard, task_name=task_name)
+            self.todoTasksCard.add_item(task_card)
+
+        # loading tasks from database of completed type
+        tasks = session.query(Task).filter(Task.task_type == TaskType.COMPLETED).all()
+        for task in tasks:
+            task_name = task.task_name
+            task_card = DragItem(parent=self.completedTasksCard, task_name=task_name)
+            self.completedTasksCard.add_item(task_card)
+
+
     def addTask(self):
         dialog = AddTaskDialog(self)
         # if user clicks on add task inside dialog
@@ -53,8 +74,8 @@ class TaskListView(Ui_TaskView, QWidget):
             task_card = DragItem(parent=self.todoTasksCard, task_name=task_name)
             self.todoTasksCard.add_item(task_card)
 
-            Session = sessionmaker(bind=engine)
-            session = Session()
+            session_maker = sessionmaker(bind=engine)
+            session = session_maker()
 
             session.add(task_card.task_record)
             session.commit()

@@ -74,9 +74,12 @@ class DragWidget(CardWidget):
         self._drag_target_indicator.hide()
 
         self.setLayout(self.blayout)
+        self.sourceDragWidget = None
+        self.destionaDragWidget = None
 
     def dragEnterEvent(self, e):
         e.accept()
+        self.sourceDragWidget = e.source().parentWidget().objectName()
 
     def dragLeaveEvent(self, e):
         self._drag_target_indicator.hide()
@@ -103,7 +106,8 @@ class DragWidget(CardWidget):
             self.blayout.insertWidget(index, widget)
             self.orderChanged.emit(self.get_item_data())
             widget.show()
-            print(widget.parentWidget().objectName())
+            self.destinationDragWidget = widget.parentWidget().objectName()
+            print(self.sourceDragWidget, self.destinationDragWidget)
             self.blayout.activate()
         e.accept()
 
