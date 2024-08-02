@@ -2,9 +2,7 @@ import sys
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QMainWindow, QWidget, \
-    QListWidgetItem
-
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QMainWindow, QWidget
 from qfluentwidgets import FluentStyleSheet, PrimaryPushButton, SubtitleLabel, ListWidget, setCustomStyleSheet, \
     PushButton
 from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
@@ -45,6 +43,8 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.viewLayout.addWidget(self.titleLabel, 0, Qt.AlignLeft)
         self.viewLayout.addWidget(self.workspaceList, 1, Qt.AlignCenter)
 
+        self.__connectSignalsToSlots()
+
     def __initLayout(self):
         self._hBoxLayout.removeWidget(self.widget)
         self._hBoxLayout.addWidget(self.widget, 1, Qt.AlignCenter)
@@ -84,6 +84,9 @@ class ManageWorkspaceDialog(MaskDialogBase):
 
         # setStyleSheet()
         setCustomStyleSheet(self, qss, qss)
+
+    def __connectSignalsToSlots(self):
+        self.closeDialogButton.clicked.connect(lambda: self.close())
 
 
 if __name__ == '__main__':
