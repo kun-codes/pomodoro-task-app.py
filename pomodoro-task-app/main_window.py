@@ -1,10 +1,12 @@
-from qfluentwidgets import FluentIcon, FluentWindow, setTheme, Theme, NavigationItemPosition
+from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition
 
 from models.drag_and_drop import DragItem
 from models.timer import TimerState
+from prefabs.workplaceManagerDialog import ManageWorkspaceDialog
 from views.pomodoro_view import PomodoroView
 from views.settings_view import SettingsView
 from views.tasks_view import TaskListView
+
 
 class MainWindow(FluentWindow):
     def __init__(self):
@@ -31,6 +33,15 @@ class MainWindow(FluentWindow):
         self.addSubInterface(self.pomodoro_interface, FluentIcon.STOP_WATCH, 'Pomodoro')
 
         # Add sub interface at bottom
+        self.navigationInterface.addItem(
+            routeKey="WorkplaceSelector",
+            icon=FluentIcon.VPN,
+            text="Select Workplace",
+            onClick=lambda: self.onWorkplaceManagerClicked(),
+            selectable=False,
+            tooltip="Select the workplace to work on",
+            position=NavigationItemPosition.BOTTOM
+        )
         self.addSubInterface(
             self.settings_interface, FluentIcon.SETTING, 'Settings', NavigationItemPosition.BOTTOM)
 
@@ -49,10 +60,14 @@ class MainWindow(FluentWindow):
             item.set_data(n)  # Store the data.
             self.task_interface.completedTasksCard.add_item(item)
 
+    def onWorkplaceManagerClicked(self):
+        # parent is set according to: https://pyqt-fluent-widgets.readthedocs.io/en/latest/navigation.html
+        dialog = ManageWorkspaceDialog(parent=self.stackedWidget)
+        dialog.exec()
+
     def disablePomodoroSettingsDuringTimer(self, timerState):
         # TODO: show a tip to stop the timer before changing settings when timer is running
         if timerState in [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
             self.settings_interface.pomodoro_settings_group.setDisabled(True)
         else:
             self.settings_interface.pomodoro_settings_group.setDisabled(False)
-
