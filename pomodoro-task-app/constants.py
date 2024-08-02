@@ -1,3 +1,11 @@
 # Application
 ORGANIZATION_NAME = "Pomodoro App"
 APPLICATION_NAME = "Pomodoro"
+
+# for pomodoro timer of new workplaces
+WORK_DURATION = 25
+BREAK_DURATION = 5
+LONG_BREAK_DURATION = 15
+WORK_INTERVALS = 2
+AUTOSTART_WORK = True
+AUTOSTART_BREAK = True
