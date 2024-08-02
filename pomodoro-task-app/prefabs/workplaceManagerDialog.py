@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QMainWindow, QWidget
 from qfluentwidgets import FluentStyleSheet, PrimaryPushButton, SubtitleLabel, ListWidget, setCustomStyleSheet, \
-    PushButton
+    PushButton, LineEdit
 from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
 
 
@@ -24,11 +24,14 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.deleteWorkspaceButton.setText('Delete Workspace')
         self.addWorkspaceButton = PushButton()
         self.addWorkspaceButton.setText('Add Workspace')
+        self.addWorkspaceButton.setObjectName('addWorkspaceButton')
+        self.addWorkspaceButton.setDisabled(True)
         self.closeDialogButton = PrimaryPushButton()
         self.closeDialogButton.setText('Close Dialog')
 
         self.titleLabel = SubtitleLabel('Manage Workspaces', parent=None)
         self.workspaceList = ListWidget()
+        self.newWorkspaceLineEdit = LineEdit()
 
         self.__initWidget()
 
@@ -41,7 +44,8 @@ class ManageWorkspaceDialog(MaskDialogBase):
 
         # self.buttonGroup.setFixedHeight(81)
         self.viewLayout.addWidget(self.titleLabel, 0, Qt.AlignLeft)
-        self.viewLayout.addWidget(self.workspaceList, 1, Qt.AlignCenter)
+        self.viewLayout.addWidget(self.workspaceList, 1)
+        self.viewLayout.addWidget(self.newWorkspaceLineEdit, 1)
 
         self.__connectSignalsToSlots()
 
@@ -87,6 +91,15 @@ class ManageWorkspaceDialog(MaskDialogBase):
 
     def __connectSignalsToSlots(self):
         self.closeDialogButton.clicked.connect(lambda: self.close())
+        self.addWorkspaceButton.clicked.connect(self.onAddWorkspaceButtonClicked)
+
+        self.newWorkspaceLineEdit.textChanged.connect(self.onWorkspaceTextChanged)
+
+    def onWorkspaceTextChanged(self):
+        self.addWorkspaceButton.setDisabled(self.newWorkspaceLineEdit.text().strip() == "")
+
+    def onAddWorkspaceButtonClicked(self):
+        pass
 
 
 if __name__ == '__main__':
