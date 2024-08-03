@@ -2,13 +2,14 @@ import sys
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QMainWindow, QWidget, \
-    QListWidgetItem
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QMainWindow, QWidget
+from loguru import logger
 from qfluentwidgets import FluentStyleSheet, PrimaryPushButton, SubtitleLabel, ListView, setCustomStyleSheet, \
-    PushButton, LineEdit
+    PushButton, LineEdit, InfoBar, InfoBarPosition
 from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
-from models.workspace_list_model import WorkspaceListModel
+
 from models.db_tables import Workspace
+from models.workspace_list_model import WorkspaceListModel
 
 
 class ManageWorkspaceDialog(MaskDialogBase):
@@ -101,6 +102,8 @@ class ManageWorkspaceDialog(MaskDialogBase):
 
         self.newWorkspaceLineEdit.textChanged.connect(self.onWorkspaceTextChanged)
 
+        self.workspaceList.selectionModel().selectionChanged.connect(self.onWorkplaceSelectionChanged)
+
     def onWorkspaceTextChanged(self):
         self.addWorkspaceButton.setDisabled(self.newWorkspaceLineEdit.text().strip() == "")
 
@@ -115,6 +118,23 @@ class ManageWorkspaceDialog(MaskDialogBase):
         selected_index = self.workspaceList.currentIndex()
         if selected_index.isValid():
             self.model.delete_workspace(selected_index.row())
+
+    def onWorkplaceSelectionChanged(self, selected, deselected):
+        selected_index = selected.indexes()
+        if selected_index:
+            selected_index = selected_index[0]
+            workplace_name = self.model.data(selected_index, Qt.ItemDataRole.DisplayRole)
+            logger.debug(f"Selected workspace: {workplace_name}")
+
+            infobar = InfoBar.success(
+                title=f"{workplace_name} is selected",
+                content="",
+                orient=Qt.Orientation.Horizontal,
+                isClosable=True,
+                position=InfoBarPosition.TOP_RIGHT,
+                duration=4000,
+                parent=self.parent()
+            )
 
 
 if __name__ == '__main__':
