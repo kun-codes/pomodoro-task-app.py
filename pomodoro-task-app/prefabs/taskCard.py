@@ -1,7 +1,7 @@
 from PySide6.QtGui import QColor, QPalette
 from PySide6.QtWidgets import QHBoxLayout, QApplication, QSizePolicy
 from qfluentwidgets import BodyLabel, FluentIcon, SimpleCardWidget
-from models.task_db import Task, TaskType
+from models.db_tables import Task, TaskType
 
 
 class TaskCard(SimpleCardWidget):

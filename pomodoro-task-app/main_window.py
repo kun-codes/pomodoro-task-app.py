@@ -2,10 +2,10 @@ from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition
 
 from models.drag_and_drop import DragItem
 from models.timer import TimerState
-from prefabs.workplaceManagerDialog import ManageWorkspaceDialog
-from views.pomodoro_view import PomodoroView
-from views.settings_view import SettingsView
-from views.tasks_view import TaskListView
+from views.dialogs.workplaceManagerDialog import ManageWorkspaceDialog
+from views.subinterfaces.pomodoro_view import PomodoroView
+from views.subinterfaces.settings_view import SettingsView
+from views.subinterfaces.tasks_view import TaskListView
 
 
 class MainWindow(FluentWindow):

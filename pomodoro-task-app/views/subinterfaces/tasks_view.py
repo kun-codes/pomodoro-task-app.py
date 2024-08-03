@@ -3,10 +3,10 @@ from PySide6.QtWidgets import QWidget, QApplication, QSizePolicy
 from qfluentwidgets import FluentIcon, TitleLabel
 
 from models.drag_and_drop import DragWidget, DragItem
-from prefabs.addTaskDialog import AddTaskDialog
+from views.dialogs.addTaskDialog import AddTaskDialog
 from ui_py.ui_tasks_list_view import Ui_TaskView
 from sqlalchemy.orm import sessionmaker
-from models.task_db import Task, TaskType, engine
+from models.db_tables import Task, TaskType, engine
 
 
 class TaskListView(Ui_TaskView, QWidget):
