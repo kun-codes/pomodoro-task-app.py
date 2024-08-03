@@ -1,15 +1,43 @@
 import sys
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QMainWindow, QWidget
+from PySide6.QtCore import Qt, QModelIndex
+from PySide6.QtGui import QColor, QPainter, QPen
+from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QMainWindow, QWidget, \
+    QListView, QStyleOptionViewItem, QStyle
 from loguru import logger
 from qfluentwidgets import FluentStyleSheet, PrimaryPushButton, SubtitleLabel, ListView, setCustomStyleSheet, \
-    PushButton, LineEdit, InfoBar, InfoBarPosition
+    PushButton, LineEdit, InfoBar, InfoBarPosition, TableItemDelegate, themeColor, isDarkTheme
 from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
 
 from models.db_tables import Workspace
 from models.workspace_list_model import WorkspaceListModel
+
+
+class ListItemDelegate(TableItemDelegate):
+    """ List item delegate """
+
+    def __init__(self, parent: QListView):
+        super().__init__(parent)
+
+    def _drawBackground(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex):
+        painter.save()
+        rect = option.rect.adjusted(1, 1, -1, -1)  # Adjust to fit within the background
+        if option.state & QStyle.State_Selected:
+            painter.setBrush(option.palette.highlight())
+        else:
+            painter.setBrush(QColor(255, 255, 255, 13 if isDarkTheme() else 170))
+        if isDarkTheme():
+            painter.setPen(QColor(0, 0, 0, 48))
+        else:
+            painter.setPen(QColor(0, 0, 0, 12))
+        painter.drawRoundedRect(rect, 5, 5)
+        painter.restore()
+
+    def _drawIndicator(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex):
+        if option.state & QStyle.State_Selected:
+            rect = option.rect.adjusted(1, 1, -1, -1)  # Adjust to fit within the background
+            painter.setPen(QPen(themeColor(), 2))  # Set pen with theme color and width 2
+            painter.drawRoundedRect(rect, 5, 5)  # Draw rounded rectangle border
 
 
 class ManageWorkspaceDialog(MaskDialogBase):
@@ -38,6 +66,8 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.workspaceList = ListView()
         self.model = WorkspaceListModel()
         self.workspaceList.setModel(self.model)
+
+        self.workspaceList.setItemDelegate(ListItemDelegate(self.workspaceList))
 
         self.__initWidget()
 
@@ -79,7 +109,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
 
     def __setQss(self):
         self.buttonGroup.setObjectName('buttonGroup')
-        qss = f"""
+        dialog_qss = f"""
             {__class__.__name__} #buttonGroup,
             {__class__.__name__} #buttonGroup {{
             border-bottom-left-radius: 8px;
@@ -93,7 +123,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.style().polish(self)
 
         # setStyleSheet()
-        setCustomStyleSheet(self, qss, qss)
+        setCustomStyleSheet(self, dialog_qss, dialog_qss)
 
     def __connectSignalsToSlots(self):
         self.closeDialogButton.clicked.connect(lambda: self.close())
