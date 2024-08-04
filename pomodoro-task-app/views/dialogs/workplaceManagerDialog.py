@@ -1,6 +1,6 @@
 import sys
 
-from PySide6.QtCore import Qt, QModelIndex
+from PySide6.QtCore import Qt, QModelIndex, QItemSelectionModel
 from PySide6.QtGui import QColor, QPainter, QPen, QKeyEvent
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QMainWindow, QWidget, \
     QListView, QStyleOptionViewItem, QStyle
@@ -135,6 +135,8 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.newWorkspaceLineEdit.textChanged.connect(self.onWorkspaceTextChanged)
 
         self.workspaceList.selectionModel().selectionChanged.connect(self.onWorkplaceSelectionChanged)
+        # TODO: fix bug which causes infobar to display when opening manage workspace dialog
+        self.workspaceList.selectionModel().currentChanged.connect(self.workspaceList.updateSelectedRows)
         self.model.current_workspace_changed.connect(self.onCurrentWorkplaceChanged)
         self.model.current_workspace_deleted.connect(self.onCurrentWorkplaceDeleted)
 
@@ -144,6 +146,23 @@ class ManageWorkspaceDialog(MaskDialogBase):
         """
         if event.key() == Qt.Key.Key_Escape:
             event.ignore()
+
+    def showEvent(self, event):
+        self.preselect_current_workspace()
+        super().showEvent(event)
+
+    def preselect_current_workspace(self):
+        current_workspace_id = self.model.get_current_workspace_preference().current_workspace_id
+        logger.debug(f"Current workspace id: {current_workspace_id}")
+        for workspace in self.model.workspaces:
+            workplace_id = workspace["id"]
+            workplace_name = workspace["workspace_name"]
+            if workplace_id == current_workspace_id:
+                index = self.model.index(self.model.workspaces.index({"id": workplace_id, "workspace_name": workplace_name}))
+                logger.debug(f"Preselecting workspace in manage workspace dialog: {workplace_name}")
+                # self.workspaceList.selectionModel().select(index, QItemSelectionModel.SelectionFlag.Select)
+                self.workspaceList.selectionModel().setCurrentIndex(index, QItemSelectionModel.SelectionFlag.Select)
+
 
     def onWorkspaceTextChanged(self):
         self.addWorkspaceButton.setDisabled(self.newWorkspaceLineEdit.text().strip() == "")
@@ -192,8 +211,6 @@ class ManageWorkspaceDialog(MaskDialogBase):
             self.model.set_current_workspace_preference()
         else:
             self.closeDialogButton.setDisabled(True)
-            # TODO: show a tip to select a workspace before closing the dialog
-            # TODO: unbind escape key from closing the dialog
             # TODO: if app is closed before before selecting a workspace, automatically select a workspace on next start
             #   or if there is no workspace make a sample workspace automatically and set it as the current workspace
 
