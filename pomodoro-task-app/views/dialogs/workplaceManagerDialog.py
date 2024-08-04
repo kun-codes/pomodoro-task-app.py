@@ -1,7 +1,7 @@
 import sys
 
 from PySide6.QtCore import Qt, QModelIndex
-from PySide6.QtGui import QColor, QPainter, QPen
+from PySide6.QtGui import QColor, QPainter, QPen, QKeyEvent
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QMainWindow, QWidget, \
     QListView, QStyleOptionViewItem, QStyle
 from loguru import logger
@@ -137,6 +137,13 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.workspaceList.selectionModel().selectionChanged.connect(self.onWorkplaceSelectionChanged)
         self.model.current_workspace_changed.connect(self.onCurrentWorkplaceChanged)
         self.model.current_workspace_deleted.connect(self.onCurrentWorkplaceDeleted)
+
+    def keyPressEvent(self, event:QKeyEvent):
+        """
+        Override keyPressEvent to ignore escape key so that the dialog doesn't get closed when escape key is pressed
+        """
+        if event.key() == Qt.Key.Key_Escape:
+            event.ignore()
 
     def onWorkspaceTextChanged(self):
         self.addWorkspaceButton.setDisabled(self.newWorkspaceLineEdit.text().strip() == "")
