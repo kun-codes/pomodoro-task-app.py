@@ -67,6 +67,8 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.model = WorkspaceListModel()
         self.workspaceList.setModel(self.model)
 
+        self.model.setSelectionModel(self.workspaceList.selectionModel())
+
         self.workspaceList.setItemDelegate(ListItemDelegate(self.workspaceList))
 
         self.__initWidget()
@@ -133,6 +135,8 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.newWorkspaceLineEdit.textChanged.connect(self.onWorkspaceTextChanged)
 
         self.workspaceList.selectionModel().selectionChanged.connect(self.onWorkplaceSelectionChanged)
+        self.model.current_workspace_changed.connect(self.onCurrentWorkplaceChanged)
+        self.model.current_workspace_deleted.connect(self.onCurrentWorkplaceDeleted)
 
     def onWorkspaceTextChanged(self):
         self.addWorkspaceButton.setDisabled(self.newWorkspaceLineEdit.text().strip() == "")
@@ -148,6 +152,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         selected_index = self.workspaceList.currentIndex()
         if selected_index.isValid():
             self.model.delete_workspace(selected_index.row())
+            self.workspaceList.clearSelection()
 
     def onWorkplaceSelectionChanged(self, selected, deselected):
         selected_index = selected.indexes()
@@ -165,7 +170,20 @@ class ManageWorkspaceDialog(MaskDialogBase):
                 duration=4000,
                 parent=self.parent()
             )
+            self.closeDialogButton.setDisabled(False)
+            self.model.set_current_workspace_preference()
+        else:
+            self.closeDialogButton.setDisabled(True)
+            # TODO: show a tip to select a workspace before closing the dialog
+            # TODO: unbind escape key from closing the dialog
+            # TODO: if app is closed before before selecting a workspace, automatically select a workspace on next start
+            #   or if there is no workspace make a sample workspace automatically and set it as the current workspace
 
+    def onCurrentWorkplaceChanged(self):
+        logger.debug(f"Current workspace change {self.model.get_current_workspace_preference().current_workspace_id}")
+
+    def onCurrentWorkplaceDeleted(self):
+        logger.debug("Current workspace deleted")
 
 if __name__ == '__main__':
     # create a mainwindow
