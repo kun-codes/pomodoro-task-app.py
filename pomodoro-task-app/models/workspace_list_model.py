@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, QAbstractListModel, QItemSelectionModel, Signal
+from PySide6.QtCore import Qt, QAbstractListModel, QItemSelectionModel, Signal, QModelIndex
 from sqlalchemy.orm import sessionmaker
 from loguru import logger
 
@@ -34,7 +34,7 @@ class WorkspaceListModel(QAbstractListModel):
         if role == Qt.ItemDataRole.DisplayRole:
             return self.workspaces[index.row()]["id"]
 
-    def rowCount(self, index):
+    def rowCount(self, index=QModelIndex()):
         return len(self.workspaces)
 
     def add_workspace(self, workspace):

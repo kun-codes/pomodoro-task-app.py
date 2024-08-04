@@ -157,9 +157,20 @@ class ManageWorkspaceDialog(MaskDialogBase):
 
     def onDeleteWorkspaceButtonClicked(self):
         selected_index = self.workspaceList.currentIndex()
-        if selected_index.isValid():
+        no_of_workplaces = self.model.rowCount()
+        if selected_index.isValid() and no_of_workplaces > 1:  # only delete if there is more than one workspace
             self.model.delete_workspace(selected_index.row())
             self.workspaceList.clearSelection()
+        elif selected_index.isValid() and no_of_workplaces <= 1:
+            infobar = InfoBar.warning(
+                title="Can't delete the only workspace",
+                content="Add another workspace before deleting this one.",
+                orient=Qt.Orientation.Horizontal,
+                isClosable=True,
+                position=InfoBarPosition.TOP_RIGHT,
+                duration=4000,
+                parent=self.parent()
+            )
 
     def onWorkplaceSelectionChanged(self, selected, deselected):
         selected_index = selected.indexes()
