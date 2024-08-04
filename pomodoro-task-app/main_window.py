@@ -1,4 +1,5 @@
 from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition
+from sqlalchemy.orm import sessionmaker
 
 from models.drag_and_drop import DragItem
 from models.timer import TimerState
@@ -6,6 +7,7 @@ from views.dialogs.workplaceManagerDialog import ManageWorkspaceDialog
 from views.subinterfaces.pomodoro_view import PomodoroView
 from views.subinterfaces.settings_view import SettingsView
 from views.subinterfaces.tasks_view import TaskListView
+from models.db_tables import engine, Workspace, CurrentWorkspace
 
 
 class MainWindow(FluentWindow):
@@ -26,6 +28,7 @@ class MainWindow(FluentWindow):
         self.initNavigation()
         self.initWindow()
         self.populateTasks()
+        self.check_valid_db()
 
     def initNavigation(self):
         # Add sub interface
@@ -71,3 +74,22 @@ class MainWindow(FluentWindow):
             self.settings_interface.pomodoro_settings_group.setDisabled(True)
         else:
             self.settings_interface.pomodoro_settings_group.setDisabled(False)
+
+    def check_valid_db(self):
+        session = sessionmaker(bind=engine)()
+        workspace = session.query(Workspace).first()
+        # create a default workspace if none exists
+        if not workspace:
+            workspace = Workspace(workspace_name="Default Workspace")
+            session.add(workspace)
+            session.commit()
+
+        # if application was closed while no workplace was selected, select the first workplace in the database
+        # if database had no workplace to begin with then set default workspace as current database
+        current_workspace = session.query(CurrentWorkspace).first()
+        if not current_workspace:
+            current_workspace = CurrentWorkspace(current_workspace_id=workspace.id)
+            session.add(current_workspace)
+            session.commit()
+
+        session.close()
