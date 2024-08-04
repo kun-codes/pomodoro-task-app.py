@@ -69,6 +69,9 @@ class WorkspaceListModel(QAbstractListModel):
                 selected_workspace = self.workspaces[selected_index.row()]
                 session = sessionmaker(bind=engine)()
 
+                previous_selected_workspace = session.query(CurrentWorkspace).first()
+                previous_selected_workspace_id = previous_selected_workspace.current_workspace_id \
+                    if previous_selected_workspace else None
                 # make sure that only one record exists in current_workspace table
                 session.query(CurrentWorkspace).delete()
                 current_workspace = CurrentWorkspace(current_workspace_id=selected_workspace["id"])
@@ -77,13 +80,23 @@ class WorkspaceListModel(QAbstractListModel):
                 session.close()
 
                 self.load_data()
-                self.current_workspace_changed.emit()
+
+                current_workspace_id = session.query(CurrentWorkspace).first().current_workspace_id
+
+                if previous_selected_workspace_id != current_workspace_id:
+                    self.current_workspace_changed.emit()
 
     def get_current_workspace_preference(self):
         session = sessionmaker(bind=engine)()
         current_workspace = session.query(CurrentWorkspace).first()
         session.close()
         return current_workspace
+
+    def get_workplace_name_by_id(self, workspace_id):
+        for workspace in self.workspaces:
+            if workspace["id"] == workspace_id:
+                return workspace["workspace_name"]
+        return None
 
     def logList(self):
         logger.debug(f"Workspaces list in memory: {self.workspaces}")

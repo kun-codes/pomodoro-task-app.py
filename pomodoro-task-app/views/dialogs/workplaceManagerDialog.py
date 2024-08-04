@@ -8,8 +8,9 @@ from loguru import logger
 from qfluentwidgets import FluentStyleSheet, PrimaryPushButton, SubtitleLabel, ListView, setCustomStyleSheet, \
     PushButton, LineEdit, InfoBar, InfoBarPosition, TableItemDelegate, themeColor, isDarkTheme
 from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
+from sqlalchemy.orm import sessionmaker
 
-from models.db_tables import Workspace
+from models.db_tables import Workspace, engine
 from models.workspace_list_model import WorkspaceListModel
 
 
@@ -135,9 +136,11 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.newWorkspaceLineEdit.textChanged.connect(self.onWorkspaceTextChanged)
 
         self.workspaceList.selectionModel().selectionChanged.connect(self.onWorkplaceSelectionChanged)
-        # TODO: fix bug which causes infobar to display when opening manage workspace dialog
+
+        # from: https://github.com/zhiyiYo/PyQt-Fluent-Widgets/issues/667
         self.workspaceList.selectionModel().currentChanged.connect(self.workspaceList.updateSelectedRows)
         self.model.current_workspace_changed.connect(self.onCurrentWorkplaceChanged)
+        self.model.current_workspace_changed.connect(self.spawnInfoBar)
         self.model.current_workspace_deleted.connect(self.onCurrentWorkplaceDeleted)
 
     def keyPressEvent(self, event:QKeyEvent):
@@ -198,21 +201,27 @@ class ManageWorkspaceDialog(MaskDialogBase):
             workplace_name = self.model.data(selected_index, Qt.ItemDataRole.DisplayRole)
             logger.debug(f"Selected workspace: {workplace_name}")
 
-            infobar = InfoBar.success(
-                title=f"{workplace_name} is selected",
-                content="",
-                orient=Qt.Orientation.Horizontal,
-                isClosable=True,
-                position=InfoBarPosition.TOP_RIGHT,
-                duration=4000,
-                parent=self.parent()
-            )
             self.closeDialogButton.setDisabled(False)
             self.model.set_current_workspace_preference()
         else:
             self.closeDialogButton.setDisabled(True)
             # TODO: if app is closed before before selecting a workspace, automatically select a workspace on next start
             #   or if there is no workspace make a sample workspace automatically and set it as the current workspace
+
+    def spawnInfoBar(self):
+        workplace_id = self.model.get_current_workspace_preference().current_workspace_id
+        logger.debug(f"Current workspace id: {workplace_id}")
+        workplace_name = self.model.get_workplace_name_by_id(workplace_id)
+
+        infobar = InfoBar.success(
+            title=f"{workplace_name} is selected",
+            content="",
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            position=InfoBarPosition.TOP_RIGHT,
+            duration=4000,
+            parent=self.parent()
+        )
 
     def onCurrentWorkplaceChanged(self):
         logger.debug(f"Current workspace change {self.model.get_current_workspace_preference().current_workspace_id}")
