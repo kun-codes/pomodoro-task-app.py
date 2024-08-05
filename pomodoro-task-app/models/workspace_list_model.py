@@ -50,7 +50,7 @@ class WorkspaceListModel(QAbstractListModel):
     def delete_workspace(self, index):
         if 0 <= index < len(self.workspaces):
             workspace_id = self.workspaces[index]["id"]  # workspace about to be deleted
-            selected_workspace_id = self.get_current_workspace_preference().current_workspace_id
+            selected_workspace_id = self.get_current_workspace_id()
             session = sessionmaker(bind=engine)()
             workspace = session.get(Workspace, workspace_id)
             if workspace:
@@ -86,11 +86,11 @@ class WorkspaceListModel(QAbstractListModel):
                 if previous_selected_workspace_id != current_workspace_id:
                     self.current_workspace_changed.emit()
 
-    def get_current_workspace_preference(self):
+    def get_current_workspace_id(self):
         session = sessionmaker(bind=engine)()
         current_workspace = session.query(CurrentWorkspace).first()
         session.close()
-        return current_workspace
+        return current_workspace.current_workspace_id if current_workspace else None
 
     def get_workplace_name_by_id(self, workspace_id):
         for workspace in self.workspaces:

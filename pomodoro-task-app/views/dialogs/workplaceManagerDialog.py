@@ -155,7 +155,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         super().showEvent(event)
 
     def preselect_current_workspace(self):
-        current_workspace_id = self.model.get_current_workspace_preference().current_workspace_id
+        current_workspace_id = self.model.get_current_workspace_id()
         logger.debug(f"Current workspace id: {current_workspace_id}")
         for workspace in self.model.workspaces:
             workplace_id = workspace["id"]
@@ -209,7 +209,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
             #   or if there is no workspace make a sample workspace automatically and set it as the current workspace
 
     def spawnInfoBar(self):
-        workplace_id = self.model.get_current_workspace_preference().current_workspace_id
+        workplace_id = self.model.get_current_workspace_id()
         logger.debug(f"Current workspace id: {workplace_id}")
         workplace_name = self.model.get_workplace_name_by_id(workplace_id)
 
@@ -224,7 +224,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         )
 
     def onCurrentWorkplaceChanged(self):
-        logger.debug(f"Current workspace change {self.model.get_current_workspace_preference().current_workspace_id}")
+        logger.debug(f"Current workspace change {self.model.get_current_workspace_id()}")
 
     def onCurrentWorkplaceDeleted(self):
         logger.debug("Current workspace deleted")
