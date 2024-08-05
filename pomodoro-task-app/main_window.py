@@ -7,6 +7,7 @@ from views.dialogs.workplaceManagerDialog import ManageWorkspaceDialog
 from views.subinterfaces.pomodoro_view import PomodoroView
 from views.subinterfaces.settings_view import SettingsView
 from views.subinterfaces.tasks_view import TaskListView
+from views.subinterfaces.website_blocker_view import WebsiteBlockerView
 from models.db_tables import engine, Workspace, CurrentWorkspace
 
 
@@ -22,6 +23,9 @@ class MainWindow(FluentWindow):
         self.settings_interface = SettingsView()
         self.settings_interface.setObjectName('settings_interface')
 
+        self.website_filter_interface = WebsiteBlockerView()
+        self.website_filter_interface.setObjectName('website_filter_interface')
+
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             self.disablePomodoroSettingsDuringTimer)
 
@@ -34,6 +38,7 @@ class MainWindow(FluentWindow):
         # Add sub interface
         self.addSubInterface(self.task_interface, FluentIcon.ADD, 'Tasks')
         self.addSubInterface(self.pomodoro_interface, FluentIcon.STOP_WATCH, 'Pomodoro')
+        self.addSubInterface(self.website_filter_interface, FluentIcon.VPN, 'Website Filter')
 
         # Add sub interface at bottom
         self.navigationInterface.addItem(
