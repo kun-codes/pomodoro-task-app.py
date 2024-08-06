@@ -11,7 +11,7 @@ from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
 from sqlalchemy.orm import sessionmaker
 
 from models.db_tables import Workspace, engine
-from models.workspace_list_model import WorkspaceListModel
+from models.workspace_list_model import workplace_model
 
 
 class ListItemDelegate(TableItemDelegate):
@@ -65,7 +65,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.titleLabel = SubtitleLabel('Manage Workspaces', parent=None)
         self.newWorkspaceLineEdit = LineEdit()
         self.workspaceList = ListView()
-        self.model = WorkspaceListModel()
+        self.model = workplace_model
         self.workspaceList.setModel(self.model)
 
         self.model.setSelectionModel(self.workspaceList.selectionModel())

@@ -100,3 +100,6 @@ class WorkspaceListModel(QAbstractListModel):
 
     def logList(self):
         logger.debug(f"Workspaces list in memory: {self.workspaces}")
+
+
+workplace_model = WorkspaceListModel()

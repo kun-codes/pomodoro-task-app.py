@@ -6,7 +6,7 @@ from qfluentwidgets import PlainTextEdit, Pivot
 from loguru import logger
 
 
-class WebsiteFilter(Enum):
+from models.workspace_list_model import workplace_model
     BLOCKLIST = "Blocklist"
     ALLOWLIST = "Allowlist"
 
@@ -55,7 +55,7 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
             self.blocklistPivot.setCurrentItem(self.blockListTextEdit.objectName())
             self.blocklistStackedWidget.setCurrentWidget(self.blockListTextEdit)
 
-        elif self.blockTypeComboBox.currentText() == WebsiteFilter.ALLOWLIST.value:
+            current_workspace_id = workplace_model.get_current_workspace_id()
             self.blocklistPivot.hide()
             self.blocklistStackedWidget.hide()
             self.allowlistPivot.show()
