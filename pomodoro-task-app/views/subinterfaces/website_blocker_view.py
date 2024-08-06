@@ -5,10 +5,8 @@ from ui_py.ui_website_blocker_view import Ui_WebsiteBlockView
 from qfluentwidgets import PlainTextEdit, Pivot
 from loguru import logger
 
-
+from constants import WebsiteFilterType
 from models.workspace_list_model import workplace_model
-    BLOCKLIST = "Blocklist"
-    ALLOWLIST = "Allowlist"
 
 class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
     """
@@ -46,7 +44,7 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.cancelButton.clicked.connect(lambda: logger.debug("Cancel button clicked"))
 
     def onBlockTypeChanged(self):
-        if self.blockTypeComboBox.currentText() == WebsiteFilter.BLOCKLIST.value:
+        if self.blockTypeComboBox.currentText() == WebsiteFilterType.BLOCKLIST.value:
             self.blocklistPivot.show()
             self.blocklistStackedWidget.show()
             self.allowlistPivot.hide()
@@ -56,6 +54,8 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
             self.blocklistStackedWidget.setCurrentWidget(self.blockListTextEdit)
 
             current_workspace_id = workplace_model.get_current_workspace_id()
+
+        elif self.blockTypeComboBox.currentText() == WebsiteFilterType.ALLOWLIST.value:
             self.blocklistPivot.hide()
             self.blocklistStackedWidget.hide()
             self.allowlistPivot.show()
@@ -65,8 +65,8 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
             self.allowlistStackedWidget.setCurrentWidget(self.allowListTextEdit)
 
     def initWebsiteFilterComboBox(self):
-        self.blockTypeComboBox.addItem(WebsiteFilter.BLOCKLIST.value)
-        self.blockTypeComboBox.addItem(WebsiteFilter.ALLOWLIST.value)
+        self.blockTypeComboBox.addItem(WebsiteFilterType.BLOCKLIST.value)
+        self.blockTypeComboBox.addItem(WebsiteFilterType.ALLOWLIST.value)
 
         self.blockTypeComboBox.setCurrentIndex(self.workplaceBlockTypePreference)
         self.blockTypeComboBox.currentIndexChanged.emit(self.workplaceBlockTypePreference)  # if block list type is
