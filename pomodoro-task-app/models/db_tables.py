@@ -1,5 +1,5 @@
 from sqlalchemy import URL, create_engine, Column, Integer, String, Enum as SQLEnum, Boolean, ForeignKey, event, Engine
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 from enum import Enum
 from models.config import db_path
 from constants import WORK_DURATION, BREAK_DURATION, LONG_BREAK_DURATION, WORK_INTERVALS, AUTOSTART_WORK, \
@@ -51,6 +51,13 @@ class Workspace(Base):
     work_intervals = Column(Integer, default=WORK_INTERVALS)
     autostart_work = Column(Boolean, default=AUTOSTART_WORK)
     autostart_break = Column(Boolean, default=AUTOSTART_BREAK)
+    website_filter_type = Column(SQLEnum(WebsiteFilterType), default=WebsiteFilterType.BLOCKLIST)
+
+    blocklist_urls = relationship("BlocklistURL", back_populates="workspace", cascade="all, delete-orphan")
+    blocklist_exception_urls = relationship("BlocklistExceptionURL", back_populates="workspace", cascade="all, delete-orphan")
+    allowlist_urls = relationship("AllowlistURL", back_populates="workspace", cascade="all, delete-orphan")
+    allowlist_exception_urls = relationship("AllowlistExceptionURL", back_populates="workspace", cascade="all, delete-orphan")
+
 
 class CurrentWorkspace(Base):
     """
@@ -59,7 +66,40 @@ class CurrentWorkspace(Base):
     __tablename__ = 'current_workspace'
 
     id = Column(Integer, primary_key=True)
+    # TODO: use ` cascade="all, delete-orphan"` here too for more compatibility with other databases
     current_workspace_id = Column(Integer, ForeignKey('workspaces.id', ondelete='CASCADE'), unique=True, nullable=False)
+
+class BlocklistURL(Base):
+    __tablename__ = URLListType.BLOCKLIST.value
+    id = Column(Integer, primary_key=True)
+    workspace_id = Column(Integer, ForeignKey('workspaces.id'))
+    url = Column(String, nullable=False)
+
+    workspace = relationship("Workspace", back_populates="blocklist_urls")
+
+class BlocklistExceptionURL(Base):
+    __tablename__ = URLListType.BLOCKLIST_EXCEPTION.value
+    id = Column(Integer, primary_key=True)
+    workspace_id = Column(Integer, ForeignKey('workspaces.id'))
+    url = Column(String, nullable=False)
+
+    workspace = relationship("Workspace", back_populates="blocklist_exception_urls")
+
+class AllowlistURL(Base):
+    __tablename__ = URLListType.ALLOWLIST.value
+    id = Column(Integer, primary_key=True)
+    workspace_id = Column(Integer, ForeignKey('workspaces.id'))
+    url = Column(String, nullable=False)
+
+    workspace = relationship("Workspace", back_populates="allowlist_urls")
+
+class AllowlistExceptionURL(Base):
+    __tablename__ = URLListType.ALLOWLIST_EXCEPTION.value
+    id = Column(Integer, primary_key=True)
+    workspace_id = Column(Integer, ForeignKey('workspaces.id'))
+    url = Column(String, nullable=False)
+
+    workspace = relationship("Workspace", back_populates="allowlist_exception_urls")
 
 
 Base.metadata.create_all(engine)
