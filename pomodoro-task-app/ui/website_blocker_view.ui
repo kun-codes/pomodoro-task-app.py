@@ -96,23 +96,10 @@
         </layout>
        </item>
        <item>
-        <widget class="Pivot" name="allowlistPivot">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
+        <widget class="PlainTextEdit" name="blockListTextEdit"/>
        </item>
        <item>
-        <widget class="QStackedWidget" name="allowlistStackedWidget"/>
-       </item>
-       <item>
-        <widget class="Pivot" name="blocklistPivot"/>
-       </item>
-       <item>
-        <widget class="QStackedWidget" name="blocklistStackedWidget"/>
+        <widget class="PlainTextEdit" name="allowListTextEdit"/>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -184,8 +171,8 @@
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
-   <class>Pivot</class>
-   <extends>QWidget</extends>
+   <class>PlainTextEdit</class>
+   <extends>QPlainTextEdit</extends>
    <header>qfluentwidgets</header>
   </customwidget>
  </customwidgets>

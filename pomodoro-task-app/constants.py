@@ -14,8 +14,8 @@ AUTOSTART_BREAK = True
 
 
 class WebsiteFilterType(Enum):
-    BLOCKLIST = "Blocklist"
-    ALLOWLIST = "Allowlist"
+    BLOCKLIST = 0
+    ALLOWLIST = 1
 
 
 class URLListType(Enum):

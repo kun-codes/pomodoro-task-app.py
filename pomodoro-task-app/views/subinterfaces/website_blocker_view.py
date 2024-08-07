@@ -1,12 +1,15 @@
 from PySide6.QtWidgets import QWidget, QStackedWidget
 from PySide6.QtCore import Qt
 from enum import Enum
+from sqlalchemy.orm import sessionmaker
+from models.db_tables import engine, Workspace
+
 from ui_py.ui_website_blocker_view import Ui_WebsiteBlockView
 from qfluentwidgets import PlainTextEdit, Pivot
 from loguru import logger
-
 from constants import WebsiteFilterType
 from models.workspace_list_model import workplace_model
+from models.website_blocker_model import WebsiteBlockerModel
 
 class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
     """
@@ -16,76 +19,65 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         super().__init__()
         self.setupUi(self)
 
-        self.blockListTextEdit = PlainTextEdit()
-        self.blockListTextEdit.setObjectName("BlocklistTextEdit")
-        self.blockListExceptionsTextEdit = PlainTextEdit()
-        self.blockListExceptionsTextEdit.setObjectName("BlocklistExceptionsTextEdit")
-        self.allowListTextEdit = PlainTextEdit()
-        self.allowListTextEdit.setObjectName("AllowlistTextEdit")
-        self.allowListExceptionsTextEdit = PlainTextEdit()
-        self.allowListExceptionsTextEdit.setObjectName("AllowlistExceptionsTextEdit")
-
         # for testing
         self.blockListTextEdit.setPlainText("Blocklist")
-        self.blockListExceptionsTextEdit.setPlainText("Blocklist Exceptions")
         self.allowListTextEdit.setPlainText("Allowlist")
-        self.allowListExceptionsTextEdit.setPlainText("Allowlist Exceptions")
 
-        self.workplaceBlockTypePreference = 0  # TODO: add a block type preference to workplace table
+        self.blockListTextEdit.setHidden(True)
+        self.allowListTextEdit.setHidden(True)
 
-        self.initPivot()
-        self.connectSignalsToSlots()
+        current_workspace_id = workplace_model.get_current_workspace_id()
+        session = sessionmaker(bind=engine)()
+        self.workplaceBlockTypePreference = session.query(Workspace).get(current_workspace_id).website_filter_type
+        logger.debug(f"Workplace block type preference in __init__: {self.workplaceBlockTypePreference}")
+        session.close()
+
+        self.model = WebsiteBlockerModel()
+
         self.initWebsiteFilterComboBox()
+        self.connectSignalsToSlots()
                                                             # still emit the signal to show/hide appropriate widgets
 
     def connectSignalsToSlots(self):
-        self.blockTypeComboBox.currentIndexChanged.connect(self.onBlockTypeChanged)
+        self.blockTypeComboBox.currentIndexChanged.connect(self.onFilterTypeChanged)
         self.saveButton.clicked.connect(lambda: logger.debug("Save button clicked"))
         self.cancelButton.clicked.connect(lambda: logger.debug("Cancel button clicked"))
+        # workplace_model.current_workspace_changed.connect(self.onCurrentWorkplaceChanged)
+        workplace_model.current_workspace_deleted.connect(self.onCurrentWorkplaceDeleted)
 
-    def onBlockTypeChanged(self):
-        if self.blockTypeComboBox.currentText() == WebsiteFilterType.BLOCKLIST.value:
-            self.blocklistPivot.show()
-            self.blocklistStackedWidget.show()
-            self.allowlistPivot.hide()
-            self.allowlistStackedWidget.hide()
+    def load_data(self):
+        # todo: don't let user change filter type till they click on save button
+        # todo: don't let user click on save button till they make some changes
+        # todo: check for invalid urls
+        # todo: check for duplicate urls
+        pass
 
-            self.blocklistPivot.setCurrentItem(self.blockListTextEdit.objectName())
-            self.blocklistStackedWidget.setCurrentWidget(self.blockListTextEdit)
+    def onFilterTypeChanged(self):
+        if self.blockTypeComboBox.currentIndex() == WebsiteFilterType.BLOCKLIST.value:
+            self.allowListTextEdit.setHidden(True)
+            self.blockListTextEdit.setHidden(False)
 
-            current_workspace_id = workplace_model.get_current_workspace_id()
+            self.model.set_website_filter_type(WebsiteFilterType.BLOCKLIST)
+            self.workplaceBlockTypePreference = WebsiteFilterType.BLOCKLIST
 
-        elif self.blockTypeComboBox.currentText() == WebsiteFilterType.ALLOWLIST.value:
-            self.blocklistPivot.hide()
-            self.blocklistStackedWidget.hide()
-            self.allowlistPivot.show()
-            self.allowlistStackedWidget.show()
+        elif self.blockTypeComboBox.currentIndex() == WebsiteFilterType.ALLOWLIST.value:
+            self.allowListTextEdit.setHidden(False)
+            self.blockListTextEdit.setHidden(True)
 
-            self.allowlistPivot.setCurrentItem(self.allowListTextEdit.objectName())
-            self.allowlistStackedWidget.setCurrentWidget(self.allowListTextEdit)
+            self.model.set_website_filter_type(WebsiteFilterType.ALLOWLIST)
+            self.workplaceBlockTypePreference = WebsiteFilterType.ALLOWLIST
+
 
     def initWebsiteFilterComboBox(self):
-        self.blockTypeComboBox.addItem(WebsiteFilterType.BLOCKLIST.value)
-        self.blockTypeComboBox.addItem(WebsiteFilterType.ALLOWLIST.value)
+        self.blockTypeComboBox.addItem("Blocklist")
+        self.blockTypeComboBox.addItem("Allowlist")
 
-        self.blockTypeComboBox.setCurrentIndex(self.workplaceBlockTypePreference)
-        self.blockTypeComboBox.currentIndexChanged.emit(self.workplaceBlockTypePreference)  # if block list type is
-        # already set, then emit the signal explicitly to show/hide the appropriate widgets
+        self.blockTypeComboBox.setCurrentIndex(self.workplaceBlockTypePreference.value)
+        self.onFilterTypeChanged()  # calling manually since signals aren't connected to slots yet
 
-    def initPivot(self):
-        self.addSubInterface(self.blocklistPivot, self.blocklistStackedWidget, self.blockListTextEdit, 'Blocklist')
-        self.addSubInterface(self.blocklistPivot, self.blocklistStackedWidget, self.blockListExceptionsTextEdit, 'Blocklist Exceptions')
-        self.addSubInterface(self.allowlistPivot, self.allowlistStackedWidget, self.allowListTextEdit, 'Allowlist')
-        self.addSubInterface(self.allowlistPivot, self.allowlistStackedWidget, self.allowListExceptionsTextEdit, 'Allowlist Exceptions')
-
-
-    def addSubInterface(self, pivot: Pivot, stackedWidget: QStackedWidget, widget: PlainTextEdit, text: str):
-        stackedWidget.addWidget(widget)
-
-        # Use the globally unique objectName as the route key
-        pivot.addItem(
-            routeKey=widget.objectName(),
-            text=text,
-            onClick=lambda: stackedWidget.setCurrentWidget(widget)
-        )
-
+    def onCurrentWorkplaceDeleted(self):
+        # set every ui component to its default
+        self.blockTypeComboBox.setCurrentIndex(0)
+        self.blockTypeComboBox.currentIndexChanged.emit(0)
+        self.blockListTextEdit.clear()
+        self.allowListTextEdit.clear()

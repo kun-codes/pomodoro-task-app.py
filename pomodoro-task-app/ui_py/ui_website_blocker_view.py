@@ -16,9 +16,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QHBoxLayout, QSizePolicy, QSpacerItem,
-    QStackedWidget, QVBoxLayout, QWidget)
+    QVBoxLayout, QWidget)
 
-from qfluentwidgets import (BodyLabel, ComboBox, Pivot, PrimaryPushButton,
+from qfluentwidgets import (BodyLabel, ComboBox, PlainTextEdit, PrimaryPushButton,
     PushButton, SingleDirectionScrollArea, TitleLabel)
 
 class Ui_WebsiteBlockView(object):
@@ -68,30 +68,15 @@ class Ui_WebsiteBlockView(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 
-        self.allowlistPivot = Pivot(self.scrollAreaWidgetContents)
-        self.allowlistPivot.setObjectName(u"allowlistPivot")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.allowlistPivot.sizePolicy().hasHeightForWidth())
-        self.allowlistPivot.setSizePolicy(sizePolicy1)
+        self.blockListTextEdit = PlainTextEdit(self.scrollAreaWidgetContents)
+        self.blockListTextEdit.setObjectName(u"blockListTextEdit")
 
-        self.verticalLayout.addWidget(self.allowlistPivot)
+        self.verticalLayout.addWidget(self.blockListTextEdit)
 
-        self.allowlistStackedWidget = QStackedWidget(self.scrollAreaWidgetContents)
-        self.allowlistStackedWidget.setObjectName(u"allowlistStackedWidget")
+        self.allowListTextEdit = PlainTextEdit(self.scrollAreaWidgetContents)
+        self.allowListTextEdit.setObjectName(u"allowListTextEdit")
 
-        self.verticalLayout.addWidget(self.allowlistStackedWidget)
-
-        self.blocklistPivot = Pivot(self.scrollAreaWidgetContents)
-        self.blocklistPivot.setObjectName(u"blocklistPivot")
-
-        self.verticalLayout.addWidget(self.blocklistPivot)
-
-        self.blocklistStackedWidget = QStackedWidget(self.scrollAreaWidgetContents)
-        self.blocklistStackedWidget.setObjectName(u"blocklistStackedWidget")
-
-        self.verticalLayout.addWidget(self.blocklistStackedWidget)
+        self.verticalLayout.addWidget(self.allowListTextEdit)
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
