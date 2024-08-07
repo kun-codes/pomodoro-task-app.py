@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (QApplication, QHBoxLayout, QSizePolicy, QSpacerIt
     QVBoxLayout, QWidget)
 
 from qfluentwidgets import (BodyLabel, ComboBox, PlainTextEdit, PrimaryPushButton,
-    PushButton, SingleDirectionScrollArea, TitleLabel)
+    PushButton, SingleDirectionScrollArea, TitleLabel, ToolButton)
 
 class Ui_WebsiteBlockView(object):
     def setupUi(self, WebsiteBlockView):
@@ -80,12 +80,22 @@ class Ui_WebsiteBlockView(object):
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.websiteExceptionHintButton = ToolButton(self.scrollAreaWidgetContents)
+        self.websiteExceptionHintButton.setObjectName(u"websiteExceptionHintButton")
+
+        self.horizontalLayout_4.addWidget(self.websiteExceptionHintButton)
+
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer)
 
         self.cancelButton = PushButton(self.scrollAreaWidgetContents)
         self.cancelButton.setObjectName(u"cancelButton")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.cancelButton.sizePolicy().hasHeightForWidth())
+        self.cancelButton.setSizePolicy(sizePolicy1)
 
         self.horizontalLayout_4.addWidget(self.cancelButton)
 
