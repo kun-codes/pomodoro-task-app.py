@@ -7,6 +7,9 @@ from sqlalchemy.orm import sessionmaker
 from models.db_tables import engine, Workspace
 from constants import WebsiteFilterType, URLListType
 from models.db_tables import BlocklistURL, BlocklistExceptionURL, AllowlistURL, AllowlistExceptionURL
+from urllib.parse import urlparse
+from loguru import logger
+import re
 
 
 @contextmanager
@@ -65,8 +68,17 @@ class WebsiteBlockerModel(QObject):
     def get_website_filter_type(self):
         return self.website_filter_type
 
-    def update_target_list_urls(self, target_list: URLListType, target_list_urls: list):
-        # TODO: implement urllib to determine if the urls are valid and remove duplicates
+    def update_target_list_urls(self, target_list: URLListType, target_list_urls: list):  # todo: find out how to pass the urls as a list
+        valid_urls = []
+        for line_number, url in enumerate(target_list_urls):
+            result = self.validate_url(url)
+            if not result:
+                logger.error(f"Invalid URL at line {line_number + 1}: {url}")
+            else:
+                valid_urls.append(url)
+
+        valid_urls_set = set(valid_urls)  # remove duplicates
+
         with get_session() as session:
 
             current_urls_set = set()
@@ -85,11 +97,8 @@ class WebsiteBlockerModel(QObject):
                 current_urls_set = set(self.allowlist_exception_urls)
                 target_class = AllowlistExceptionURL
 
-            # to remove duplicates
-            target_list_urls_set = set(target_list_urls)
-
-            urls_to_add = target_list_urls_set - current_urls_set  # new url = url not in old set but in new set
-            urls_to_remove = current_urls_set - target_list_urls_set # removed url = url not in new set but in old set
+            urls_to_add = valid_urls_set - current_urls_set  # new url = url not in old set but in new set
+            urls_to_remove = current_urls_set - valid_urls_set # removed url = url not in new set but in old set
 
             if urls_to_remove:
                 self.remove_urls(session, urls_to_remove, target_class)
@@ -99,10 +108,43 @@ class WebsiteBlockerModel(QObject):
 
             self.load_data(target_list)
 
+    # helper function for validate_url()
+    def add_default_scheme(self, url):
+        if not urlparse(url).scheme:
+            return f"https://{url}"
+
+    # helper function for is_valid_url()
+    def is_valid_url(self, url):
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])
+        except ValueError:
+            return False
+
+    # helper function for is_valid_url()
+    def is_valid_domain(self, domain):
+        regex = r'^(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+\.[a-zA-Z]{2,11}?$'
+        return re.match(regex, domain) is not None
+
+    def validate_url(self, url):
+        url = self.add_default_scheme(url)
+        if not self.is_valid_url(url):
+            return False
+
+        parsed_url = urlparse(url)
+        result = self.is_valid_domain(parsed_url.netloc)
+
+        if result:
+            return (result, url)
+        else:
+            return (result, None)
+
+    # helper function for update_target_list_urls()
     def add_urls(self, session, urls, target_class):
         for url in urls:
             session.add(target_class(workspace_id=self.workplace_model.get_current_workspace_id(), url=url))
 
+    # helper function for update_target_list_urls()
     def remove_urls(self, session, urls, target_class):
         session.query(target_class).filter(target_class.url.in_(urls)).delete(synchronize_session=False)
 
@@ -115,4 +157,3 @@ class WebsiteBlockerModel(QObject):
             return self.allowlist_urls
         elif target_list == URLListType.ALLOWLIST_EXCEPTION:
             return self.allowlist_exception_urls
-
