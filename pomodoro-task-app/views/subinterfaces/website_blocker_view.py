@@ -49,7 +49,7 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
     def connectSignalsToSlots(self):
         self.blockTypeComboBox.currentIndexChanged.connect(self.onFilterTypeChanged)
         self.saveButton.clicked.connect(self.onSaveButtonClicked)
-        self.cancelButton.clicked.connect(lambda: logger.debug("Cancel button clicked"))
+        self.cancelButton.clicked.connect(self.onCancelButtonClicked)
         # workplace_model.current_workspace_changed.connect(self.onCurrentWorkplaceChanged)
         workplace_model.current_workspace_deleted.connect(self.onCurrentWorkplaceDeleted)
         self.websiteExceptionHintButton.clicked.connect(self.onExceptionHelpButtonClicked)
@@ -65,6 +65,13 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
     def onSaveButtonClicked(self):
         self.blockListText = self.blockListTextEdit.toPlainText()
         self.allowListText = self.allowListTextEdit.toPlainText()
+
+        self.saveButton.setDisabled(True)
+        self.blockTypeComboBox.setDisabled(False)
+
+    def onCancelButtonClicked(self):
+        self.blockListTextEdit.setPlainText(self.blockListText)
+        self.allowListTextEdit.setPlainText(self.allowListText)
 
         self.saveButton.setDisabled(True)
         self.blockTypeComboBox.setDisabled(False)
