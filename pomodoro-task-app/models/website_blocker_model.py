@@ -44,18 +44,18 @@ class WebsiteBlockerModel(QObject):
             current_workspace_id = self.workplace_model.get_current_workspace_id()
 
             if target_list == None:
-                self.blocklist_urls = session.query(BlocklistURL).filter(BlocklistURL.workspace_id == current_workspace_id).all()
-                self.blocklist_exception_urls = session.query(BlocklistExceptionURL).filter(BlocklistExceptionURL.workspace_id == current_workspace_id).all()
-                self.allowlist_urls = session.query(AllowlistURL).filter(AllowlistURL.workspace_id == current_workspace_id).all()
-                self.allowlist_exception_urls = session.query(AllowlistExceptionURL).filter(AllowlistExceptionURL.workspace_id == current_workspace_id).all()
+                self.blocklist_urls = [url.url for url in session.query(BlocklistURL).filter(BlocklistURL.workspace_id == current_workspace_id).all()]
+                self.blocklist_exception_urls = [url.url for url in session.query(BlocklistExceptionURL).filter(BlocklistExceptionURL.workspace_id == current_workspace_id).all()]
+                self.allowlist_urls = [url.url for url in session.query(AllowlistURL).filter(AllowlistURL.workspace_id == current_workspace_id).all()]
+                self.allowlist_exception_urls = [url.url for url in session.query(AllowlistExceptionURL).filter(AllowlistExceptionURL.workspace_id == current_workspace_id).all()]
             elif target_list == URLListType.BLOCKLIST:
-                self.blocklist_urls = session.query(BlocklistURL).filter(BlocklistURL.workspace_id == current_workspace_id).all()
+                self.blocklist_urls = [url.url for url in session.query(BlocklistURL).filter(BlocklistURL.workspace_id == current_workspace_id).all()]
             elif target_list == URLListType.BLOCKLIST_EXCEPTION:
-                self.blocklist_exception_urls = session.query(BlocklistExceptionURL).filter(BlocklistExceptionURL.workspace_id == current_workspace_id).all()
+                self.blocklist_exception_urls = [url.url for url in session.query(BlocklistExceptionURL).filter(BlocklistExceptionURL.workspace_id == current_workspace_id).all()]
             elif target_list == URLListType.ALLOWLIST:
-                self.allowlist_urls = session.query(AllowlistURL).filter(AllowlistURL.workspace_id == current_workspace_id).all()
+                self.allowlist_urls = [url.url for url in session.query(AllowlistURL).filter(AllowlistURL.workspace_id == current_workspace_id).all()]
             elif target_list == URLListType.ALLOWLIST_EXCEPTION:
-                self.allowlist_exception_urls = session.query(AllowlistExceptionURL).filter(AllowlistExceptionURL.workspace_id == current_workspace_id).all()
+                self.allowlist_exception_urls = [url.url for url in session.query(AllowlistExceptionURL).filter(AllowlistExceptionURL.workspace_id == current_workspace_id).all()]
 
     def set_website_filter_type(self, website_filter_type: WebsiteFilterType):
         with get_session() as session:
