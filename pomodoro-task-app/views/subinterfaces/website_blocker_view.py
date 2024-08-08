@@ -20,6 +20,9 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.setupUi(self)
 
         # for testing
+        self.blockListText = ""
+        self.allowListText = ""
+
         self.blockListTextEdit.setPlainText("Blocklist")
         self.allowListTextEdit.setPlainText("Allowlist")
 
@@ -38,16 +41,33 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.initWebsiteFilterComboBox()
         self.connectSignalsToSlots()
 
+        self.saveButton.setDisabled(True)
+
     def initWidget(self):
         self.websiteExceptionHintButton.setIcon(FluentIcon.QUESTION)
 
     def connectSignalsToSlots(self):
         self.blockTypeComboBox.currentIndexChanged.connect(self.onFilterTypeChanged)
-        self.saveButton.clicked.connect(lambda: logger.debug("Save button clicked"))
+        self.saveButton.clicked.connect(self.onSaveButtonClicked)
         self.cancelButton.clicked.connect(lambda: logger.debug("Cancel button clicked"))
         # workplace_model.current_workspace_changed.connect(self.onCurrentWorkplaceChanged)
         workplace_model.current_workspace_deleted.connect(self.onCurrentWorkplaceDeleted)
         self.websiteExceptionHintButton.clicked.connect(self.onExceptionHelpButtonClicked)
+
+        self.blockListTextEdit.textChanged.connect(self.onTextChanged)
+        self.allowListTextEdit.textChanged.connect(self.onTextChanged)
+
+    def onTextChanged(self):
+        self.saveButton.setDisabled(False)
+        self.blockTypeComboBox.setDisabled(True)
+        # todo: show the user a tip that they can enable the combo box again by clicking on save or cancel buttons
+
+    def onSaveButtonClicked(self):
+        self.blockListText = self.blockListTextEdit.toPlainText()
+        self.allowListText = self.allowListTextEdit.toPlainText()
+
+        self.saveButton.setDisabled(True)
+        self.blockTypeComboBox.setDisabled(False)
 
     def onExceptionHelpButtonClicked(self):
         Flyout.create(
