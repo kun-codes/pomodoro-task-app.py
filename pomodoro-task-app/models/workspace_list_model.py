@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QAbstractListModel, QItemSelectionModel, Signal, QModelIndex
-from sqlalchemy.orm import sessionmaker
+from utils.db_utils import get_session
 from loguru import logger
 
 from models.db_tables import Workspace, engine, CurrentWorkspace
@@ -20,12 +20,11 @@ class WorkspaceListModel(QAbstractListModel):
         self.selection_model = selection_model
 
     def load_data(self):
-        session = sessionmaker(bind=engine)()
-        self.workspaces = [
-            {"id": workspace.id, "workspace_name": workspace.workspace_name}
-            for workspace in session.query(Workspace).all()
-        ]
-        session.close()
+        with get_session(is_read_only=True) as session:
+            self.workspaces = [
+                {"id": workspace.id, "workspace_name": workspace.workspace_name}
+                for workspace in session.query(Workspace).all()
+            ]
         self.layoutChanged.emit()
 
     def data(self, index, role):
@@ -38,11 +37,10 @@ class WorkspaceListModel(QAbstractListModel):
         return len(self.workspaces)
 
     def add_workspace(self, workspace):
-        session = sessionmaker(bind=engine)()
-        session.add(workspace)
-        session.commit()
-        self.workspaces.append({"id": workspace.id, "workspace_name": workspace.workspace_name})
-        session.close()
+        with get_session() as session:
+            session.add(workspace)
+            session.commit()
+            self.workspaces.append({"id": workspace.id, "workspace_name": workspace.workspace_name})
         self.layoutChanged.emit()
 
     # TODO: Implement update_workspace method
@@ -51,14 +49,12 @@ class WorkspaceListModel(QAbstractListModel):
         if 0 <= index < len(self.workspaces):
             workspace_id = self.workspaces[index]["id"]  # workspace about to be deleted
             selected_workspace_id = self.get_current_workspace_id()
-            session = sessionmaker(bind=engine)()
-            workspace = session.get(Workspace, workspace_id)
-            if workspace:
-                session.delete(workspace)
-                session.commit()
-                if workspace_id == selected_workspace_id:
-                    self.current_workspace_deleted.emit()
-            session.close()
+            with get_session() as session:
+                workspace = session.get(Workspace, workspace_id)
+                if workspace:
+                    session.delete(workspace)
+                    if workspace_id == selected_workspace_id:
+                        self.current_workspace_deleted.emit()
             self.workspaces.pop(index)
             self.layoutChanged.emit()
 
@@ -67,17 +63,15 @@ class WorkspaceListModel(QAbstractListModel):
             selected_index = self.selection_model.currentIndex()
             if selected_index.isValid():
                 selected_workspace = self.workspaces[selected_index.row()]
-                session = sessionmaker(bind=engine)()
 
-                previous_selected_workspace = session.query(CurrentWorkspace).first()
-                previous_selected_workspace_id = previous_selected_workspace.current_workspace_id \
-                    if previous_selected_workspace else None
-                # make sure that only one record exists in current_workspace table
-                session.query(CurrentWorkspace).delete()
-                current_workspace = CurrentWorkspace(current_workspace_id=selected_workspace["id"])
-                session.add(current_workspace)
-                session.commit()
-                session.close()
+                with get_session() as session:
+                    previous_selected_workspace = session.query(CurrentWorkspace).first()
+                    previous_selected_workspace_id = previous_selected_workspace.current_workspace_id \
+                        if previous_selected_workspace else None
+                    # make sure that only one record exists in current_workspace table
+                    session.query(CurrentWorkspace).delete()
+                    current_workspace = CurrentWorkspace(current_workspace_id=selected_workspace["id"])
+                    session.add(current_workspace)
 
                 self.load_data()
 
@@ -87,9 +81,8 @@ class WorkspaceListModel(QAbstractListModel):
                     self.current_workspace_changed.emit()
 
     def get_current_workspace_id(self):
-        session = sessionmaker(bind=engine)()
-        current_workspace = session.query(CurrentWorkspace).first()
-        session.close()
+        with get_session(is_read_only=True) as session:
+            current_workspace = session.query(CurrentWorkspace).first()
         return current_workspace.current_workspace_id if current_workspace else None
 
     def get_workspace_name_by_id(self, workspace_id):

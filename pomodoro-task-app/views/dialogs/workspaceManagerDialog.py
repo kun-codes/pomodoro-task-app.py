@@ -8,7 +8,6 @@ from loguru import logger
 from qfluentwidgets import FluentStyleSheet, PrimaryPushButton, SubtitleLabel, ListView, setCustomStyleSheet, \
     PushButton, LineEdit, InfoBar, InfoBarPosition, TableItemDelegate, themeColor, isDarkTheme
 from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
-from sqlalchemy.orm import sessionmaker
 
 from models.db_tables import Workspace, engine
 from models.workspace_list_model import workspace_list_model

@@ -1,13 +1,12 @@
 from PySide6.QtWidgets import QWidget
-from loguru import logger
 from qfluentwidgets import FluentIcon, Flyout, InfoBarIcon, FlyoutAnimationType
-from sqlalchemy.orm import sessionmaker
 
 from constants import WebsiteFilterType, URLListType
 from models.db_tables import engine, Workspace
 from models.website_blocker_model import WebsiteBlockerModel
 from models.workspace_list_model import workspace_list_model
 from ui_py.ui_website_blocker_view import Ui_WebsiteBlockView
+from utils.db_utils import get_session
 
 
 class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
@@ -23,9 +22,8 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.allowListText = ""
 
         current_workspace_id = workspace_list_model.get_current_workspace_id()
-        session = sessionmaker(bind=engine)()
-        self.workspaceBlockTypePreference = session.query(Workspace).get(current_workspace_id).website_filter_type
-        session.close()
+        with get_session(is_read_only=True) as session:
+            self.workspaceBlockTypePreference = session.query(Workspace).get(current_workspace_id).website_filter_type
 
         self.model = WebsiteBlockerModel()
 

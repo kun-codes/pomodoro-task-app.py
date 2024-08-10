@@ -3,27 +3,14 @@ from contextlib import contextmanager
 from PySide6.QtCore import QObject
 from enum import Enum
 from models.workspace_list_model import workspace_list_model
-from sqlalchemy.orm import sessionmaker
 from models.db_tables import engine, Workspace
 from constants import WebsiteFilterType, URLListType
 from models.db_tables import BlocklistURL, BlocklistExceptionURL, AllowlistURL, AllowlistExceptionURL
+from utils.db_utils import get_session
 from urllib.parse import urlparse
 from loguru import logger
 import re
 
-
-@contextmanager
-def get_session():
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    try:
-        yield session
-        session.commit()
-    except Exception:
-        session.rollback()
-        raise
-    finally:
-        session.close()
 
 class WebsiteBlockerModel(QObject):
     def __init__(self):
@@ -40,7 +27,7 @@ class WebsiteBlockerModel(QObject):
         self.load_data()
 
     def load_data(self, target_list: URLListType = None):
-        with get_session() as session:
+        with get_session(is_read_only=True) as session:
             current_workspace_id = self.workspace_model.get_current_workspace_id()
 
             if target_list == None:

@@ -1,5 +1,4 @@
 from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition
-from sqlalchemy.orm import sessionmaker
 
 from models.drag_and_drop import DragItem
 from models.timer import TimerState
@@ -9,6 +8,7 @@ from views.subinterfaces.settings_view import SettingsView
 from views.subinterfaces.tasks_view import TaskListView
 from views.subinterfaces.website_blocker_view import WebsiteBlockerView
 from models.db_tables import engine, Workspace, CurrentWorkspace
+from utils.db_utils import get_session
 
 
 class MainWindow(FluentWindow):
@@ -81,20 +81,18 @@ class MainWindow(FluentWindow):
             self.settings_interface.pomodoro_settings_group.setDisabled(False)
 
     def check_valid_db(self):
-        session = sessionmaker(bind=engine)()
-        workspace = session.query(Workspace).first()
-        # create a default workspace if none exists
-        if not workspace:
-            workspace = Workspace(workspace_name="Default Workspace")
-            session.add(workspace)
-            session.commit()
+        with get_session() as session:
+            workspace = session.query(Workspace).first()
+            # create a default workspace if none exists
+            if not workspace:
+                workspace = Workspace(workspace_name="Default Workspace")
+                session.add(workspace)
+                session.commit()
 
-        # if application was closed while no workspace was selected, select the first workspace in the database
-        # if database had no workspace to begin with then set default workspace as current database
-        current_workspace = session.query(CurrentWorkspace).first()
-        if not current_workspace:
-            current_workspace = CurrentWorkspace(current_workspace_id=workspace.id)
-            session.add(current_workspace)
-            session.commit()
-
-        session.close()
+            # if application was closed while no workspace was selected, select the first workspace in the database
+            # if database had no workspace to begin with then set default workspace as current database
+            current_workspace = session.query(CurrentWorkspace).first()
+            if not current_workspace:
+                current_workspace = CurrentWorkspace(current_workspace_id=workspace.id)
+                session.add(current_workspace)
+                session.commit()

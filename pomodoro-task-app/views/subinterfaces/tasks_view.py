@@ -5,8 +5,8 @@ from qfluentwidgets import FluentIcon, TitleLabel
 from models.drag_and_drop import DragWidget, DragItem
 from views.dialogs.addTaskDialog import AddTaskDialog
 from ui_py.ui_tasks_list_view import Ui_TaskView
-from sqlalchemy.orm import sessionmaker
 from models.db_tables import Task, TaskType, engine
+from utils.db_utils import get_session
 
 
 class TaskListView(Ui_TaskView, QWidget):
@@ -48,18 +48,17 @@ class TaskListView(Ui_TaskView, QWidget):
         self.loadTasksFromDB()
 
     def loadTasksFromDB(self):
-        session_maker = sessionmaker(bind=engine)
-        session = session_maker()
-
         # loading tasks from database of todo type
-        tasks = session.query(Task).filter(Task.task_type == TaskType.TODO).all()
+        with get_session(is_read_only=True) as session:
+            tasks = session.query(Task).filter(Task.task_type == TaskType.TODO).all()
         for task in tasks:
             task_name = task.task_name
             task_card = DragItem(parent=self.todoTasksCard, task_name=task_name)
             self.todoTasksCard.add_item(task_card)
 
         # loading tasks from database of completed type
-        tasks = session.query(Task).filter(Task.task_type == TaskType.COMPLETED).all()
+        with get_session(is_read_only=True) as session:
+            tasks = session.query(Task).filter(Task.task_type == TaskType.COMPLETED).all()
         for task in tasks:
             task_name = task.task_name
             task_card = DragItem(parent=self.completedTasksCard, task_name=task_name)
@@ -74,11 +73,8 @@ class TaskListView(Ui_TaskView, QWidget):
             task_card = DragItem(parent=self.todoTasksCard, task_name=task_name)
             self.todoTasksCard.add_item(task_card)
 
-            session_maker = sessionmaker(bind=engine)
-            session = session_maker()
-
-            session.add(task_card.task_record)
-            session.commit()
+            with get_session() as session:
+                session.add(task_card.task_record)
 
 
     def addTaskCard(self, task_name: str):
