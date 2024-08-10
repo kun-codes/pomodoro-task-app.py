@@ -3,7 +3,7 @@ from loguru import logger
 from qfluentwidgets import FluentIcon, Flyout, InfoBarIcon, FlyoutAnimationType
 from sqlalchemy.orm import sessionmaker
 
-from constants import WebsiteFilterType
+from constants import WebsiteFilterType, URLListType
 from models.db_tables import engine, Workspace
 from models.website_blocker_model import WebsiteBlockerModel
 from models.workspace_list_model import workplace_model
@@ -63,8 +63,17 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         # todo: show the user a tip that they can enable the combo box again by clicking on save or cancel buttons
 
     def onSaveButtonClicked(self):
-        self.blockListText = self.blockListTextEdit.toPlainText()
-        self.allowListText = self.allowListTextEdit.toPlainText()
+        self.blockListText = self.blockListTextEdit.toPlainText().strip()
+        self.allowListText = self.allowListTextEdit.toPlainText().strip()
+
+        current_website_filter_type = self.model.get_website_filter_type()
+        if current_website_filter_type == WebsiteFilterType.BLOCKLIST:
+            # assuming all urls are separated by new line and are valid
+            list_of_urls = [url.strip() for url in self.blockListText.split('\n') if url.strip()]
+            self.model.update_target_list_urls(URLListType.BLOCKLIST, list_of_urls)
+        elif current_website_filter_type == WebsiteFilterType.ALLOWLIST:
+            list_of_urls = [url.strip() for url in self.allowListText.split('\n') if url.strip()]
+            self.model.update_target_list_urls(URLListType.ALLOWLIST, list_of_urls)
 
         self.saveButton.setDisabled(True)
         self.blockTypeComboBox.setDisabled(False)
