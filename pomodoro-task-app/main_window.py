@@ -15,7 +15,11 @@ from models.workspace_list_model import WorkspaceListModel
 class MainWindow(FluentWindow):
     def __init__(self):
         super().__init__()
+
+        self.check_valid_db()
+
         self.workplace_list_model = WorkspaceListModel()
+
         self.task_interface = TaskListView()
         self.task_interface.setObjectName('task_interface')
 
@@ -34,7 +38,6 @@ class MainWindow(FluentWindow):
         self.initNavigation()
         self.initWindow()
         self.populateTasks()
-        self.check_valid_db()
 
     def initNavigation(self):
         # Add sub interface
