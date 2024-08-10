@@ -19,32 +19,29 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         super().__init__()
         self.setupUi(self)
 
-        # for testing
         self.blockListText = ""
         self.allowListText = ""
-
-        self.blockListTextEdit.setPlainText("Blocklist")
-        self.allowListTextEdit.setPlainText("Allowlist")
-
-        self.blockListTextEdit.setHidden(True)
-        self.allowListTextEdit.setHidden(True)
 
         current_workspace_id = workplace_model.get_current_workspace_id()
         session = sessionmaker(bind=engine)()
         self.workplaceBlockTypePreference = session.query(Workspace).get(current_workspace_id).website_filter_type
-        logger.debug(f"Workplace block type preference in __init__: {self.workplaceBlockTypePreference}")
         session.close()
 
         self.model = WebsiteBlockerModel()
 
         self.initWidget()
-        self.initWebsiteFilterComboBox()
         self.connectSignalsToSlots()
 
         self.saveButton.setDisabled(True)
 
     def initWidget(self):
         self.websiteExceptionHintButton.setIcon(FluentIcon.QUESTION)
+
+        self.blockListTextEdit.setHidden(True)
+        self.allowListTextEdit.setHidden(True)
+
+        self.initTextEdits()
+        self.initWebsiteFilterComboBox()
 
     def connectSignalsToSlots(self):
         self.blockTypeComboBox.currentIndexChanged.connect(self.onFilterTypeChanged)
@@ -65,6 +62,12 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
     def onSaveButtonClicked(self):
         self.blockListText = self.blockListTextEdit.toPlainText().strip()
         self.allowListText = self.allowListTextEdit.toPlainText().strip()
+
+        self.blockListText = '\n'.join(sorted(self.blockListText.split('\n')))
+        self.allowListText = '\n'.join(sorted(self.allowListText.split('\n')))
+
+        self.blockListTextEdit.setPlainText(self.blockListText)
+        self.allowListTextEdit.setPlainText(self.allowListText)
 
         current_website_filter_type = self.model.get_website_filter_type()
         if current_website_filter_type == WebsiteFilterType.BLOCKLIST:
@@ -124,6 +127,13 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
 
         self.blockTypeComboBox.setCurrentIndex(self.workplaceBlockTypePreference.value)
         self.onFilterTypeChanged()  # calling manually since signals aren't connected to slots yet
+
+    def initTextEdits(self):
+        self.blockListTextEdit.setPlainText("\n".join(sorted(self.model.blocklist_urls)))
+        self.allowListTextEdit.setPlainText("\n".join(sorted(self.model.allowlist_urls)))
+
+        self.blockListText = self.blockListTextEdit.toPlainText()
+        self.allowListText = self.allowListTextEdit.toPlainText()
 
     def onCurrentWorkplaceDeleted(self):
         # set every ui component to its default
