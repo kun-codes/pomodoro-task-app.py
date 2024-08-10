@@ -4,28 +4,30 @@ from qfluentwidgets import FluentIcon, Flyout, InfoBarIcon, FlyoutAnimationType
 from constants import WebsiteFilterType, URLListType
 from models.db_tables import engine, Workspace
 from models.website_blocker_model import WebsiteBlockerModel
-from models.workspace_list_model import workspace_list_model
+from models.workspace_list_model import WorkspaceListModel
 from ui_py.ui_website_blocker_view import Ui_WebsiteBlockView
 from utils.db_utils import get_session
-
+from models.workspace_lookup import WorkspaceLookup
+from loguru import logger
 
 class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
     """
     For website blocker view of the app
     """
 
-    def __init__(self):
+    def __init__(self, workspace_list_model: WorkspaceListModel):
         super().__init__()
         self.setupUi(self)
 
         self.blockListText = ""
         self.allowListText = ""
 
-        current_workspace_id = workspace_list_model.get_current_workspace_id()
+        current_workspace_id = WorkspaceLookup.get_current_workspace_id()
         with get_session(is_read_only=True) as session:
             self.workspaceBlockTypePreference = session.query(Workspace).get(current_workspace_id).website_filter_type
 
         self.model = WebsiteBlockerModel()
+        self.workspace_list_model = workspace_list_model
 
         self.initWidget()
         self.connectSignalsToSlots()
@@ -45,8 +47,8 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.blockTypeComboBox.currentIndexChanged.connect(self.onFilterTypeChanged)
         self.saveButton.clicked.connect(self.onSaveButtonClicked)
         self.cancelButton.clicked.connect(self.onCancelButtonClicked)
-        # workspace_model.current_workspace_changed.connect(self.onCurrentWorkspaceChanged)
-        workspace_list_model.current_workspace_deleted.connect(self.onCurrentWorkspaceDeleted)
+        self.workspace_list_model.current_workspace_deleted.connect(self.onCurrentWorkspaceDeleted)
+        self.workspace_list_model.current_workspace_changed.connect(self.onCurrentWorkspaceChanged)
         self.websiteExceptionHintButton.clicked.connect(self.onExceptionHelpButtonClicked)
 
         self.blockListTextEdit.textChanged.connect(self.onTextChanged)
@@ -142,3 +144,6 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         # todo: set blockListTextEdit to new current workspace's blocklist
         self.allowListTextEdit.clear()
         # todo: set allowListTextEdit to new current workspace's allowlist
+
+    def onCurrentWorkspaceChanged(self):
+        logger.debug("Current workspace changed")

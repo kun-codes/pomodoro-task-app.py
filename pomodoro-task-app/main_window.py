@@ -9,11 +9,13 @@ from views.subinterfaces.tasks_view import TaskListView
 from views.subinterfaces.website_blocker_view import WebsiteBlockerView
 from models.db_tables import engine, Workspace, CurrentWorkspace
 from utils.db_utils import get_session
+from models.workspace_list_model import WorkspaceListModel
 
 
 class MainWindow(FluentWindow):
     def __init__(self):
         super().__init__()
+        self.workplace_list_model = WorkspaceListModel()
         self.task_interface = TaskListView()
         self.task_interface.setObjectName('task_interface')
 
@@ -23,7 +25,7 @@ class MainWindow(FluentWindow):
         self.settings_interface = SettingsView()
         self.settings_interface.setObjectName('settings_interface')
 
-        self.website_filter_interface = WebsiteBlockerView()
+        self.website_filter_interface = WebsiteBlockerView(self.workplace_list_model)
         self.website_filter_interface.setObjectName('website_filter_interface')
 
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
@@ -70,7 +72,7 @@ class MainWindow(FluentWindow):
 
     def onWorkspaceManagerClicked(self):
         # parent is set according to: https://pyqt-fluent-widgets.readthedocs.io/en/latest/navigation.html
-        dialog = ManageWorkspaceDialog(parent=self.stackedWidget)
+        dialog = ManageWorkspaceDialog(parent=self.stackedWidget, workspaceListModel=self.workplace_list_model)
         dialog.exec()
 
     def disablePomodoroSettingsDuringTimer(self, timerState):

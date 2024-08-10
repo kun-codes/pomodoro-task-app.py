@@ -2,13 +2,14 @@ from contextlib import contextmanager
 
 from PySide6.QtCore import QObject
 from enum import Enum
-from models.workspace_list_model import workspace_list_model
+from models.workspace_list_model import WorkspaceListModel
 from models.db_tables import engine, Workspace
 from constants import WebsiteFilterType, URLListType
 from models.db_tables import BlocklistURL, BlocklistExceptionURL, AllowlistURL, AllowlistExceptionURL
 from utils.db_utils import get_session
 from urllib.parse import urlparse
 from loguru import logger
+from models.workspace_lookup import WorkspaceLookup
 import re
 
 
@@ -21,14 +22,13 @@ class WebsiteBlockerModel(QObject):
         self.allowlist_urls = []
         self.allowlist_exception_urls = []
 
-        self.workspace_model = workspace_list_model
         self.website_filter_type = None
 
         self.load_data()
 
     def load_data(self, target_list: URLListType = None):
         with get_session(is_read_only=True) as session:
-            current_workspace_id = self.workspace_model.get_current_workspace_id()
+            current_workspace_id = WorkspaceLookup.get_current_workspace_id()
 
             if target_list == None:
                 self.blocklist_urls = [url.url for url in session.query(BlocklistURL).filter(BlocklistURL.workspace_id == current_workspace_id).all()]
@@ -46,8 +46,7 @@ class WebsiteBlockerModel(QObject):
 
     def set_website_filter_type(self, website_filter_type: WebsiteFilterType):
         with get_session() as session:
-            current_workspace_id = self.workspace_model.get_current_workspace_id()
-            current_workspace = session.query(Workspace).filter(Workspace.id == current_workspace_id).first()
+            current_workspace = WorkspaceLookup.get_current_workspace()
             current_workspace.website_filter_type = website_filter_type
             session.add(current_workspace)
             self.website_filter_type = website_filter_type
@@ -129,7 +128,7 @@ class WebsiteBlockerModel(QObject):
     # helper function for update_target_list_urls()
     def add_urls(self, session, urls, target_class):
         for url in urls:
-            session.add(target_class(workspace_id=self.workspace_model.get_current_workspace_id(), url=url))
+            session.add(target_class(workspace_id=WorkspaceLookup.get_current_workspace_id(), url=url))
 
     # helper function for update_target_list_urls()
     def remove_urls(self, session, urls, target_class):

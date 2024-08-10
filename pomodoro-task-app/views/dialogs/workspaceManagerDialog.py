@@ -10,7 +10,8 @@ from qfluentwidgets import FluentStyleSheet, PrimaryPushButton, SubtitleLabel, L
 from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
 
 from models.db_tables import Workspace, engine
-from models.workspace_list_model import workspace_list_model
+from models.workspace_list_model import WorkspaceListModel
+from models.workspace_lookup import WorkspaceLookup
 
 
 class ListItemDelegate(TableItemDelegate):
@@ -41,7 +42,7 @@ class ListItemDelegate(TableItemDelegate):
 
 
 class ManageWorkspaceDialog(MaskDialogBase):
-    def __init__(self, parent=None):
+    def __init__(self, workspaceListModel: WorkspaceListModel, parent=None):
         super().__init__(parent=parent)
         self.buttonGroup = QFrame(self.widget)
 
@@ -64,7 +65,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.titleLabel = SubtitleLabel('Manage Workspaces', parent=None)
         self.newWorkspaceLineEdit = LineEdit()
         self.workspaceList = ListView()
-        self.model = workspace_list_model
+        self.model = workspaceListModel
         self.workspaceList.setModel(self.model)
 
         self.model.setSelectionModel(self.workspaceList.selectionModel())
@@ -154,7 +155,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         super().showEvent(event)
 
     def preselect_current_workspace(self):
-        current_workspace_id = self.model.get_current_workspace_id()
+        current_workspace_id = WorkspaceLookup.get_current_workspace_id()
         logger.debug(f"Current workspace id: {current_workspace_id}")
         for workspace in self.model.workspaces:
             workspace_id = workspace["id"]
@@ -208,7 +209,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
             #   or if there is no workspace make a sample workspace automatically and set it as the current workspace
 
     def spawnInfoBar(self):
-        workspace_id = self.model.get_current_workspace_id()
+        workspace_id = WorkspaceLookup.get_current_workspace_id()
         logger.debug(f"Current workspace id: {workspace_id}")
         workspace_name = self.model.get_workspace_name_by_id(workspace_id)
 
@@ -223,7 +224,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         )
 
     def onCurrentWorkspaceChanged(self):
-        logger.debug(f"Current workspace change {self.model.get_current_workspace_id()}")
+        logger.debug(f"Current workspace change {WorkspaceLookup.get_current_workspace_id()}")
 
     def onCurrentWorkspaceDeleted(self):
         logger.debug("Current workspace deleted")
