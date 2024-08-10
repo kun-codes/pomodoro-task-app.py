@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 from models.drag_and_drop import DragItem
 from models.timer import TimerState
-from views.dialogs.workplaceManagerDialog import ManageWorkspaceDialog
+from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
 from views.subinterfaces.pomodoro_view import PomodoroView
 from views.subinterfaces.settings_view import SettingsView
 from views.subinterfaces.tasks_view import TaskListView
@@ -42,12 +42,12 @@ class MainWindow(FluentWindow):
 
         # Add sub interface at bottom
         self.navigationInterface.addItem(
-            routeKey="WorkplaceSelector",
+            routeKey="WorkspaceSelector",
             icon=FluentIcon.VPN,
-            text="Select Workplace",
-            onClick=lambda: self.onWorkplaceManagerClicked(),
+            text="Select Workspace",
+            onClick=lambda: self.onWorkspaceManagerClicked(),
             selectable=False,
-            tooltip="Select the workplace to work on",
+            tooltip="Select the workspace to work in",
             position=NavigationItemPosition.BOTTOM
         )
         self.addSubInterface(
@@ -68,7 +68,7 @@ class MainWindow(FluentWindow):
             item.set_data(n)  # Store the data.
             self.task_interface.completedTasksCard.add_item(item)
 
-    def onWorkplaceManagerClicked(self):
+    def onWorkspaceManagerClicked(self):
         # parent is set according to: https://pyqt-fluent-widgets.readthedocs.io/en/latest/navigation.html
         dialog = ManageWorkspaceDialog(parent=self.stackedWidget)
         dialog.exec()
@@ -89,8 +89,8 @@ class MainWindow(FluentWindow):
             session.add(workspace)
             session.commit()
 
-        # if application was closed while no workplace was selected, select the first workplace in the database
-        # if database had no workplace to begin with then set default workspace as current database
+        # if application was closed while no workspace was selected, select the first workspace in the database
+        # if database had no workspace to begin with then set default workspace as current database
         current_workspace = session.query(CurrentWorkspace).first()
         if not current_workspace:
             current_workspace = CurrentWorkspace(current_workspace_id=workspace.id)

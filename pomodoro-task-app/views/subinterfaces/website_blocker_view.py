@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from constants import WebsiteFilterType, URLListType
 from models.db_tables import engine, Workspace
 from models.website_blocker_model import WebsiteBlockerModel
-from models.workspace_list_model import workplace_model
+from models.workspace_list_model import workspace_list_model
 from ui_py.ui_website_blocker_view import Ui_WebsiteBlockView
 
 
@@ -22,9 +22,9 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.blockListText = ""
         self.allowListText = ""
 
-        current_workspace_id = workplace_model.get_current_workspace_id()
+        current_workspace_id = workspace_list_model.get_current_workspace_id()
         session = sessionmaker(bind=engine)()
-        self.workplaceBlockTypePreference = session.query(Workspace).get(current_workspace_id).website_filter_type
+        self.workspaceBlockTypePreference = session.query(Workspace).get(current_workspace_id).website_filter_type
         session.close()
 
         self.model = WebsiteBlockerModel()
@@ -47,8 +47,8 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.blockTypeComboBox.currentIndexChanged.connect(self.onFilterTypeChanged)
         self.saveButton.clicked.connect(self.onSaveButtonClicked)
         self.cancelButton.clicked.connect(self.onCancelButtonClicked)
-        # workplace_model.current_workspace_changed.connect(self.onCurrentWorkplaceChanged)
-        workplace_model.current_workspace_deleted.connect(self.onCurrentWorkplaceDeleted)
+        # workspace_model.current_workspace_changed.connect(self.onCurrentWorkspaceChanged)
+        workspace_list_model.current_workspace_deleted.connect(self.onCurrentWorkspaceDeleted)
         self.websiteExceptionHintButton.clicked.connect(self.onExceptionHelpButtonClicked)
 
         self.blockListTextEdit.textChanged.connect(self.onTextChanged)
@@ -112,20 +112,20 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
             self.blockListTextEdit.setHidden(False)
 
             self.model.set_website_filter_type(WebsiteFilterType.BLOCKLIST)
-            self.workplaceBlockTypePreference = WebsiteFilterType.BLOCKLIST
+            self.workspaceBlockTypePreference = WebsiteFilterType.BLOCKLIST
 
         elif self.blockTypeComboBox.currentIndex() == WebsiteFilterType.ALLOWLIST.value:
             self.allowListTextEdit.setHidden(False)
             self.blockListTextEdit.setHidden(True)
 
             self.model.set_website_filter_type(WebsiteFilterType.ALLOWLIST)
-            self.workplaceBlockTypePreference = WebsiteFilterType.ALLOWLIST
+            self.workspaceBlockTypePreference = WebsiteFilterType.ALLOWLIST
 
     def initWebsiteFilterComboBox(self):
         self.blockTypeComboBox.addItem("Blocklist")
         self.blockTypeComboBox.addItem("Allowlist")
 
-        self.blockTypeComboBox.setCurrentIndex(self.workplaceBlockTypePreference.value)
+        self.blockTypeComboBox.setCurrentIndex(self.workspaceBlockTypePreference.value)
         self.onFilterTypeChanged()  # calling manually since signals aren't connected to slots yet
 
     def initTextEdits(self):
@@ -135,12 +135,12 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.blockListText = self.blockListTextEdit.toPlainText()
         self.allowListText = self.allowListTextEdit.toPlainText()
 
-    def onCurrentWorkplaceDeleted(self):
+    def onCurrentWorkspaceDeleted(self):
         # set every ui component to its default
         self.blockTypeComboBox.setCurrentIndex(0)
-        # todo: set blockTypeComboBox index to new current workplace's website_filter_type
+        # todo: set blockTypeComboBox index to new current workspace's website_filter_type
         self.blockTypeComboBox.currentIndexChanged.emit(0)
         self.blockListTextEdit.clear()
-        # todo: set blockListTextEdit to new current workplace's blocklist
+        # todo: set blockListTextEdit to new current workspace's blocklist
         self.allowListTextEdit.clear()
-        # todo: set allowListTextEdit to new current workplace's allowlist
+        # todo: set allowListTextEdit to new current workspace's allowlist

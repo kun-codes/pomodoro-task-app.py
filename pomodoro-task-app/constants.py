@@ -4,7 +4,7 @@ from enum import Enum
 ORGANIZATION_NAME = "Pomodoro App"
 APPLICATION_NAME = "Pomodoro"
 
-# for pomodoro timer of new workplaces
+# for pomodoro timer of new workspaces
 WORK_DURATION = 25
 BREAK_DURATION = 5
 LONG_BREAK_DURATION = 15

@@ -11,7 +11,7 @@ from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
 from sqlalchemy.orm import sessionmaker
 
 from models.db_tables import Workspace, engine
-from models.workspace_list_model import workplace_model
+from models.workspace_list_model import workspace_list_model
 
 
 class ListItemDelegate(TableItemDelegate):
@@ -65,7 +65,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.titleLabel = SubtitleLabel('Manage Workspaces', parent=None)
         self.newWorkspaceLineEdit = LineEdit()
         self.workspaceList = ListView()
-        self.model = workplace_model
+        self.model = workspace_list_model
         self.workspaceList.setModel(self.model)
 
         self.model.setSelectionModel(self.workspaceList.selectionModel())
@@ -135,13 +135,13 @@ class ManageWorkspaceDialog(MaskDialogBase):
 
         self.newWorkspaceLineEdit.textChanged.connect(self.onWorkspaceTextChanged)
 
-        self.workspaceList.selectionModel().selectionChanged.connect(self.onWorkplaceSelectionChanged)
+        self.workspaceList.selectionModel().selectionChanged.connect(self.onWorkspaceSelectionChanged)
 
         # from: https://github.com/zhiyiYo/PyQt-Fluent-Widgets/issues/667
         self.workspaceList.selectionModel().currentChanged.connect(self.workspaceList.updateSelectedRows)
-        self.model.current_workspace_changed.connect(self.onCurrentWorkplaceChanged)
+        self.model.current_workspace_changed.connect(self.onCurrentWorkspaceChanged)
         self.model.current_workspace_changed.connect(self.spawnInfoBar)
-        self.model.current_workspace_deleted.connect(self.onCurrentWorkplaceDeleted)
+        self.model.current_workspace_deleted.connect(self.onCurrentWorkspaceDeleted)
 
     def keyPressEvent(self, event:QKeyEvent):
         """
@@ -158,11 +158,11 @@ class ManageWorkspaceDialog(MaskDialogBase):
         current_workspace_id = self.model.get_current_workspace_id()
         logger.debug(f"Current workspace id: {current_workspace_id}")
         for workspace in self.model.workspaces:
-            workplace_id = workspace["id"]
-            workplace_name = workspace["workspace_name"]
-            if workplace_id == current_workspace_id:
-                index = self.model.index(self.model.workspaces.index({"id": workplace_id, "workspace_name": workplace_name}))
-                logger.debug(f"Preselecting workspace in manage workspace dialog: {workplace_name}")
+            workspace_id = workspace["id"]
+            workspace_name = workspace["workspace_name"]
+            if workspace_id == current_workspace_id:
+                index = self.model.index(self.model.workspaces.index({"id": workspace_id, "workspace_name": workspace_name}))
+                logger.debug(f"Preselecting workspace in manage workspace dialog: {workspace_name}")
                 # self.workspaceList.selectionModel().select(index, QItemSelectionModel.SelectionFlag.Select)
                 self.workspaceList.selectionModel().setCurrentIndex(index, QItemSelectionModel.SelectionFlag.Select)
 
@@ -179,11 +179,11 @@ class ManageWorkspaceDialog(MaskDialogBase):
 
     def onDeleteWorkspaceButtonClicked(self):
         selected_index = self.workspaceList.currentIndex()
-        no_of_workplaces = self.model.rowCount()
-        if selected_index.isValid() and no_of_workplaces > 1:  # only delete if there is more than one workspace
+        no_of_workspaces = self.model.rowCount()
+        if selected_index.isValid() and no_of_workspaces > 1:  # only delete if there is more than one workspace
             self.model.delete_workspace(selected_index.row())
             self.workspaceList.clearSelection()
-        elif selected_index.isValid() and no_of_workplaces <= 1:
+        elif selected_index.isValid() and no_of_workspaces <= 1:
             infobar = InfoBar.warning(
                 title="Can't delete the only workspace",
                 content="Add another workspace before deleting this one.",
@@ -194,12 +194,12 @@ class ManageWorkspaceDialog(MaskDialogBase):
                 parent=self.parent()
             )
 
-    def onWorkplaceSelectionChanged(self, selected, deselected):
+    def onWorkspaceSelectionChanged(self, selected, deselected):
         selected_index = selected.indexes()
         if selected_index:
             selected_index = selected_index[0]
-            workplace_name = self.model.data(selected_index, Qt.ItemDataRole.DisplayRole)
-            logger.debug(f"Selected workspace: {workplace_name}")
+            workspace_name = self.model.data(selected_index, Qt.ItemDataRole.DisplayRole)
+            logger.debug(f"Selected workspace: {workspace_name}")
 
             self.closeDialogButton.setDisabled(False)
             self.model.set_current_workspace_preference()
@@ -209,12 +209,12 @@ class ManageWorkspaceDialog(MaskDialogBase):
             #   or if there is no workspace make a sample workspace automatically and set it as the current workspace
 
     def spawnInfoBar(self):
-        workplace_id = self.model.get_current_workspace_id()
-        logger.debug(f"Current workspace id: {workplace_id}")
-        workplace_name = self.model.get_workplace_name_by_id(workplace_id)
+        workspace_id = self.model.get_current_workspace_id()
+        logger.debug(f"Current workspace id: {workspace_id}")
+        workspace_name = self.model.get_workspace_name_by_id(workspace_id)
 
         infobar = InfoBar.success(
-            title=f"{workplace_name} is selected",
+            title=f"{workspace_name} is selected",
             content="",
             orient=Qt.Orientation.Horizontal,
             isClosable=True,
@@ -223,10 +223,10 @@ class ManageWorkspaceDialog(MaskDialogBase):
             parent=self.parent()
         )
 
-    def onCurrentWorkplaceChanged(self):
+    def onCurrentWorkspaceChanged(self):
         logger.debug(f"Current workspace change {self.model.get_current_workspace_id()}")
 
-    def onCurrentWorkplaceDeleted(self):
+    def onCurrentWorkspaceDeleted(self):
         logger.debug("Current workspace deleted")
 
 if __name__ == '__main__':

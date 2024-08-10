@@ -92,7 +92,7 @@ class WorkspaceListModel(QAbstractListModel):
         session.close()
         return current_workspace.current_workspace_id if current_workspace else None
 
-    def get_workplace_name_by_id(self, workspace_id):
+    def get_workspace_name_by_id(self, workspace_id):
         for workspace in self.workspaces:
             if workspace["id"] == workspace_id:
                 return workspace["workspace_name"]
@@ -102,4 +102,4 @@ class WorkspaceListModel(QAbstractListModel):
         logger.debug(f"Workspaces list in memory: {self.workspaces}")
 
 
-workplace_model = WorkspaceListModel()
+workspace_list_model = WorkspaceListModel()
