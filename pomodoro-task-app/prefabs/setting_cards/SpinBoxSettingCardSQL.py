@@ -3,10 +3,11 @@ from typing import Union
 from PySide6.QtCore import Qt
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QIcon
-from qfluentwidgets import SettingCard, SpinBox, FluentIconBase, qconfig
+from qfluentwidgets import SettingCard, SpinBox, FluentIconBase
+from prefabs.config.qconfig_sql import qconfig_custom
 
 
-class SpinBoxSettingCard(SettingCard):
+class SpinBoxSettingCardSQL(SettingCard):
     """ Setting card with a SpinBox """
 
     valueChanged = Signal(int)
@@ -52,5 +53,5 @@ class SpinBoxSettingCard(SettingCard):
         self.valueChanged.emit(value)
 
     def setValue(self, value):
-        qconfig.set(self.configItem, value)
+        qconfig_custom.set(self.configItem, value)
         self.spinBox.setValue(value)

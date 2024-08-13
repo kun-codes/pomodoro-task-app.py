@@ -1,7 +1,7 @@
 from sqlalchemy import URL, create_engine, Column, Integer, String, Enum as SQLEnum, Boolean, ForeignKey, event, Engine
 from sqlalchemy.orm import declarative_base, relationship
 from enum import Enum
-from models.config import db_path
+from config_paths import db_path
 from constants import WORK_DURATION, BREAK_DURATION, LONG_BREAK_DURATION, WORK_INTERVALS, AUTOSTART_WORK, \
     AUTOSTART_BREAK
 from constants import WebsiteFilterType, URLListType

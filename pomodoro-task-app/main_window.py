@@ -10,6 +10,8 @@ from views.subinterfaces.website_blocker_view import WebsiteBlockerView
 from models.db_tables import engine, Workspace, CurrentWorkspace
 from utils.db_utils import get_session
 from models.workspace_list_model import WorkspaceListModel
+from models.config import qconfig_custom, load_workspace_settings
+from config_paths import settings_file_path
 
 
 class MainWindow(FluentWindow):
@@ -35,6 +37,7 @@ class MainWindow(FluentWindow):
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             self.disablePomodoroSettingsDuringTimer)
 
+        self.connectSignalsToSlots()
         self.initNavigation()
         self.initWindow()
         self.populateTasks()
@@ -84,6 +87,9 @@ class MainWindow(FluentWindow):
             self.settings_interface.pomodoro_settings_group.setDisabled(True)
         else:
             self.settings_interface.pomodoro_settings_group.setDisabled(False)
+
+    def connectSignalsToSlots(self):
+        self.workplace_list_model.current_workspace_changed.connect(load_workspace_settings)
 
     def check_valid_db(self):
         with get_session() as session:

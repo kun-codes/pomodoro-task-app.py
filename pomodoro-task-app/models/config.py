@@ -1,44 +1,46 @@
-import os
+from qfluentwidgets import RangeValidator, BoolValidator, Theme, qconfig, QConfig
+from prefabs.config.qconfig_sql import qconfig_custom
 
-from PySide6.QtCore import QSettings, QCoreApplication
-from qfluentwidgets import QConfig, qconfig, RangeConfigItem, RangeValidator, ConfigItem, BoolValidator, Theme
-
-from constants import ORGANIZATION_NAME, APPLICATION_NAME
 from constants import WORK_DURATION, BREAK_DURATION, LONG_BREAK_DURATION, WORK_INTERVALS, AUTOSTART_WORK, \
     AUTOSTART_BREAK
+from config_paths import settings_file_path
+from prefabs.config.config_item_sql import RangeConfigItemSQL, ConfigItemSQL
+from models.db_tables import Workspace
+from prefabs.config.qconfig_sql import QConfigSQL
 
 
-class Settings(QConfig):
+class WorkspaceSettings(QConfigSQL):
     """
-    Used for storing settings of the app.
+    Used for storing settings unique to a workspace in the app.
     Documentation for QConfig is here: https://qfluentwidgets.com/pages/components/config/#usage
     """
 
-    work_duration = RangeConfigItem("Pomodoro", "WorkDuration", WORK_DURATION, RangeValidator(1, 240))
-    break_duration = RangeConfigItem("Pomodoro", "BreakDuration", BREAK_DURATION, RangeValidator(1, 60))
-    long_break_duration = RangeConfigItem("Pomodoro", "LongBreakDuration", LONG_BREAK_DURATION,
-                                          RangeValidator(1, 60))
-    work_intervals = RangeConfigItem("Pomodoro", "WorkIntervals", WORK_INTERVALS, RangeValidator(1, 4))
-    autostart_work = ConfigItem("Pomodoro", "AutostartWork", AUTOSTART_WORK, BoolValidator())
-    autostart_break = ConfigItem("Pomodoro", "AutostartBreak", AUTOSTART_BREAK, BoolValidator())
+    work_duration = RangeConfigItemSQL(Workspace, Workspace.work_duration, WORK_DURATION, RangeValidator(1, 240))
+    break_duration = RangeConfigItemSQL(Workspace, Workspace.break_duration, BREAK_DURATION, RangeValidator(1, 60))
+    long_break_duration = RangeConfigItemSQL(Workspace, Workspace.long_break_duration, LONG_BREAK_DURATION,
+                                             RangeValidator(1, 60))
+    work_intervals = RangeConfigItemSQL(Workspace, Workspace.work_intervals, WORK_INTERVALS, RangeValidator(1, 10))
+    autostart_work = ConfigItemSQL(Workspace, Workspace.autostart_work, AUTOSTART_WORK, BoolValidator())
+    autostart_break = ConfigItemSQL(Workspace, Workspace.autostart_break, AUTOSTART_BREAK, BoolValidator())
 
 
-QCoreApplication.setOrganizationName(ORGANIZATION_NAME)
-QCoreApplication.setApplicationName(APPLICATION_NAME)
+class AppSettings(QConfig):
+    """
+    Used for storing settings that are not workspace specific and global to the app.
+    Documentation for QConfig is here: https://qfluentwidgets.com/pages/components/config/#usage
+    """
+    pass
 
-# will be used for saving settings
-app_settings = Settings()
 
-# will only be used to get platform specific file save location, all config values are to be saved using qconfig
-setting_temp = QSettings(QSettings.Format.IniFormat, QSettings.Scope.UserScope, ORGANIZATION_NAME, APPLICATION_NAME)
-
-settings_dir = os.path.dirname(setting_temp.fileName())
-
-# replacing the extension of the settings file from .ini to .json
-root, _ = os.path.splitext(setting_temp.fileName())
-settings_file_path = root + ".json"
-
-db_path = os.path.join(settings_dir, f"{APPLICATION_NAME}.db")
+workspace_specific_settings = WorkspaceSettings()
+app_settings = AppSettings()
 
 app_settings.themeMode.value = Theme.AUTO
-qconfig.load(settings_file_path, app_settings)
+def load_workspace_settings():
+    qconfig_custom.load("", workspace_specific_settings)  # passing empty string as the path as function asks for path
+    # to json file which stores settings and we are using db to store settings
+def load_app_settings():
+    qconfig.load(settings_file_path,app_settings)
+
+load_app_settings()
+load_workspace_settings()
