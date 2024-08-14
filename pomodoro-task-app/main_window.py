@@ -34,7 +34,7 @@ class MainWindow(FluentWindow):
         self.website_filter_interface.setObjectName('website_filter_interface')
 
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.disablePomodoroSettingsDuringTimer)
+            self.toggleUIElementsBasedOnTimerState)
 
         self.manage_workspace_dialog = None
 
@@ -85,12 +85,15 @@ class MainWindow(FluentWindow):
         self.manage_workspace_dialog.show()
 
 
-    def disablePomodoroSettingsDuringTimer(self, timerState):
+    def toggleUIElementsBasedOnTimerState(self, timerState):
         # TODO: show a tip to stop the timer before changing settings when timer is running
+        workspace_selector_button = self.navigationInterface.panel.widget("WorkspaceSelector")
         if timerState in [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
             self.settings_interface.pomodoro_settings_group.setDisabled(True)
+            workspace_selector_button.setDisabled(True)
         else:
             self.settings_interface.pomodoro_settings_group.setDisabled(False)
+            workspace_selector_button.setDisabled(False)
 
     def connectSignalsToSlots(self):
         self.workplace_list_model.current_workspace_changed.connect(load_workspace_settings)
