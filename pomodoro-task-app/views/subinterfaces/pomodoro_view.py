@@ -55,7 +55,7 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.skipButton.setCheckable(False)
 
     def stopButtonClicked(self):
-        logger.debug("Restart Button Clicked")
+        logger.debug("Stop Button Clicked")
         self.pomodoro_timer_obj.stopSession()
 
     def pauseResumeButtonClicked(self):
@@ -70,38 +70,40 @@ class PomodoroView(QWidget, Ui_PomodoroView):
             self.pomodoro_timer_obj.startDuration()
 
     def initProgressRing(self, currentTimerState: TimerState):
-        logger.debug("Init Progress Ring")
         self.ProgressRing.setMinimum(0)
 
         if currentTimerState == TimerState.WORK:
-            logger.debug(f"WORK_DURATION: {ConfigValues.WORK_DURATION}")
             self.ProgressRing.setMaximum(ConfigValues.WORK_DURATION * 60 * 1000)
         elif currentTimerState == TimerState.BREAK:
-            logger.debug(f"BREAK_DURATION: {ConfigValues.BREAK_DURATION}")
             self.ProgressRing.setMaximum(ConfigValues.BREAK_DURATION * 60 * 1000)
         elif currentTimerState == TimerState.LONG_BREAK:
-            logger.debug(f"LONG_BREAK_DURATION: {ConfigValues.LONG_BREAK_DURATION}")
             self.ProgressRing.setMaximum(ConfigValues.LONG_BREAK_DURATION * 60 * 1000)
         elif currentTimerState == TimerState.NOTHING:
-            self.ProgressRing.setMaximum(0)
+            self.ProgressRing.reset()
 
-        self.ProgressRing.setValue(self.ProgressRing.maximum())
+        if self.pomodoro_timer_obj.getTimerState() != TimerState.NOTHING:
+            self.ProgressRing.setValue(self.ProgressRing.maximum())
+        else:
+            self.ProgressRing.setValue(0)
 
         # display current timer state value along with the full duration formatted to clock format
         hours, minutes, seconds = self.convert_milliseconds(self.ProgressRing.maximum())
-        if hours != 0:
-            self.ProgressRing.setFormat(f"{currentTimerState.value}\n{hours:02d}:{minutes:02d}:{seconds:02d}")
+        if self.pomodoro_timer_obj.getTimerState() != TimerState.NOTHING:
+            if hours != 0:
+                self.ProgressRing.setFormat(f"{currentTimerState.value}\n{hours:02d}:{minutes:02d}:{seconds:02d}")
+            else:
+                self.ProgressRing.setFormat(f"{currentTimerState.value}\n{minutes:02d}:{seconds:02d}")
         else:
-            self.ProgressRing.setFormat(f"{currentTimerState.value}\n{minutes:02d}:{seconds:02d}")
+            self.ProgressRing.setFormat(self.pomodoro_timer_obj.getTimerState().value)
 
     def updateProgressRing(self):
-        hours, minutes, seconds = self.convert_milliseconds(self.pomodoro_timer_obj.getRemainingTime())
-        currentTimerState = self.pomodoro_timer_obj.getTimerState().value
-
-        if hours != 0:
-            self.ProgressRing.setFormat(f"{currentTimerState}\n{hours:02d}:{minutes:02d}:{seconds:02d}")
-        else:
-            self.ProgressRing.setFormat(f"{currentTimerState}\n{minutes:02d}:{seconds:02d}")
+        if self.pomodoro_timer_obj.getTimerState() != TimerState.NOTHING:
+            hours, minutes, seconds = self.convert_milliseconds(self.pomodoro_timer_obj.getRemainingTime())
+            currentTimerState = self.pomodoro_timer_obj.getTimerState().value
+            if hours != 0:
+                self.ProgressRing.setFormat(f"{currentTimerState}\n{hours:02d}:{minutes:02d}:{seconds:02d}")
+            else:
+                self.ProgressRing.setFormat(f"{currentTimerState}\n{minutes:02d}:{seconds:02d}")
 
         self.ProgressRing.setValue(self.pomodoro_timer_obj.getRemainingTime())
 
@@ -117,7 +119,6 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         minutes, seconds = divmod(seconds, 60)
         hours, minutes = divmod(minutes, 60)
         return int(hours), int(minutes), int(seconds)
-        # return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 
 if __name__ == '__main__':

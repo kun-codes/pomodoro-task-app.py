@@ -77,6 +77,9 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
 
         self.timerStateChangedSignal.emit(self.timer_state)
 
+        logger.debug(f"Session Progress (after): {self.session_progress}")
+        logger.debug(f"Timer State (after): {self.timer_state}")
+
     def setDuration(self):
         """
         Starts the timer for the work session, break session or long break session
@@ -99,9 +102,6 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
                 logger.debug(f"Long break duration: {ConfigValues.LONG_BREAK_DURATION}")
                 self.setTimerDuration(ConfigValues.LONG_BREAK_DURATION * 60 * 1000)
                 logger.info("Starting long break session")
-
-            logger.debug(f"Session Progress (after): {self.session_progress}")
-            logger.debug(f"Timer State (after): {self.timer_state}")
 
     def startDuration(self):
         self.pomodoro_timer.start(self.timer_resolution)
