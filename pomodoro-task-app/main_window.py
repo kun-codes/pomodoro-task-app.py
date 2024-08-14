@@ -7,11 +7,10 @@ from views.subinterfaces.pomodoro_view import PomodoroView
 from views.subinterfaces.settings_view import SettingsView
 from views.subinterfaces.tasks_view import TaskListView
 from views.subinterfaces.website_blocker_view import WebsiteBlockerView
-from models.db_tables import engine, Workspace, CurrentWorkspace
+from models.db_tables import Workspace, CurrentWorkspace
 from utils.db_utils import get_session
 from models.workspace_list_model import WorkspaceListModel
-from models.config import qconfig_custom, load_workspace_settings
-from config_paths import settings_file_path
+from models.config import load_workspace_settings
 
 
 class MainWindow(FluentWindow):
@@ -36,6 +35,8 @@ class MainWindow(FluentWindow):
 
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             self.disablePomodoroSettingsDuringTimer)
+
+        self.manage_workspace_dialog = None
 
         self.connectSignalsToSlots()
         self.initNavigation()
@@ -77,9 +78,12 @@ class MainWindow(FluentWindow):
             self.task_interface.completedTasksCard.add_item(item)
 
     def onWorkspaceManagerClicked(self):
-        # parent is set according to: https://pyqt-fluent-widgets.readthedocs.io/en/latest/navigation.html
-        dialog = ManageWorkspaceDialog(parent=self.stackedWidget, workspaceListModel=self.workplace_list_model)
-        dialog.exec()
+        if self.manage_workspace_dialog is None:
+            # parent is set according to: https://pyqt-fluent-widgets.readthedocs.io/en/latest/navigation.html
+            self.manage_workspace_dialog = ManageWorkspaceDialog(parent=self.stackedWidget, workspaceListModel=self.workplace_list_model)
+
+        self.manage_workspace_dialog.show()
+
 
     def disablePomodoroSettingsDuringTimer(self, timerState):
         # TODO: show a tip to stop the timer before changing settings when timer is running
