@@ -93,7 +93,7 @@ class WebsiteBlockerModel(QObject):
             if urls_to_add:
                 self.add_urls(session, urls_to_add, target_class)
 
-            self.load_data(target_list)
+        self.load_data(target_list)
 
     # helper function for validate_url()
     def add_default_scheme(self, url):

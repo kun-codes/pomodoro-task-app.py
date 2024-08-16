@@ -63,20 +63,18 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.blockListText = self.blockListTextEdit.toPlainText().strip()
         self.allowListText = self.allowListTextEdit.toPlainText().strip()
 
-        self.blockListText = '\n'.join(sorted(self.blockListText.split('\n')))
-        self.allowListText = '\n'.join(sorted(self.allowListText.split('\n')))
-
-        self.blockListTextEdit.setPlainText(self.blockListText)
-        self.allowListTextEdit.setPlainText(self.allowListText)
-
         current_website_filter_type = self.model.get_website_filter_type()
         if current_website_filter_type == WebsiteFilterType.BLOCKLIST:
             # assuming all urls are separated by new line and are valid
-            list_of_urls = [url.strip() for url in self.blockListText.split('\n') if url.strip()]
-            self.model.update_target_list_urls(URLListType.BLOCKLIST, list_of_urls)
+            urls = {url.strip() for url in self.blockListText.split('\n') if url.strip()}
+            self.model.update_target_list_urls(URLListType.BLOCKLIST, urls)
+            self.initTextEdits(WebsiteFilterType.BLOCKLIST)
         elif current_website_filter_type == WebsiteFilterType.ALLOWLIST:
-            list_of_urls = [url.strip() for url in self.allowListText.split('\n') if url.strip()]
-            self.model.update_target_list_urls(URLListType.ALLOWLIST, list_of_urls)
+            urls = {url.strip() for url in self.allowListText.split('\n') if url.strip()}
+            self.model.update_target_list_urls(URLListType.ALLOWLIST, urls)
+            self.initTextEdits(WebsiteFilterType.ALLOWLIST)
+
+        self.initTextEdits()
 
         self.saveButton.setDisabled(True)
         self.blockTypeComboBox.setDisabled(False)
@@ -100,7 +98,6 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         )
 
     def load_data(self):
-        # todo: don't let user change filter type till they click on save button
         # todo: don't let user click on save button till they make some changes
         # todo: check for invalid urls
         # todo: check for duplicate urls
@@ -128,12 +125,19 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.blockTypeComboBox.setCurrentIndex(self.workspaceBlockTypePreference.value)
         self.onFilterTypeChanged()  # calling manually since signals aren't connected to slots yet
 
-    def initTextEdits(self):
-        self.blockListTextEdit.setPlainText("\n".join(sorted(self.model.blocklist_urls)))
-        self.allowListTextEdit.setPlainText("\n".join(sorted(self.model.allowlist_urls)))
+    def initTextEdits(self, filter_type: WebsiteFilterType = None):
+        if filter_type == None:
+            self.blockListTextEdit.setPlainText("\n".join(sorted(self.model.blocklist_urls)))
+            self.allowListTextEdit.setPlainText("\n".join(sorted(self.model.allowlist_urls)))
 
-        self.blockListText = self.blockListTextEdit.toPlainText()
-        self.allowListText = self.allowListTextEdit.toPlainText()
+            self.blockListText = self.blockListTextEdit.toPlainText()
+            self.allowListText = self.allowListTextEdit.toPlainText()
+        elif filter_type == WebsiteFilterType.BLOCKLIST:
+            self.blockListTextEdit.setPlainText("\n".join(sorted(self.model.blocklist_urls)))
+            self.blockListText = self.blockListTextEdit.toPlainText()
+        elif filter_type == WebsiteFilterType.ALLOWLIST:
+            self.allowListTextEdit.setPlainText("\n".join(sorted(self.model.allowlist_urls)))
+            self.allowListText = self.allowListTextEdit.toPlainText()
 
     def onCurrentWorkspaceDeleted(self):
         # set every ui component to its default
