@@ -22,10 +22,6 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.blockListText = ""
         self.allowListText = ""
 
-        current_workspace_id = WorkspaceLookup.get_current_workspace_id()
-        with get_session(is_read_only=True) as session:
-            self.workspaceBlockTypePreference = session.query(Workspace).get(current_workspace_id).website_filter_type
-
         self.model = WebsiteBlockerModel()
         self.workspace_list_model = workspace_list_model
 
@@ -98,31 +94,28 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         )
 
     def load_data(self):
-        # todo: don't let user click on save button till they make some changes
         # todo: check for invalid urls
-        # todo: check for duplicate urls
         pass
 
     def onFilterTypeChanged(self):
+        logger.debug("Inside onFilterTypeChanged")
         if self.blockTypeComboBox.currentIndex() == WebsiteFilterType.BLOCKLIST.value:
             self.allowListTextEdit.setHidden(True)
             self.blockListTextEdit.setHidden(False)
 
             self.model.set_website_filter_type(WebsiteFilterType.BLOCKLIST)
-            self.workspaceBlockTypePreference = WebsiteFilterType.BLOCKLIST
 
         elif self.blockTypeComboBox.currentIndex() == WebsiteFilterType.ALLOWLIST.value:
             self.allowListTextEdit.setHidden(False)
             self.blockListTextEdit.setHidden(True)
 
             self.model.set_website_filter_type(WebsiteFilterType.ALLOWLIST)
-            self.workspaceBlockTypePreference = WebsiteFilterType.ALLOWLIST
 
     def initWebsiteFilterComboBox(self):
         self.blockTypeComboBox.addItem("Blocklist")
         self.blockTypeComboBox.addItem("Allowlist")
 
-        self.blockTypeComboBox.setCurrentIndex(self.workspaceBlockTypePreference.value)
+        self.blockTypeComboBox.setCurrentIndex(self.model.get_website_filter_type().value)
         self.onFilterTypeChanged()  # calling manually since signals aren't connected to slots yet
 
     def initTextEdits(self, filter_type: WebsiteFilterType = None):
@@ -150,4 +143,13 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         # todo: set allowListTextEdit to new current workspace's allowlist
 
     def onCurrentWorkspaceChanged(self):
-        logger.debug("Current workspace changed")
+        self.model.load_website_filter_type()
+        self.model.load_data()
+
+        current_workspace = WorkspaceLookup.get_current_workspace()
+        self.blockTypeComboBox.setCurrentIndex(current_workspace.website_filter_type.value)
+
+        self.initTextEdits()
+
+        self.saveButton.setDisabled(True)
+        self.blockTypeComboBox.setDisabled(False)

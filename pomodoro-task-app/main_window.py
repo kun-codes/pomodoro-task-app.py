@@ -97,6 +97,9 @@ class MainWindow(FluentWindow):
 
     def connectSignalsToSlots(self):
         self.workplace_list_model.current_workspace_changed.connect(load_workspace_settings)
+        self.workplace_list_model.current_workspace_changed.connect(
+            self.website_filter_interface.onCurrentWorkspaceChanged
+        )
 
     def check_valid_db(self):
         with get_session() as session:

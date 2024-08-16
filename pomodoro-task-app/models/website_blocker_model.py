@@ -24,6 +24,7 @@ class WebsiteBlockerModel(QObject):
 
         self.website_filter_type = None
 
+        self.load_website_filter_type()
         self.load_data()
 
     def load_data(self, target_list: URLListType = None):
@@ -44,6 +45,11 @@ class WebsiteBlockerModel(QObject):
                 self.allowlist_urls = {url.url for url in session.query(AllowlistURL).filter(AllowlistURL.workspace_id == current_workspace_id).all()}
             elif target_list == URLListType.ALLOWLIST_EXCEPTION:
                 self.allowlist_exception_urls = {url.url for url in session.query(AllowlistExceptionURL).filter(AllowlistExceptionURL.workspace_id == current_workspace_id).all()}
+
+    def load_website_filter_type(self):
+        with get_session(is_read_only=True) as session:
+            current_workspace_id = WorkspaceLookup.get_current_workspace_id()
+            self.website_filter_type = session.query(Workspace).get(current_workspace_id).website_filter_type
 
     def set_website_filter_type(self, website_filter_type: WebsiteFilterType):
         with get_session() as session:
