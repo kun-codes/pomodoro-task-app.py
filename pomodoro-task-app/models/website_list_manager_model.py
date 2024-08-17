@@ -13,7 +13,7 @@ from models.workspace_lookup import WorkspaceLookup
 import re
 
 
-class WebsiteBlockerModel(QObject):
+class WebsiteListManager(QObject):
     def __init__(self):
         super().__init__()
 

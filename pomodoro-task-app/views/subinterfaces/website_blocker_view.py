@@ -3,7 +3,7 @@ from qfluentwidgets import FluentIcon, Flyout, InfoBarIcon, FlyoutAnimationType
 
 from constants import WebsiteFilterType, URLListType
 from models.db_tables import engine, Workspace
-from models.website_blocker_model import WebsiteBlockerModel
+from models.website_list_manager_model import WebsiteListManager
 from models.workspace_list_model import WorkspaceListModel
 from ui_py.ui_website_blocker_view import Ui_WebsiteBlockView
 from utils.db_utils import get_session
@@ -22,7 +22,7 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.blockListText = ""
         self.allowListText = ""
 
-        self.model = WebsiteBlockerModel()
+        self.model = WebsiteListManager()
         self.workspace_list_model = workspace_list_model
 
         self.initWidget()
