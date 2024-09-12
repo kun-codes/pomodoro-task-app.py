@@ -13,6 +13,7 @@ PySide6-Fluent-Widgets = "^1.6.0"
 sqlalchemy = "^2.0.31"
 mitmproxy = "^10.4.2"
 psutil = "^6.0.0"
+uniproxy = "^0.1.1"
 
 [tool.poetry.group.dev.dependencies]
 loguru = "^0.7.2"

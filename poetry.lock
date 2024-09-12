@@ -4195,6 +4195,20 @@ files = [
 ]
 
 [[package]]
+name = "uniproxy"
+version = "0.1.1"
+description = "Cross platform python library to set system-wide proxy and bypass domains for proxy."
+optional = false
+python-versions = "<4.0,>=3.8"
+files = [
+    {file = "uniproxy-0.1.1-py3-none-any.whl", hash = "sha256:318e4607e322d9d5a9c562831388d965b9c1b3fb09257a51119a303679168783"},
+    {file = "uniproxy-0.1.1.tar.gz", hash = "sha256:6c300ff61bb23487fba23e67480f8d05e3b7c19697e93c914ba9f15143a3d9f6"},
+]
+
+[package.dependencies]
+xdg = ">=6.0.0,<7.0.0"
+
+[[package]]
 name = "urwid"
 version = "2.6.15"
 description = "A full-featured console (xterm et al.) user interface library"
@@ -4274,6 +4288,17 @@ files = [
 
 [package.dependencies]
 h11 = ">=0.9.0,<1"
+
+[[package]]
+name = "xdg"
+version = "6.0.0"
+description = "Variables defined by the XDG Base Directory Specification"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "xdg-6.0.0-py3-none-any.whl", hash = "sha256:df3510755b4395157fc04fc3b02467c777f3b3ca383257397f09ab0d4c16f936"},
+    {file = "xdg-6.0.0.tar.gz", hash = "sha256:24278094f2d45e846d1eb28a2ebb92d7b67fc0cab5249ee3ce88c95f649a1c92"},
+]
 
 [[package]]
 name = "zstandard"
@@ -4390,4 +4415,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12,<3.13"
-content-hash = "f6efca46832adfded988a27dc35269377e57fbc886776f9b0b3a55503742057f"
+content-hash = "0d7a3f4b1c00656dd2ccf3aa67a4c5aecd29daa1e06d13870b15dc34b4ac5ee6"
