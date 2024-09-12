@@ -1,4 +1,7 @@
+import sys
 from enum import Enum
+import os
+from pathlib import Path
 
 # Application
 ORGANIZATION_NAME = "Pomodoro App"
@@ -12,6 +15,12 @@ WORK_INTERVALS = 2
 AUTOSTART_WORK = True
 AUTOSTART_BREAK = True
 
+MITMDUMP_COMMAND_LINUX = '{} --set allow_remote=true --showhost -s {} --set "addresses_str={}" --set "block_type={}"'.format(
+    '{}', os.path.join(getattr(sys, '_MEIPASS', Path(__file__).parent), 'website_blocker', 'filter.py'), '{}', '{}'
+)  # using _MEIPASS to make it compatible with pyinstaller
+# the os.path.join returns the location of filter.py
+
+BLOCK_HTML_MESSAGE = f"<h1>Website blocked by {APPLICATION_NAME}!</h1>"
 
 class WebsiteFilterType(Enum):
     BLOCKLIST = 0

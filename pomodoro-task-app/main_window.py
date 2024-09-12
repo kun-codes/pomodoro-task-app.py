@@ -1,5 +1,7 @@
 from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition
+from loguru import logger
 
+from constants import WebsiteFilterType, URLListType
 from models.drag_and_drop import DragItem
 from models.timer import TimerState
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
@@ -11,6 +13,8 @@ from models.db_tables import Workspace, CurrentWorkspace
 from utils.db_utils import get_session
 from models.workspace_list_model import WorkspaceListModel
 from models.config import load_workspace_settings
+from website_blocker.website_blocker_manager import WebsiteBlockerManager
+from utils.find_mitmdump_executable import get_mitmdump_path
 
 
 class MainWindow(FluentWindow):
@@ -35,8 +39,13 @@ class MainWindow(FluentWindow):
 
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             self.toggleUIElementsBasedOnTimerState)
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
+            self.toggle_website_filtering
+        )
 
         self.manage_workspace_dialog = None
+
+        self.website_blocker_manager = WebsiteBlockerManager()
 
         self.connectSignalsToSlots()
         self.initNavigation()
@@ -94,6 +103,35 @@ class MainWindow(FluentWindow):
         else:
             self.settings_interface.pomodoro_settings_group.setDisabled(False)
             workspace_selector_button.setDisabled(False)
+
+    def toggle_website_filtering(self, timerState):
+        website_filter_type = self.website_filter_interface.model.get_website_filter_type()
+        logger.debug(f"website_filter_type: {website_filter_type}")
+
+        urls = None
+        block_type = None
+
+        if website_filter_type == WebsiteFilterType.BLOCKLIST:  # blocklist
+            urls = self.website_filter_interface.model.get_urls(URLListType.BLOCKLIST)
+            block_type = "blocklist"
+        elif website_filter_type == WebsiteFilterType.ALLOWLIST:  # allowlist
+            urls = self.website_filter_interface.model.get_urls(URLListType.ALLOWLIST)
+            block_type = "allowlist"
+
+        logger.debug(f"URLs: {urls}")
+        logger.debug(f"Block type: {block_type}")
+
+        if urls is not None:  # find what to do when there are no urls registered
+            joined_urls = "$[]".join(urls)
+
+        mitmdump_path = get_mitmdump_path()
+
+        if timerState == TimerState.WORK:
+            logger.debug("Starting website filtering")
+            self.website_blocker_manager.start_filtering(8080, joined_urls, block_type, mitmdump_path)
+        else:
+            logger.debug("Stopping website filtering")
+            self.website_blocker_manager.stop_filtering()
 
     def connectSignalsToSlots(self):
         self.workplace_list_model.current_workspace_changed.connect(load_workspace_settings)
