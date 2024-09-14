@@ -53,7 +53,7 @@ class MainWindow(FluentWindow):
         self.task_interface.todoTasksList.model().taskDeletedSignal.connect(
             self.check_current_task_deleted
         )
-        self.task_interface.todoTasksList.model().taskMovedSignal.connect(
+        self.task_interface.completedTasksList.model().taskMovedSignal.connect(
             self.check_current_task_moved
         )
 
