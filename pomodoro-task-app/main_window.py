@@ -46,7 +46,7 @@ class MainWindow(FluentWindow):
             self.toggle_website_filtering
         )
         self.pomodoro_interface.pauseResumeButton.clicked.connect(
-            self.store_current_task
+            self.store_and_display_current_task
         )
         self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(
             self.updateTaskTime
@@ -139,11 +139,21 @@ class MainWindow(FluentWindow):
             logger.debug("Stopping website filtering")
             self.website_blocker_manager.stop_filtering(delete_proxy=True)
 
-    def store_current_task(self):
+    def store_and_display_current_task(self):
         self.current_task_index = self.task_interface.currentTaskIndex()
         if self.current_task_index is not None:
             logger.debug(f"Current Task: {self.current_task_index.data(Qt.DisplayRole)}")
             self.already_elapsed_time, _ = self.current_task_index.data(Qt.UserRole)  # stores the already elapsed time of the current Task
+            current_task_name = self.current_task_index.data(Qt.DisplayRole)
+
+            InfoBar.success(
+                title="Task Started",
+                content=f'Task named "{current_task_name} has started"',
+                isClosable=True,
+                duration=5000,
+                position=InfoBarPosition.TOP_RIGHT,
+                parent=self
+            )
 
     def check_current_task_deleted(self, task_index):
         if self.current_task_index is not None and self.current_task_index == task_index and \
