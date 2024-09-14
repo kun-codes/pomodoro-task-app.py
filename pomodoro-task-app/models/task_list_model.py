@@ -54,6 +54,22 @@ class TaskListModel(QAbstractListModel):
                 stream.writeInt32(task_id)
                 stream.writeQString(self.tasks[row]["task_name"])
 
+        # update task positions
+        rows_to_be_remove = []
+        for index in indexes:
+            if index.isValid():
+                row = index.row()
+                rows_to_be_remove.append(row)
+
+        removed_rows_count = 0
+        for i, task in enumerate(self.tasks):
+            if i in rows_to_be_remove:
+                task["task_position"] = -1  # setting task position to -1 to indicate that it will be removed
+                removed_rows_count += 1
+            else:
+                task["task_position"] = i - removed_rows_count  # subtracting removed rows count from current index
+                                                                # so that numbers skipped for removed rows are accounted for
+
         logger.debug(self.task_type)
         logger.debug(self.tasks)
 
@@ -81,12 +97,13 @@ class TaskListModel(QAbstractListModel):
             self.layoutChanged.emit()
         self.endInsertRows()
 
-        logger.debug(self.task_type)
-        logger.debug(self.tasks)
 
         # Update task positions
         for i, task in enumerate(self.tasks):
             task["task_position"] = i
+
+        logger.debug(self.task_type)
+        logger.debug(self.tasks)
 
         self.layoutChanged.emit()
         return True
