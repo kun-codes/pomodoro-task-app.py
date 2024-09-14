@@ -146,7 +146,11 @@ class MainWindow(FluentWindow):
             self.already_elapsed_time, _ = self.current_task_index.data(Qt.UserRole)  # stores the already elapsed time of the current Task
 
     def check_current_task_deleted(self, task_index):
-        if self.current_task_index == task_index:
+        if self.current_task_index == task_index and \
+            self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in \
+                [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
+            # make sure that the current task is deleted and the timer is running, without timer being running
+            # there is no need to stop the timer and show infobar
             self.pomodoro_interface.pomodoro_timer_obj.stopSession()
             self.current_task_index = None
             self.already_elapsed_time = 0
@@ -165,8 +169,11 @@ class MainWindow(FluentWindow):
     def check_current_task_moved(self, task_id, task_type:TaskType):
         current_task_id = self.current_task_index.data(TaskListModel.IDRole)
 
-        if task_id == current_task_id and task_type == TaskType.COMPLETED:  # current task can only move to the other tasklist
-            # that is completed task list
+        if (task_id == current_task_id and task_type == TaskType.COMPLETED and
+                self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in
+                [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]):
+            # make sure that the current task is moved into completed task list and the timer is running,
+            # without timer being running there is no need to stop the timer and show infobar
             self.pomodoro_interface.pomodoro_timer_obj.stopSession()
             self.current_task_index = None
             self.already_elapsed_time = 0
