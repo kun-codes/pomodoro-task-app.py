@@ -241,3 +241,7 @@ class MainWindow(FluentWindow):
                 current_workspace = CurrentWorkspace(current_workspace_id=workspace.id)
                 session.add(current_workspace)
                 session.commit()
+
+    def closeEvent(self, event):
+        self.website_blocker_manager.stop_filtering(delete_proxy=True)
+        event.accept()
