@@ -146,7 +146,7 @@ class MainWindow(FluentWindow):
             self.already_elapsed_time, _ = self.current_task_index.data(Qt.UserRole)  # stores the already elapsed time of the current Task
 
     def check_current_task_deleted(self, task_index):
-        if self.current_task_index == task_index and \
+        if self.current_task_index is not None and self.current_task_index == task_index and \
             self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in \
                 [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
             # make sure that the current task is deleted and the timer is running, without timer being running
@@ -167,7 +167,10 @@ class MainWindow(FluentWindow):
             logger.debug("Current Task has been deleted")
 
     def check_current_task_moved(self, task_id, task_type:TaskType):
-        current_task_id = self.current_task_index.data(TaskListModel.IDRole)
+        if self.current_task_index is not None:
+            current_task_id = self.current_task_index.data(TaskListModel.IDRole)
+        else:
+            return  # no need to check if current task is moved if there is no current task
 
         if (task_id == current_task_id and task_type == TaskType.COMPLETED and
                 self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in
