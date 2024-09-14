@@ -1,8 +1,8 @@
-from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition
+from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition, InfoBar, InfoBarPosition
 from loguru import logger
 from PySide6.QtCore import Qt
 
-from constants import WebsiteFilterType, URLListType, WORK_DURATION
+from constants import WebsiteFilterType, URLListType, WORK_DURATION, BREAK_DURATION, LONG_BREAK_DURATION
 from models.drag_and_drop import DragItem
 from models.task_list_model import TaskListModel
 from models.timer import TimerState
@@ -11,7 +11,7 @@ from views.subinterfaces.pomodoro_view import PomodoroView
 from views.subinterfaces.settings_view import SettingsView
 from views.subinterfaces.tasks_view import TaskListView
 from views.subinterfaces.website_blocker_view import WebsiteBlockerView
-from models.db_tables import Workspace, CurrentWorkspace
+from models.db_tables import Workspace, CurrentWorkspace, TaskType
 from utils.db_utils import get_session
 from models.workspace_list_model import WorkspaceListModel
 from models.config import load_workspace_settings
@@ -50,12 +50,18 @@ class MainWindow(FluentWindow):
         self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(
             self.updateTaskTime
         )
+        self.task_interface.todoTasksList.model().taskDeletedSignal.connect(
+            self.check_current_task_deleted
+        )
+        self.task_interface.todoTasksList.model().taskMovedSignal.connect(
+            self.check_current_task_moved
+        )
 
         self.manage_workspace_dialog = None
 
         self.website_blocker_manager = WebsiteBlockerManager()
 
-        self.current_task = None
+        self.current_task_index = None
         self.already_elapsed_time = 0
 
         self.connectSignalsToSlots()
@@ -133,18 +139,61 @@ class MainWindow(FluentWindow):
             self.website_blocker_manager.stop_filtering()
 
     def store_current_task(self):
-        self.current_task = self.task_interface.currentTaskIndex()
-        self.already_elapsed_time, _ = self.current_task.data(Qt.UserRole)  # stores the already elapsed time of the current Task
+        self.current_task_index = self.task_interface.currentTaskIndex()
+        if self.current_task_index is not None:
+            logger.debug(f"Current Task: {self.current_task_index.data(Qt.DisplayRole)}")
+            self.already_elapsed_time, _ = self.current_task_index.data(Qt.UserRole)  # stores the already elapsed time of the current Task
+
+    def check_current_task_deleted(self, task_index):
+        if self.current_task_index == task_index:
+            self.pomodoro_interface.pomodoro_timer_obj.stopSession()
+            self.current_task_index = None
+            self.already_elapsed_time = 0
+            InfoBar.warning(
+                title="Pomodoro Timer Stopped",
+                content="The task you were working on has been deleted. Please select another task to continue." \
+                        if self.task_interface.todoTasksList.model().rowCount() > 0 else
+                            "The task you were working on has been deleted. Please add a new task to continue.",
+                isClosable=True,
+                position=InfoBarPosition.TOP_RIGHT,
+                duration=5000,
+                parent = self
+            )
+            logger.debug("Current Task has been deleted")
+
+    def check_current_task_moved(self, task_id, task_type:TaskType):
+        current_task_id = self.current_task_index.data(TaskListModel.IDRole)
+
+        if task_id == current_task_id and task_type == TaskType.COMPLETED:  # current task can only move to the other tasklist
+            # that is completed task list
+            self.pomodoro_interface.pomodoro_timer_obj.stopSession()
+            self.current_task_index = None
+            self.already_elapsed_time = 0
+            InfoBar.warning(
+                title="Pomodoro Timer Stopped",
+                content="The task you were working on has been completed. Please select another task to continue." \
+                    if self.task_interface.todoTasksList.model().rowCount() > 0 else
+                "The task you were working on has been completed. Please add a new task to continue.",
+                isClosable=True,
+                position=InfoBarPosition.TOP_RIGHT,
+                duration=5000,
+                parent = self
+            )
+            logger.debug("Current Task has been moved")
 
     def updateTaskTime(self):
-        work_duration = WORK_DURATION * 60 * 1000  ## in ms
-        remaining_duration = self.pomodoro_interface.pomodoro_timer_obj.remaining_time
-        elapsed_time = work_duration - remaining_duration
+        if self.current_task_index is not None:
+            if self.pomodoro_interface.pomodoro_timer_obj.getTimerState() == TimerState.WORK:
+                duration = WORK_DURATION * 60 * 1000  ## in ms
+            elif self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in [TimerState.BREAK, TimerState.LONG_BREAK]:
+                return
 
-        final_elapsed_time = self.already_elapsed_time + elapsed_time
-        logger.debug(f"Elapsed time: {final_elapsed_time}")
-        if final_elapsed_time % 1000 == 0:  # only update db once a second
-            self.task_interface.todoTasksList.model().updateTask(self.current_task.row(), elapsed_time=final_elapsed_time)
+            remaining_duration = self.pomodoro_interface.pomodoro_timer_obj.remaining_time
+            elapsed_time = duration - remaining_duration
+
+            final_elapsed_time = self.already_elapsed_time + elapsed_time
+            if final_elapsed_time % 1000 == 0:  # only update db when the elapsed time is a multiple of 1000
+                self.task_interface.todoTasksList.model().updateTask(self.current_task_index.row(), elapsed_time=final_elapsed_time)
 
     def connectSignalsToSlots(self):
         self.workplace_list_model.current_workspace_changed.connect(load_workspace_settings)

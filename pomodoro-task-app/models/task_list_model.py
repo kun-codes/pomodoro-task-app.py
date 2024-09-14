@@ -1,4 +1,4 @@
-from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex, QByteArray, QMimeData, QDataStream, QIODevice
+from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex, QByteArray, QMimeData, QDataStream, QIODevice, Signal
 from sqlalchemy import update
 from loguru import logger
 
@@ -10,6 +10,9 @@ from utils.db_utils import get_session
 class TaskListModel(QAbstractListModel):
     IDRole = Qt.UserRole + 1
     IconRole = Qt.UserRole + 3
+
+    taskDeletedSignal = Signal(QModelIndex)
+    taskMovedSignal = Signal(int, TaskType)  # task_id and TaskType
 
     def __init__(self, task_type: TaskType, parent=None):
         super().__init__(parent)
@@ -130,6 +133,7 @@ class TaskListModel(QAbstractListModel):
         for task in new_tasks:
             self.tasks.insert(row, task)
             row += 1
+            self.taskMovedSignal(task["id"], self.task_type)
             self.layoutChanged.emit()
         self.endInsertRows()
 
@@ -244,6 +248,8 @@ class TaskListModel(QAbstractListModel):
         """
         logger.debug(f"Deleting task at row: {row}")
         task_id = self.tasks[row]["id"]
+        # get index of row
+        index = self.index(row, 0, parent)
         with get_session() as session:
             task = session.query(Task).get(task_id)
             session.delete(task)
@@ -255,6 +261,7 @@ class TaskListModel(QAbstractListModel):
             task["task_position"] = i
 
         self.update_db()
+        self.taskDeletedSignal.emit(index)
         self.layoutChanged.emit()
         return True
 

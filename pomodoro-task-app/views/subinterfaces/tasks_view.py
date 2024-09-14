@@ -171,7 +171,7 @@ class TaskListView(Ui_TaskView, QWidget):
         elif self.todoTasksList.model().rowCount(QModelIndex()) > 0:
             return self.todoTasksList.model().index(0)
         else:
-            return -1  # no task is there in todotask list
+            return None  # no task is there in todotask list
 
 
 if __name__ == "__main__":
