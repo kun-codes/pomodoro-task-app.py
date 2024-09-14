@@ -48,6 +48,11 @@ class Ui_TaskView(object):
 
         self.horizontalLayout.addWidget(self.addTaskButton)
 
+        self.deleteTaskButton = ToolButton(self.scrollAreaWidgetContents)
+        self.deleteTaskButton.setObjectName(u"deleteTaskButton")
+
+        self.horizontalLayout.addWidget(self.deleteTaskButton)
+
 
         self.verticalLayout_2.addLayout(self.horizontalLayout)
 
