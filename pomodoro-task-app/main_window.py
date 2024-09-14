@@ -2,7 +2,8 @@ from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition, Inf
 from loguru import logger
 from PySide6.QtCore import Qt
 
-from constants import WebsiteFilterType, URLListType, WORK_DURATION, BREAK_DURATION, LONG_BREAK_DURATION
+from constants import WebsiteFilterType, URLListType
+from config_values import ConfigValues
 from models.drag_and_drop import DragItem
 from models.task_list_model import TaskListModel
 from models.timer import TimerState
@@ -184,7 +185,7 @@ class MainWindow(FluentWindow):
     def updateTaskTime(self):
         if self.current_task_index is not None:
             if self.pomodoro_interface.pomodoro_timer_obj.getTimerState() == TimerState.WORK:
-                duration = WORK_DURATION * 60 * 1000  ## in ms
+                duration = ConfigValues.WORK_DURATION * 60 * 1000  ## in ms
             elif self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in [TimerState.BREAK, TimerState.LONG_BREAK]:
                 return
 
