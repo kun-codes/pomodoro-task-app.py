@@ -56,7 +56,10 @@ class RoundedListItemDelegateDisplayTime(RoundedListItemDelegate):
         time_str = f"{elapsed_time_str}/{target_time_str}"
 
         # Draw the time string on the right side
-        painter.setPen(QColor(0, 0, 0))
+        if isDarkTheme():
+            painter.setPen(QColor(255, 255,255))
+        else:
+            painter.setPen(QColor(0, 0, 0))
         painter.drawText(rect.adjusted(-100, 0, -10, 0), Qt.AlignRight | Qt.AlignVCenter, time_str)
 
         painter.restore()
