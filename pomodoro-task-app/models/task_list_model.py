@@ -1,4 +1,5 @@
 from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex, QByteArray, QMimeData, QDataStream, QIODevice
+from sqlalchemy import update
 from loguru import logger
 
 from models.db_tables import Task, TaskType
@@ -69,6 +70,7 @@ class TaskListModel(QAbstractListModel):
             else:
                 task["task_position"] = i - removed_rows_count  # subtracting removed rows count from current index
                                                                 # so that numbers skipped for removed rows are accounted for
+        self.update_db()
 
         logger.debug(self.task_type)
         logger.debug(self.tasks)
@@ -102,11 +104,32 @@ class TaskListModel(QAbstractListModel):
         for i, task in enumerate(self.tasks):
             task["task_position"] = i
 
+        self.update_db()
+
         logger.debug(self.task_type)
         logger.debug(self.tasks)
 
         self.layoutChanged.emit()
         return True
+
+    def update_db(self):
+        """
+        updating db, using bulk insert
+        https://docs.sqlalchemy.org/en/20/orm/queryguide/dml.html#orm-queryguide-bulk-update
+        """
+        with get_session() as session:
+            session.execute(
+                update(Task),
+                [
+                    {
+                        "id": task["id"],
+                        "task_name": task["task_name"],
+                        "task_type": self.task_type,
+                        "task_position": task["task_position"]
+                    }
+                    for task in self.tasks
+                ]
+            )
 
 
     def flags(self, index):
