@@ -1,4 +1,5 @@
 import os
+import threading
 
 from PySide6.QtCore import QObject
 from website_blocker.utils import kill_process
@@ -20,7 +21,8 @@ class WebsiteBlockerManager(QObject):
 
         self.stop_filtering()
 
-        self.proxy.join()
+        # self.proxy.join()
+        threading.Thread(target=self.proxy.join).start()
 
         # Start mitmdump, passing filter.py.
         # if windows then
@@ -36,7 +38,7 @@ class WebsiteBlockerManager(QObject):
 
     def stop_filtering(self):
         logger.debug("Inside WebsiteBlockerManager.stop_filtering().")
-        self.proxy.delete_proxy()
+        threading.Thread(target=self.proxy.delete_proxy).start()
         try:
             kill_process()
         # In case there are no mitmproxy processes open.
