@@ -12,33 +12,7 @@ from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
 from models.db_tables import Workspace, engine
 from models.workspace_list_model import WorkspaceListModel
 from models.workspace_lookup import WorkspaceLookup
-
-
-class ListItemDelegate(TableItemDelegate):
-    """ List item delegate """
-
-    def __init__(self, parent: QListView):
-        super().__init__(parent)
-
-    def _drawBackground(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex):
-        painter.save()
-        rect = option.rect.adjusted(1, 1, -1, -1)  # Adjust to fit within the background
-        if option.state & QStyle.State_Selected:
-            painter.setBrush(option.palette.highlight())
-        else:
-            painter.setBrush(QColor(255, 255, 255, 13 if isDarkTheme() else 170))
-        if isDarkTheme():
-            painter.setPen(QColor(0, 0, 0, 48))
-        else:
-            painter.setPen(QColor(0, 0, 0, 12))
-        painter.drawRoundedRect(rect, 5, 5)
-        painter.restore()
-
-    def _drawIndicator(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex):
-        if option.state & QStyle.State_Selected:
-            rect = option.rect.adjusted(1, 1, -1, -1)  # Adjust to fit within the background
-            painter.setPen(QPen(themeColor(), 2))  # Set pen with theme color and width 2
-            painter.drawRoundedRect(rect, 5, 5)  # Draw rounded rectangle border
+from prefabs.roundedListItemDelegate import RoundedListItemDelegate
 
 
 class ManageWorkspaceDialog(MaskDialogBase):
@@ -70,7 +44,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
 
         self.model.setSelectionModel(self.workspaceList.selectionModel())
 
-        self.workspaceList.setItemDelegate(ListItemDelegate(self.workspaceList))
+        self.workspaceList.setItemDelegate(RoundedListItemDelegate(self.workspaceList))
 
         self.__initWidget()
 
