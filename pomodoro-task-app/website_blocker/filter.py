@@ -14,7 +14,7 @@ def load(l):
     l.add_option("block_type", str, '', 'Whitelist or blacklist.')
 
 def request(flow):
-    addresses = ctx.options.addresses_str.split('$[]')
+    addresses = ctx.options.addresses_str.split(',')
     addresses = set(addresses)
 
     # # write addresses to a file

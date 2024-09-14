@@ -128,7 +128,7 @@ class MainWindow(FluentWindow):
         logger.debug(f"Block type: {block_type}")
 
         if urls is not None:  # find what to do when there are no urls registered
-            joined_urls = "$[]".join(urls)
+            joined_urls = ",".join(urls)
 
         mitmdump_path = get_mitmdump_path()
 
