@@ -8,6 +8,7 @@ from models.drag_and_drop import DragItem
 from models.task_list_model import TaskListModel
 from ui_py.ui_tasks_list_view import Ui_TaskView
 from views.dialogs.addTaskDialog import AddTaskDialog
+from prefabs.roundedListItemDelegate import RoundedListItemDelegate
 
 
 class TaskList(ListView):
@@ -20,6 +21,8 @@ class TaskList(ListView):
         self.setDragDropMode(QAbstractItemView.DragDropMode.DragDrop)
         self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.setAutoScroll(True)
+
+        self.setItemDelegate(RoundedListItemDelegate(self))
 
 
 class TaskListView(Ui_TaskView, QWidget):
