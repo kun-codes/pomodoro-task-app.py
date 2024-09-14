@@ -187,9 +187,35 @@ class TaskListModel(QAbstractListModel):
 
 
     def removeRows(self, row, count, parent=...):
+        """
+        remove rows but not delete from db
+        """
         self.beginRemoveRows(parent, row, row + count - 1)
         for i in range(count):
+            logger.debug(f"tasks: {self.tasks}")
+            logger.debug(f"Removing task at row: {row}")
             del self.tasks[row]
+            logger.debug(f"tasks: {self.tasks}")
         self.layoutChanged.emit()
         self.endRemoveRows()
+        return True
+
+    def deleteTask(self, row, parent=QModelIndex()):
+        """
+        will remove rows as well as delete from database
+        """
+        logger.debug(f"Deleting task at row: {row}")
+        task_id = self.tasks[row]["id"]
+        with get_session() as session:
+            task = session.query(Task).get(task_id)
+            session.delete(task)
+
+        logger.debug(f"tasks: {self.tasks}")
+        self.removeRows(row, 1, parent)
+
+        for i, task in enumerate(self.tasks):
+            task["task_position"] = i
+
+        self.update_db()
+        self.layoutChanged.emit()
         return True

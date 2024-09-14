@@ -31,6 +31,7 @@ class TaskListView(Ui_TaskView, QWidget):
         super().__init__()
         self.setupUi(self)
         self.initLayout()
+        self.connectSignalsToSlots()
         self.setupSelectionBehavior()
 
     def initLayout(self):
@@ -68,7 +69,11 @@ class TaskListView(Ui_TaskView, QWidget):
 
         # set icons of buttons
         self.addTaskButton.setIcon(FluentIcon.ADD)
+        self.deleteTaskButton.setIcon(FluentIcon.DELETE)
+
+    def connectSignalsToSlots(self):
         self.addTaskButton.clicked.connect(self.addTask)
+        self.deleteTaskButton.clicked.connect(self.deleteTask)
 
     def addTask(self):
         dialog = AddTaskDialog(self)
@@ -77,6 +82,17 @@ class TaskListView(Ui_TaskView, QWidget):
             task_name = dialog.taskEdit.text()
             row = self.todoTasksList.model().rowCount(QModelIndex())
             self.todoTasksList.model().insertRow(row, QModelIndex(), task_name=task_name, task_type=TaskType.TODO)
+
+    def deleteTask(self):
+        # either one of the following will be selected
+        todo_selected_index = self.todoTasksList.selectionModel().currentIndex()
+        completed_selected_index = self.completedTasksList.selectionModel().currentIndex()
+
+        if self.todoTasksList.selectionModel().hasSelection():
+            self.todoTasksList.model().deleteTask(todo_selected_index.row())
+        elif self.completedTasksList.selectionModel().hasSelection():
+            self.completedTasksList.model().deleteTask(completed_selected_index.row())
+
 
     def setupSelectionBehavior(self):
         """
