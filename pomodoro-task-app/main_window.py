@@ -137,7 +137,7 @@ class MainWindow(FluentWindow):
             self.website_blocker_manager.start_filtering(8080, joined_urls, block_type, mitmdump_path)
         else:
             logger.debug("Stopping website filtering")
-            self.website_blocker_manager.stop_filtering()
+            self.website_blocker_manager.stop_filtering(delete_proxy=True)
 
     def store_current_task(self):
         self.current_task_index = self.task_interface.currentTaskIndex()

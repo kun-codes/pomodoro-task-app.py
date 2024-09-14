@@ -19,7 +19,7 @@ class WebsiteBlockerManager(QObject):
         """Function which starts filtering."""
         logger.debug("Inside WebsiteBLockerManager.start_filtering().")
 
-        self.stop_filtering()
+        self.stop_filtering(delete_proxy=False)
 
         # self.proxy.join()
         threading.Thread(target=self.proxy.join).start()
@@ -36,9 +36,10 @@ class WebsiteBlockerManager(QObject):
                                                    block_type))
         mitmdump = subprocess.Popen(args)
 
-    def stop_filtering(self):
+    def stop_filtering(self, delete_proxy: bool = True):
         logger.debug("Inside WebsiteBlockerManager.stop_filtering().")
-        threading.Thread(target=self.proxy.delete_proxy).start()
+        if delete_proxy:
+            threading.Thread(target=self.proxy.delete_proxy).start()
         try:
             kill_process()
         # In case there are no mitmproxy processes open.
