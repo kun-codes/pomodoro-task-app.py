@@ -133,7 +133,7 @@ class TaskListModel(QAbstractListModel):
         for task in new_tasks:
             self.tasks.insert(row, task)
             row += 1
-            self.taskMovedSignal(task["id"], self.task_type)
+            self.taskMovedSignal.emit(task["id"], self.task_type)
             self.layoutChanged.emit()
         self.endInsertRows()
 
