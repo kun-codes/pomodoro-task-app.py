@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from qfluentwidgets import MessageBoxBase, SubtitleLabel, LineEdit
 
 
@@ -24,3 +25,13 @@ class AddTaskDialog(MessageBoxBase):
 
     def onTaskTextChanged(self):
         self.yesButton.setDisabled(self.taskEdit.text().strip() == "")
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.taskEdit.setFocus()
+
+    def keyPressEvent(self, event):
+        if event.key() in [Qt.Key_Return, Qt.Key_Enter] and self.yesButton.isEnabled():
+            self.yesButton.click()
+        else:
+            super().keyPressEvent(event)
