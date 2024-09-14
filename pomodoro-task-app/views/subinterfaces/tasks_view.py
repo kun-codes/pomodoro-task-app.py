@@ -29,7 +29,9 @@ class TaskListView(Ui_TaskView, QWidget):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.initLayout()
 
+    def initLayout(self):
         label_size_policy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
 
         self.todoTasksLabel = TitleLabel()
@@ -52,6 +54,7 @@ class TaskListView(Ui_TaskView, QWidget):
         self.completedTasksLabel.setSizePolicy(label_size_policy)
         self.scrollAreaWidgetContents.layout().addWidget(self.completedTasksLabel)
 
+        # card inside which completed tasks list will be kept
         self.completedTasksCard = SimpleCardWidget()
         self.completedTasksCard.setLayout(QVBoxLayout())
         self.scrollAreaWidgetContents.layout().addWidget(self.completedTasksCard)
