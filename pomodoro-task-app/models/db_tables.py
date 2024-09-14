@@ -37,6 +37,8 @@ class Task(Base):
     task_name = Column(String)
     task_type = Column(SQLEnum(TaskType))
     task_position = Column(Integer)
+    elapsed_time = Column(Integer, default=0)
+    target_time = Column(Integer, default=0)
 
     workspace = relationship("Workspace", back_populates="tasks")
 

@@ -8,6 +8,8 @@ from utils.db_utils import get_session
 
 
 class TaskListModel(QAbstractListModel):
+    IDRole = Qt.UserRole + 1
+
     def __init__(self, task_type: TaskType, parent=None):
         super().__init__(parent)
         self.task_type = task_type
@@ -22,7 +24,9 @@ class TaskListModel(QAbstractListModel):
                 {
                     "id": task.id,
                     "task_name": task.task_name,
-                    "task_position": task.task_position
+                    "task_position": task.task_position,
+                    "elapsed_time": task.elapsed_time,
+                    "target_time": task.target_time
                 }
                 for task in
                 session.query(Task).filter(Task.task_type == self.task_type).filter(Task.workspace_id == current_workspace_id).order_by(Task.task_position).all()
@@ -35,6 +39,15 @@ class TaskListModel(QAbstractListModel):
     def data(self, index, role=...):
         if role == Qt.DisplayRole:
             return self.tasks[index.row()]["task_name"]
+        elif role == Qt.UserRole:
+            task = self.tasks[index.row()]
+            elapsed_time = task["elapsed_time"]
+            target_time = task["target_time"]
+            return elapsed_time, target_time
+        elif role == self.IDRole:
+            task = self.tasks[index.row()]
+            return task["id"]
+
         return None
 
     def columnCount(self, parent):
@@ -57,6 +70,8 @@ class TaskListModel(QAbstractListModel):
                 stream.writeInt32(row)
                 stream.writeInt32(task_id)
                 stream.writeQString(self.tasks[row]["task_name"])
+                stream.writeInt64(self.tasks[row]["elapsed_time"])
+                stream.writeInt64(self.tasks[row]["target_time"])
 
         # update task positions
         rows_to_be_remove = []
@@ -93,7 +108,17 @@ class TaskListModel(QAbstractListModel):
             original_row = stream.readInt32()
             task_id = stream.readInt32()
             task_name = stream.readQString()
-            new_tasks.append({"id": task_id, "task_name": task_name, "task_position": row})
+            elapsed_time = stream.readInt64()
+            target_time = stream.readInt64()
+            new_tasks.append(
+                {
+                    "id": task_id,
+                    "task_name": task_name,
+                    "task_position": row,
+                    "elapsed_time": elapsed_time,
+                    "target_time": target_time
+                }
+            )
 
         self.beginInsertRows(parent, row, row + len(new_tasks) - 1)
         for task in new_tasks:
@@ -130,7 +155,9 @@ class TaskListModel(QAbstractListModel):
                         "workspace_id": current_workspace_id,
                         "task_name": task["task_name"],
                         "task_type": self.task_type,
-                        "task_position": task["task_position"]
+                        "task_position": task["task_position"],
+                        "elapsed_time": task["elapsed_time"],
+                        "target_time": task["target_time"]
                     }
                     for task in self.tasks
                 ]
@@ -159,6 +186,9 @@ class TaskListModel(QAbstractListModel):
     #     return True
 
     def insertRow(self, row, parent = QModelIndex(), task_name = None, task_type=TaskType.TODO):
+        """
+        Used to insert a new task in the list
+        """
         self.beginInsertRows(parent, row, row)
 
         with get_session() as session:
@@ -175,7 +205,9 @@ class TaskListModel(QAbstractListModel):
         task_list_new_member = {
             "id": new_id,
             "task_name": task_name,
-            "task_position": row
+            "task_position": row,
+            "elapsed_time": 0,
+            "target_time": 0
         }
 
         logger.debug(f"Task list new member: {task_list_new_member}")
@@ -215,6 +247,21 @@ class TaskListModel(QAbstractListModel):
 
         for i, task in enumerate(self.tasks):
             task["task_position"] = i
+
+        self.update_db()
+        self.layoutChanged.emit()
+        return True
+
+    def updateTask(self, row, task_name=None, elapsed_time=None, target_time=None):
+        """
+        Update the task name and time
+        """
+        if task_name is not None:
+            self.tasks[row]["task_name"] = task_name
+        if elapsed_time is not None:
+            self.tasks[row]["elapsed_time"] = elapsed_time
+        if target_time is not None:
+            self.tasks[row]["target_time"] = target_time
 
         self.update_db()
         self.layoutChanged.emit()

@@ -43,6 +43,11 @@ class Ui_TaskView(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
+        self.editTaskTimeButton = ToolButton(self.scrollAreaWidgetContents)
+        self.editTaskTimeButton.setObjectName(u"editTaskTimeButton")
+
+        self.horizontalLayout.addWidget(self.editTaskTimeButton)
+
         self.addTaskButton = ToolButton(self.scrollAreaWidgetContents)
         self.addTaskButton.setObjectName(u"addTaskButton")
 

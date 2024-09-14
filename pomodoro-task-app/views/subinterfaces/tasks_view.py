@@ -8,7 +8,8 @@ from models.drag_and_drop import DragItem
 from models.task_list_model import TaskListModel
 from ui_py.ui_tasks_list_view import Ui_TaskView
 from views.dialogs.addTaskDialog import AddTaskDialog
-from prefabs.roundedListItemDelegate import RoundedListItemDelegate
+from prefabs.roundedListItemDelegate import RoundedListItemDelegateDisplayTime
+from views.dialogs.editTaskTimeDialog import EditTaskTimeDialog
 
 
 class TaskList(ListView):
@@ -22,7 +23,7 @@ class TaskList(ListView):
         self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.setAutoScroll(True)
 
-        self.setItemDelegate(RoundedListItemDelegate(self))
+        self.setItemDelegate(RoundedListItemDelegateDisplayTime(self))
 
 
 class TaskListView(Ui_TaskView, QWidget):
@@ -73,10 +74,12 @@ class TaskListView(Ui_TaskView, QWidget):
         # set icons of buttons
         self.addTaskButton.setIcon(FluentIcon.ADD)
         self.deleteTaskButton.setIcon(FluentIcon.DELETE)
+        self.editTaskTimeButton.setIcon(FluentIcon.EDIT)
 
     def connectSignalsToSlots(self):
         self.addTaskButton.clicked.connect(self.addTask)
         self.deleteTaskButton.clicked.connect(self.deleteTask)
+        self.editTaskTimeButton.clicked.connect(self.editTaskTime)
 
     def addTask(self):
         dialog = AddTaskDialog(self)
@@ -96,6 +99,44 @@ class TaskListView(Ui_TaskView, QWidget):
         elif self.completedTasksList.selectionModel().hasSelection():
             self.completedTasksList.model().deleteTask(completed_selected_index.row())
 
+    def editTaskTime(self):
+        row = None
+        if self.todoTasksList.selectionModel().hasSelection():
+            row = self.todoTasksList.selectionModel().currentIndex()
+        elif self.completedTasksList.selectionModel().hasSelection():
+            row = self.completedTasksList.selectionModel().currentIndex()
+
+        if row is not None:
+            task_id = row.data(TaskListModel.IDRole)
+            dialog = EditTaskTimeDialog(self, task_id)
+
+            if dialog.exec():
+                elapsed_time = dialog.getElapsedTime()
+                self.onTaskElapsedTimeChanged(elapsed_time)
+                estimated_time = dialog.getTargetTime()
+                self.onTaskEstimateTimeChanged(estimated_time)
+
+    def onTaskElapsedTimeChanged(self, time):
+        row = None
+        if self.todoTasksList.selectionModel().hasSelection():
+            row = self.todoTasksList.selectionModel().currentIndex()
+        elif self.completedTasksList.selectionModel().hasSelection():
+            row = self.completedTasksList.selectionModel().currentIndex()
+
+        if row is not None:
+            row = row.row()
+            self.todoTasksList.model().updateTask(row, elapsed_time=time)
+
+    def onTaskEstimateTimeChanged(self, time):
+        row = None
+        if self.todoTasksList.selectionModel().hasSelection():
+            row = self.todoTasksList.selectionModel().currentIndex()
+        elif self.completedTasksList.selectionModel().hasSelection():
+            row = self.completedTasksList.selectionModel().currentIndex()
+
+        if row is not None:
+            row = row.row()
+            self.todoTasksList.model().updateTask(row, target_time=time)
 
     def setupSelectionBehavior(self):
         """

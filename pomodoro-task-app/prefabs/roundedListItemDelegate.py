@@ -1,4 +1,4 @@
-from PySide6.QtCore import QModelIndex
+from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtGui import QPainter, QColor, QPen
 from PySide6.QtWidgets import QListView, QStyleOptionViewItem, QStyle
 from qfluentwidgets import TableItemDelegate, isDarkTheme, themeColor
@@ -29,3 +29,33 @@ class RoundedListItemDelegate(TableItemDelegate):
             rect = option.rect.adjusted(1, 1, -1, -1)  # Adjust to fit within the background
             painter.setPen(QPen(themeColor(), 2))  # Set pen with theme color and width 2
             painter.drawRoundedRect(rect, 5, 5)  # Draw rounded rectangle border
+
+class RoundedListItemDelegateDisplayTime(RoundedListItemDelegate):
+    def __init__(self, parent: QListView):
+        super().__init__(parent)
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex):
+        super().paint(painter, option, index)
+        painter.save()
+        rect = option.rect
+
+        # Fetch the time data from the model
+        elapsed_time, target_time = index.data(Qt.UserRole)
+
+        # Convert milliseconds to HH:MM format
+        def ms_to_hhmm(ms):
+            seconds = ms // 1000
+            minutes = seconds // 60
+            hours = minutes // 60
+            return f"{hours:02}:{minutes % 60:02}"
+
+        elapsed_time_str = ms_to_hhmm(elapsed_time)
+        target_time_str = ms_to_hhmm(target_time)
+        time_str = f"{elapsed_time_str}/{target_time_str}"
+
+        # Draw the time string on the right side
+        painter.setPen(QColor(0, 0, 0))
+        painter.drawText(rect.adjusted(-100, 0, -10, 0), Qt.AlignRight | Qt.AlignVCenter, time_str)
+
+        painter.restore()
+
