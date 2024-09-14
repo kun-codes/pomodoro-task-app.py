@@ -18,6 +18,7 @@ class TaskList(ListView):
         self.setDropIndicatorShown(True)
         self.setDefaultDropAction(Qt.DropAction.MoveAction)
         self.setDragDropMode(QAbstractItemView.DragDropMode.DragDrop)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.setAutoScroll(True)
 
 
@@ -30,6 +31,7 @@ class TaskListView(Ui_TaskView, QWidget):
         super().__init__()
         self.setupUi(self)
         self.initLayout()
+        self.setupSelectionBehavior()
 
     def initLayout(self):
         label_size_policy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
@@ -75,6 +77,25 @@ class TaskListView(Ui_TaskView, QWidget):
             task_name = dialog.taskEdit.text()
             row = self.todoTasksList.model().rowCount(QModelIndex())
             self.todoTasksList.model().insertRow(row, QModelIndex(), task_name=task_name, task_type=TaskType.TODO)
+
+    def setupSelectionBehavior(self):
+        """
+        To ensure that only one item is selected out of both the lists
+        """
+        self.todoTasksList.selectionModel().selectionChanged.connect(self.onTodoTasksSelectionChanged)
+        self.completedTasksList.selectionModel().selectionChanged.connect(self.onCompletedTasksSelectionChanged)
+
+    def onTodoTasksSelectionChanged(self):
+        if self.todoTasksList.selectionModel().hasSelection():
+            self.completedTasksList.selectionModel().selectionChanged.disconnect(self.onCompletedTasksSelectionChanged)
+            self.completedTasksList.clearSelection()
+            self.completedTasksList.selectionModel().selectionChanged.connect(self.onCompletedTasksSelectionChanged)
+
+    def onCompletedTasksSelectionChanged(self):
+        if self.completedTasksList.selectionModel().hasSelection():
+            self.todoTasksList.selectionModel().selectionChanged.disconnect(self.onTodoTasksSelectionChanged)
+            self.todoTasksList.clearSelection()
+            self.todoTasksList.selectionModel().selectionChanged.connect(self.onTodoTasksSelectionChanged)
 
 
 if __name__ == "__main__":
