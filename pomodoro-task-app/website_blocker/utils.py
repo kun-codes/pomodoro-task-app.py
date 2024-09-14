@@ -24,6 +24,9 @@ def find_processes_by_name(name):
     return ls
 
 def kill_process():
-    processes = find_processes_by_name('mitmdump') + find_processes_by_name('mitmproxy')
+    if os.name == 'nt':
+        processes = find_processes_by_name('mitmdump.exe') + find_processes_by_name('mitmproxy.exe')
+    else:
+        processes = find_processes_by_name('mitmdump') + find_processes_by_name('mitmproxy')
     for p in processes:
         p.kill()
