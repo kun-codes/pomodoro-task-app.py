@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, QModelIndex
+from PySide6.QtCore import Qt, QModelIndex, QSize
 from PySide6.QtWidgets import QWidget, QApplication, QSizePolicy, QAbstractItemView, QVBoxLayout
 from qfluentwidgets import FluentIcon, TitleLabel, ListView, SimpleCardWidget
 from loguru import logger
@@ -164,6 +164,14 @@ class TaskListView(Ui_TaskView, QWidget):
     def onCurrentWorkspaceChanged(self):
         self.todoTasksList.model().load_data()
         self.completedTasksList.model().load_data()
+
+    def currentTaskIndex(self):
+        if self.todoTasksList.selectionModel().hasSelection():
+            return self.todoTasksList.selectionModel().currentIndex()
+        elif self.todoTasksList.model().rowCount(QModelIndex()) > 0:
+            return self.todoTasksList.model().index(0)
+        else:
+            return -1  # no task is there in todotask list
 
 
 if __name__ == "__main__":

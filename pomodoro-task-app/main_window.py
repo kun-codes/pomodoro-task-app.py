@@ -1,8 +1,10 @@
 from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition
 from loguru import logger
+from PySide6.QtCore import Qt
 
-from constants import WebsiteFilterType, URLListType
+from constants import WebsiteFilterType, URLListType, WORK_DURATION
 from models.drag_and_drop import DragItem
+from models.task_list_model import TaskListModel
 from models.timer import TimerState
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
 from views.subinterfaces.pomodoro_view import PomodoroView
@@ -42,10 +44,19 @@ class MainWindow(FluentWindow):
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             self.toggle_website_filtering
         )
+        self.pomodoro_interface.pauseResumeButton.clicked.connect(
+            self.store_current_task
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(
+            self.updateTaskTime
+        )
 
         self.manage_workspace_dialog = None
 
         self.website_blocker_manager = WebsiteBlockerManager()
+
+        self.current_task = None
+        self.already_elapsed_time = 0
 
         self.connectSignalsToSlots()
         self.initNavigation()
@@ -120,6 +131,20 @@ class MainWindow(FluentWindow):
         else:
             logger.debug("Stopping website filtering")
             self.website_blocker_manager.stop_filtering()
+
+    def store_current_task(self):
+        self.current_task = self.task_interface.currentTaskIndex()
+        self.already_elapsed_time, _ = self.current_task.data(Qt.UserRole)  # stores the already elapsed time of the current Task
+
+    def updateTaskTime(self):
+        work_duration = WORK_DURATION * 60 * 1000  ## in ms
+        remaining_duration = self.pomodoro_interface.pomodoro_timer_obj.remaining_time
+        elapsed_time = work_duration - remaining_duration
+
+        final_elapsed_time = self.already_elapsed_time + elapsed_time
+        logger.debug(f"Elapsed time: {final_elapsed_time}")
+        if final_elapsed_time % 1000 == 0:  # only update db once a second
+            self.task_interface.todoTasksList.model().updateTask(self.current_task.row(), elapsed_time=final_elapsed_time)
 
     def connectSignalsToSlots(self):
         self.workplace_list_model.current_workspace_changed.connect(load_workspace_settings)

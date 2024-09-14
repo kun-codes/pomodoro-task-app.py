@@ -47,7 +47,9 @@ class RoundedListItemDelegateDisplayTime(RoundedListItemDelegate):
             seconds = ms // 1000
             minutes = seconds // 60
             hours = minutes // 60
-            return f"{hours:02}:{minutes % 60:02}"
+            seconds = seconds % 60
+            minutes = minutes % 60
+            return f"{hours:02}:{minutes:02}:{seconds:02}"
 
         elapsed_time_str = ms_to_hhmm(elapsed_time)
         target_time_str = ms_to_hhmm(target_time)

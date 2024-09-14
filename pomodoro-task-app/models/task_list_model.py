@@ -9,6 +9,7 @@ from utils.db_utils import get_session
 
 class TaskListModel(QAbstractListModel):
     IDRole = Qt.UserRole + 1
+    IconRole = Qt.UserRole + 3
 
     def __init__(self, task_type: TaskType, parent=None):
         super().__init__(parent)
@@ -25,8 +26,9 @@ class TaskListModel(QAbstractListModel):
                     "id": task.id,
                     "task_name": task.task_name,
                     "task_position": task.task_position,
-                    "elapsed_time": task.elapsed_time,
-                    "target_time": task.target_time
+                    "elapsed_time": task.elapsed_time,  # in ms
+                    "target_time": task.target_time,    # in ms
+                    "icon": None
                 }
                 for task in
                 session.query(Task).filter(Task.task_type == self.task_type).filter(Task.workspace_id == current_workspace_id).order_by(Task.task_position).all()
@@ -47,6 +49,9 @@ class TaskListModel(QAbstractListModel):
         elif role == self.IDRole:
             task = self.tasks[index.row()]
             return task["id"]
+        elif role == self.IconRole:
+            task = self.tasks[index.row()]
+            return task["icon"]
 
         return None
 
@@ -116,7 +121,8 @@ class TaskListModel(QAbstractListModel):
                     "task_name": task_name,
                     "task_position": row,
                     "elapsed_time": elapsed_time,
-                    "target_time": target_time
+                    "target_time": target_time,
+                    "icon": None
                 }
             )
 
@@ -266,3 +272,7 @@ class TaskListModel(QAbstractListModel):
         self.update_db()
         self.layoutChanged.emit()
         return True
+
+    def setIconForTask(self, row, icon):
+        self.tasks[row]["icon"] = icon
+        self.dataChanged.emit(self.index(row, 0), self.index(row, 0), [self.IconRole])
