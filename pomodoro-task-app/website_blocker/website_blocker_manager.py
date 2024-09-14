@@ -4,7 +4,7 @@ import threading
 from PySide6.QtCore import QObject
 from website_blocker.utils import kill_process
 from uniproxy import Uniproxy
-from constants import MITMDUMP_COMMAND_LINUX
+from constants import MITMDUMP_COMMAND_LINUX, MITMDUMP_COMMAND_WINDOWS
 from loguru import logger
 import subprocess
 import shlex
@@ -27,7 +27,7 @@ class WebsiteBlockerManager(QObject):
         # Start mitmdump, passing filter.py.
         # if windows then
         if os.name == 'nt':
-            args = shlex.split(MITMDUMP_COMMAND_LINUX.format(mitmdump_bin_path,
+            args = shlex.split(MITMDUMP_COMMAND_WINDOWS.format(mitmdump_bin_path,
                                                                joined_addresses,
                                                                block_type), posix=False)
         else:
