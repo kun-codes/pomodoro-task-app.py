@@ -2,6 +2,7 @@ from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex, QByteArray, QMim
 from sqlalchemy import update
 from loguru import logger
 
+from models.workspace_lookup import WorkspaceLookup
 from models.db_tables import Task, TaskType
 from utils.db_utils import get_session
 
@@ -14,6 +15,8 @@ class TaskListModel(QAbstractListModel):
         self.load_data()
 
     def load_data(self):
+        current_workspace_id = WorkspaceLookup.get_current_workspace_id()
+        self.tasks = []
         with get_session(is_read_only=True) as session:
             self.tasks = [
                 {
@@ -22,7 +25,7 @@ class TaskListModel(QAbstractListModel):
                     "task_position": task.task_position
                 }
                 for task in
-                session.query(Task).filter(Task.task_type == self.task_type).order_by(Task.task_position).all()
+                session.query(Task).filter(Task.task_type == self.task_type).filter(Task.workspace_id == current_workspace_id).order_by(Task.task_position).all()
             ]
         self.layoutChanged.emit()
 
@@ -117,12 +120,14 @@ class TaskListModel(QAbstractListModel):
         updating db, using bulk insert
         https://docs.sqlalchemy.org/en/20/orm/queryguide/dml.html#orm-queryguide-bulk-update
         """
+        current_workspace_id = WorkspaceLookup.get_current_workspace_id()
         with get_session() as session:
             session.execute(
                 update(Task),
                 [
                     {
                         "id": task["id"],
+                        "workspace_id": current_workspace_id,
                         "task_name": task["task_name"],
                         "task_type": self.task_type,
                         "task_position": task["task_position"]
@@ -158,6 +163,7 @@ class TaskListModel(QAbstractListModel):
 
         with get_session() as session:
             task = Task(
+                workspace_id=WorkspaceLookup.get_current_workspace_id(),
                 task_name=task_name,
                 task_type=task_type,
                 task_position=row

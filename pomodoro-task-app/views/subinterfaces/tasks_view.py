@@ -87,15 +87,23 @@ class TaskListView(Ui_TaskView, QWidget):
 
     def onTodoTasksSelectionChanged(self):
         if self.todoTasksList.selectionModel().hasSelection():
+            # disconnecting and connecting again so that the other SelectionChanged method is not called
+            # when selection is cleared
             self.completedTasksList.selectionModel().selectionChanged.disconnect(self.onCompletedTasksSelectionChanged)
             self.completedTasksList.clearSelection()
             self.completedTasksList.selectionModel().selectionChanged.connect(self.onCompletedTasksSelectionChanged)
 
     def onCompletedTasksSelectionChanged(self):
         if self.completedTasksList.selectionModel().hasSelection():
+            # disconnecting and connecting again so that the other SelectionChanged method is not called
+            # when selection is cleared
             self.todoTasksList.selectionModel().selectionChanged.disconnect(self.onTodoTasksSelectionChanged)
             self.todoTasksList.clearSelection()
             self.todoTasksList.selectionModel().selectionChanged.connect(self.onTodoTasksSelectionChanged)
+
+    def onCurrentWorkspaceChanged(self):
+        self.todoTasksList.model().load_data()
+        self.completedTasksList.model().load_data()
 
 
 if __name__ == "__main__":

@@ -33,9 +33,12 @@ class Task(Base):
     __tablename__ = 'tasks'
 
     id = Column(Integer, primary_key=True)
+    workspace_id = Column(Integer, ForeignKey('workspaces.id'))
     task_name = Column(String)
     task_type = Column(SQLEnum(TaskType))
     task_position = Column(Integer)
+
+    workspace = relationship("Workspace", back_populates="tasks")
 
 class Workspace(Base):
     """
@@ -57,6 +60,8 @@ class Workspace(Base):
     blocklist_exception_urls = relationship("BlocklistExceptionURL", back_populates="workspace", cascade="all, delete-orphan")
     allowlist_urls = relationship("AllowlistURL", back_populates="workspace", cascade="all, delete-orphan")
     allowlist_exception_urls = relationship("AllowlistExceptionURL", back_populates="workspace", cascade="all, delete-orphan")
+
+    tasks = relationship("Task", back_populates="workspace", cascade="all, delete-orphan")
 
 
 class CurrentWorkspace(Base):

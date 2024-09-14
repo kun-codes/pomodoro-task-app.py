@@ -126,6 +126,9 @@ class MainWindow(FluentWindow):
         self.workplace_list_model.current_workspace_changed.connect(
             self.website_filter_interface.onCurrentWorkspaceChanged
         )
+        self.workplace_list_model.current_workspace_changed.connect(
+            self.task_interface.onCurrentWorkspaceChanged  # update task list when workspace is changed
+        )
 
     def check_valid_db(self):
         with get_session() as session:
