@@ -1,13 +1,13 @@
-from PySide6.QtCore import Qt, QMimeData
-from PySide6.QtWidgets import QWidget, QApplication, QSizePolicy, QAbstractItemView, QListView, QVBoxLayout
+from PySide6.QtCore import Qt, QModelIndex
+from PySide6.QtWidgets import QWidget, QApplication, QSizePolicy, QAbstractItemView, QVBoxLayout
 from qfluentwidgets import FluentIcon, TitleLabel, ListView, SimpleCardWidget
+from loguru import logger
 
-from models.drag_and_drop import DragWidget, DragItem
-from views.dialogs.addTaskDialog import AddTaskDialog
-from ui_py.ui_tasks_list_view import Ui_TaskView
-from models.db_tables import Task, TaskType, engine
+from models.db_tables import TaskType
+from models.drag_and_drop import DragItem
 from models.task_list_model import TaskListModel
-from utils.db_utils import get_session
+from ui_py.ui_tasks_list_view import Ui_TaskView
+from views.dialogs.addTaskDialog import AddTaskDialog
 
 
 class TaskList(ListView):
@@ -25,6 +25,7 @@ class TaskListView(Ui_TaskView, QWidget):
     """
     For tasks view of the app
     """
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -69,20 +70,11 @@ class TaskListView(Ui_TaskView, QWidget):
         # if user clicks on add task inside dialog
         if dialog.exec():
             task_name = dialog.taskEdit.text()
-            task_card = DragItem(parent=self.todoTasksList, task_name=task_name)
-            self.todoTasksList.add_item(task_card)
-
-            with get_session() as session:
-                session.add(task_card.task_record)
-
-
-    def addTaskCard(self, task_name: str):
-        item = DragItem(parent=self.todoTasksList, task_name=task_name)
-        self.todoTasksList.add_item(item)
+            row = self.todoTasksList.model().rowCount(QModelIndex())
+            self.todoTasksList.model().insertRow(row, QModelIndex(), task_name=task_name, task_type=TaskType.TODO)
 
 
 if __name__ == "__main__":
-
     app = QApplication()
     w = TaskListView()
     w.show()

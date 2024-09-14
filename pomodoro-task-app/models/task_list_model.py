@@ -143,16 +143,42 @@ class TaskListModel(QAbstractListModel):
     def mimeTypes(self):
         return ["application/x-qabstractitemmodeldatalist"]
 
-    def insertRows(self, row, count, parent=None):
-        self.beginInsertRows(parent, row, row + count - 1)
-        encoded_data = self.mimeData([self.index(row)]).data("application/x-qabstractitemmodeldatalist")
-        stream = QDataStream(encoded_data, QIODevice.ReadOnly)
-        _row = stream.readInt32()
-        task_id = stream.readInt32()
-        task_name = stream.readQString()
-        self.tasks.insert(row , {"id": task_id, "task_name": task_name, "task_position": row})
+    # TODO: Implement insertRows method
+    # def insertRows(self, row, count, parent=None):
+    #     self.beginInsertRows(parent, row, row + count - 1)
+    #     encoded_data = self.mimeData([self.index(row)]).data("application/x-qabstractitemmodeldatalist")
+    #     stream = QDataStream(encoded_data, QIODevice.ReadOnly)
+    #     _row = stream.readInt32()
+    #     task_id = stream.readInt32()
+    #     task_name = stream.readQString()
+    #     return True
+
+    def insertRow(self, row, parent = QModelIndex(), task_name = None, task_type=TaskType.TODO):
+        self.beginInsertRows(parent, row, row)
+
+        with get_session() as session:
+            task = Task(
+                task_name=task_name,
+                task_type=task_type,
+                task_position=row
+            )
+            session.add(task)
+            session.commit()
+            new_id = task.id
+
+        task_list_new_member = {
+            "id": new_id,
+            "task_name": task_name,
+            "task_position": row
+        }
+
+        logger.debug(f"Task list new member: {task_list_new_member}")
+
+        self.tasks.insert(row, task_list_new_member)
         self.layoutChanged.emit()
         self.endInsertRows()
+        return True
+
 
     def removeRows(self, row, count, parent=...):
         self.beginRemoveRows(parent, row, row + count - 1)
