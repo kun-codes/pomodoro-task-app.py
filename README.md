@@ -1,5 +1,5 @@
 <h1 align="center">pomodoro-task-app.py</h1>
-<p align="center">Pomodoro todo list app with an integrated internet blocker and timeboxing(m</p>
+<p align="center">Pomodoro todo list app with an integrated internet blocker and timeboxing</p>
 
 > [!IMPORTANT]
 > pomodoro-task-app.py assumes that you aren't using a proxy server already since it runs a local proxy server to block the internet.
