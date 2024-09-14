@@ -3,9 +3,16 @@
 
 """Filter URLs according to rules."""
 
+import os
+import sys
+
+# append directory containing constants.py to path so that BLOCK_HTML_MESSAGE can be imported correctly
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from mitmproxy import http, ctx
 from loguru import logger
 from constants import BLOCK_HTML_MESSAGE
+
 
 
 def load(l):
