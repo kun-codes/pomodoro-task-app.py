@@ -1,13 +1,13 @@
 <h1 align="center">pomodoro-task-app.py</h1>
-<p align="center">Pomodoro todo list app with an integrated internet blocker and timeboxing</p>
+<p align="center">Pomodoro todo list app with an integrated website blocker and timeboxing</p>
 
 > [!IMPORTANT]
-> pomodoro-task-app.py assumes that you aren't using a proxy server already since it runs a local proxy server to block the internet.
+> pomodoro-task-app.py assumes that you aren't using a proxy server already since it runs a local proxy server to block websites.
 
 ## Features
 
 - **Cross Platform:** pomodoro-task-app.py is cross-platform and can be used on Windows, macOS and Linux.
-- **Internet Blocker:** Internet can be blocked using either a blocklist or an allowlist.
+- **Website Blocker:** Websites can be blocked using either a blocklist or an allowlist.
 - **Timeboxing:** pomodoro-task-app.py has integrated [timeboxing](https://en.wikipedia.org/wiki/Timeboxing) features.
 
 ## Installation
@@ -35,7 +35,7 @@ poetry run python pomodoro-task-app
 
 ## Usage
 > [!IMPORTANT]
-> On your first run of the application, start the timer and then go to [mitm.it](http://mitm.it) on a chromium based browser and install the certificate as per your OS and browser choice. This is required for the internet blocker to work. After installing the certificate, restart the application.
+> On your first run of the application, start the timer and then go to [mitm.it](http://mitm.it) on a chromium based browser and install the certificate as per your OS and browser choice. This is required for the website blocker to work. After installing the certificate, restart the application.
 
 - Start the app using the command mentioned above.
 
@@ -58,9 +58,9 @@ There are four main screens in the app:
 
 ## Known Bugs
 
-- The internet blocker doesn't work as expected when there are no websites in the currently selected list (blocklist or allowlist).
+- The website blocker doesn't work as expected when there are no websites in the currently selected list (blocklist or allowlist).
 
 ## Credits
 
 - [Super Productivity](https://github.com/johannesjo/super-productivity): The app is inspired by Super Productivity.
-- [chomper](https://github.com/aniketpanjwani/chomper): The internet blocker has some functionality inspired by chomper.
+- [chomper](https://github.com/aniketpanjwani/chomper): The website blocker has some functionality inspired by chomper.
