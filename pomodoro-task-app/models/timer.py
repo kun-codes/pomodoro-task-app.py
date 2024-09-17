@@ -39,7 +39,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         # would be reset to zero after every long break
 
         self.remaining_time = 0  # will change according to BREAK_DURATION, WORK_DURATION, LONG_BREAK_DURATION
-        self.timer_resolution = 100  # in milliseconds
+        self.timer_resolution = 1000  # in milliseconds
 
         # self.pomodoro_timer.timeout.connect(self.sessionEnded)
         self.pomodoro_timer.timeout.connect(self.decreaseRemainingTime)
