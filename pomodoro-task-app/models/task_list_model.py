@@ -277,7 +277,7 @@ class TaskListModel(QAbstractListModel):
             self.tasks[row]["target_time"] = target_time
 
         self.update_db()
-        self.layoutChanged.emit()
+        self.dataChanged.emit(self.index(row, 0), self.index(row, 0))
         return True
 
     def setIconForTask(self, row, icon):
