@@ -149,14 +149,15 @@ class MainWindow(FluentWindow):
             self.already_elapsed_time, _ = self.current_task_index.data(Qt.UserRole)  # stores the already elapsed time of the current Task
             current_task_name = self.current_task_index.data(Qt.DisplayRole)
 
-            InfoBar.success(
-                title="Task Started",
-                content=f'Task named "{current_task_name}" has started',
-                isClosable=True,
-                duration=5000,
-                position=InfoBarPosition.TOP_RIGHT,
-                parent=self
-            )
+            if not self.pomodoro_interface.pauseResumeButton.isChecked():
+                InfoBar.success(
+                    title="Task Started",
+                    content=f'Task named "{current_task_name}" has started',
+                    isClosable=True,
+                    duration=5000,
+                    position=InfoBarPosition.TOP_RIGHT,
+                    parent=self
+                )
 
     def store_already_elapsed_time(self):
         if self.current_task_index is not None:
