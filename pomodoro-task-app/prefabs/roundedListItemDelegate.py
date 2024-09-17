@@ -72,5 +72,7 @@ class RoundedListItemDelegateDisplayTime(RoundedListItemDelegate):
         rect = option.rect
         y = rect.y() + (rect.height() - editor.height()) // 2
         x, w = rect.x(), rect.width()
+        w = w-2  # subtract 2 to fit within the indicator
+        x = x + 1  # add 1 to fit within the indicator
 
         editor.setGeometry(x, y, w, rect.height())
