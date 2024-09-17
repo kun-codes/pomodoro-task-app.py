@@ -148,7 +148,7 @@ class MainWindow(FluentWindow):
 
             InfoBar.success(
                 title="Task Started",
-                content=f'Task named "{current_task_name} has started"',
+                content=f'Task named "{current_task_name}" has started',
                 isClosable=True,
                 duration=5000,
                 position=InfoBarPosition.TOP_RIGHT,
