@@ -48,6 +48,9 @@ class MainWindow(FluentWindow):
         self.pomodoro_interface.pauseResumeButton.clicked.connect(
             self.store_and_display_current_task
         )
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
+            self.store_already_elapsed_time
+        )
         self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(
             self.updateTaskTime
         )
@@ -154,6 +157,11 @@ class MainWindow(FluentWindow):
                 position=InfoBarPosition.TOP_RIGHT,
                 parent=self
             )
+
+    def store_already_elapsed_time(self):
+        if self.current_task_index is not None:
+            elapsed_time, _ = self.current_task_index.data(Qt.UserRole)
+            self.already_elapsed_time = elapsed_time
 
     def check_current_task_deleted(self, task_index):
         if self.current_task_index is not None and self.current_task_index == task_index and \
