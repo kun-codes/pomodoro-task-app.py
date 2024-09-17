@@ -58,6 +58,21 @@ class TaskListModel(QAbstractListModel):
 
         return None
 
+    def setData(self, index, value, role=...):
+        if role == Qt.EditRole:
+            row = index.row()
+            task_name = value.strip()
+            if task_name:
+                self.updateTask(row, task_name=task_name)
+                return True
+            else:
+                return False
+        return False
+
+    def revert(self):
+        self.load_data()
+        return super().revert()
+
     def columnCount(self, parent):
         return 1
 
@@ -179,7 +194,7 @@ class TaskListModel(QAbstractListModel):
             return Qt.ItemIsEnabled | Qt.ItemIsDropEnabled
 
         return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsDragEnabled | \
-            Qt.ItemFlag.ItemIsDropEnabled | Qt.ItemFlag.ItemIsEnabled
+            Qt.ItemFlag.ItemIsDropEnabled | Qt.ItemFlag.ItemIsEditable
 
 
     def mimeTypes(self):

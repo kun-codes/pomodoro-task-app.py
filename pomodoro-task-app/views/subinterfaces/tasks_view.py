@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QModelIndex, QSize
 from PySide6.QtWidgets import QWidget, QApplication, QSizePolicy, QAbstractItemView, QVBoxLayout
-from qfluentwidgets import FluentIcon, TitleLabel, ListView, SimpleCardWidget
+from qfluentwidgets import FluentIcon, TitleLabel, ListView, SimpleCardWidget, LineEdit
 from loguru import logger
 
 from models.db_tables import TaskType
@@ -25,6 +25,25 @@ class TaskList(ListView):
 
         self.setItemDelegate(RoundedListItemDelegateDisplayTime(self))
 
+    def edit(self, index, trigger, event):
+        """
+        Override the edit method to show lineedit which is pre-filled with the task name
+        """
+        if trigger == QAbstractItemView.DoubleClicked:
+            task_name = self.model().data(index, Qt.DisplayRole)
+            editor = LineEdit(self)
+            editor.setProperty("transparent", False)
+            editor.setText(task_name)
+            self.setIndexWidget(index, editor)
+            editor.setFocus()
+            editor.editingFinished.connect(lambda: self.commitData(editor))
+            return True
+        return super().edit(index, trigger, event)
+
+    def commitData(self, editor):
+        index = self.currentIndex()
+        self.model().setData(index, editor.text(), Qt.EditRole)
+        self.setIndexWidget(index, None)
 
 class TaskListView(Ui_TaskView, QWidget):
     """

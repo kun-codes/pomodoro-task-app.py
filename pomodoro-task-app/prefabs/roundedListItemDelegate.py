@@ -1,7 +1,7 @@
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtGui import QPainter, QColor, QPen
-from PySide6.QtWidgets import QListView, QStyleOptionViewItem, QStyle
-from qfluentwidgets import TableItemDelegate, isDarkTheme, themeColor
+from PySide6.QtWidgets import QListView, QStyleOptionViewItem, QStyle, QWidget, QApplication
+from qfluentwidgets import TableItemDelegate, isDarkTheme, themeColor, LineEdit
 
 
 class RoundedListItemDelegate(TableItemDelegate):
@@ -64,3 +64,13 @@ class RoundedListItemDelegateDisplayTime(RoundedListItemDelegate):
 
         painter.restore()
 
+    def updateEditorGeometry(self, editor: QWidget, option: QStyleOptionViewItem, index: QModelIndex):
+        """
+        re-implement this method since the parent method takes into account the original indicator,
+        but we have a custom indicator
+        """
+        rect = option.rect
+        y = rect.y() + (rect.height() - editor.height()) // 2
+        x, w = rect.x(), rect.width()
+
+        editor.setGeometry(x, y, w, rect.height())
