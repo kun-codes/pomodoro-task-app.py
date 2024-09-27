@@ -235,14 +235,24 @@ class MainWindow(FluentWindow):
         )
 
     def check_valid_db(self):
-        valid_db_present = None
         with get_session() as session:
             workspace = session.query(Workspace).first()
             # create a default workspace if none exists
             if not workspace:
-                valid_db_present = False
                 workspace = Workspace(workspace_name="Default Workspace")
                 session.add(workspace)
+                session.commit()
+
+                # add some tasks too
+                sample_tasks = [
+                    Task(workspace_id=workspace.id, task_name="Sample Task 1", task_type=TaskType.TODO, task_position=1),
+                    Task(workspace_id=workspace.id, task_name="Sample Task 2", task_type=TaskType.TODO, task_position=2),
+                    Task(workspace_id=workspace.id, task_name="Sample Task 3", task_type=TaskType.TODO, task_position=3),
+                    Task(workspace_id=workspace.id, task_name="Sample Task 4", task_type=TaskType.COMPLETED, task_position=4),
+                    Task(workspace_id=workspace.id, task_name="Sample Task 5", task_type=TaskType.COMPLETED, task_position=5),
+                    Task(workspace_id=workspace.id, task_name="Sample Task 6", task_type=TaskType.COMPLETED, task_position=6),
+                ]
+                session.add_all(sample_tasks)
                 session.commit()
 
 
@@ -254,18 +264,6 @@ class MainWindow(FluentWindow):
                 session.add(current_workspace)
                 session.commit()
 
-            # add some tasks too
-            if not session.query(Task).first():
-                sample_tasks = [
-                    Task(workspace_id=workspace.id, task_name="Sample Task 1", task_type=TaskType.TODO, task_position=1),
-                    Task(workspace_id=workspace.id, task_name="Sample Task 2", task_type=TaskType.TODO, task_position=2),
-                    Task(workspace_id=workspace.id, task_name="Sample Task 3", task_type=TaskType.TODO, task_position=3),
-                    Task(workspace_id=workspace.id, task_name="Sample Task 4", task_type=TaskType.COMPLETED, task_position=4),
-                    Task(workspace_id=workspace.id, task_name="Sample Task 5", task_type=TaskType.COMPLETED, task_position=5),
-                    Task(workspace_id=workspace.id, task_name="Sample Task 6", task_type=TaskType.COMPLETED, task_position=6),
-                ]
-                session.add_all(sample_tasks)
-                session.commit()
 
     def closeEvent(self, event):
         self.website_blocker_manager.stop_filtering(delete_proxy=True)
