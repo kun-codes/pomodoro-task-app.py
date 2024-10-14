@@ -9,10 +9,9 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.13"
-PySide6 = "^6.7.2"
 PySide6-Fluent-Widgets = "^1.6.0"
 sqlalchemy = "^2.0.31"
-mitmproxy = "^10.4.2"
+mitmproxy = "^11.0.0"
 psutil = "^6.0.0"
 uniproxy = "^0.1.1"
 
