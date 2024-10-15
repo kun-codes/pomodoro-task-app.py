@@ -61,7 +61,7 @@ class TaskListModel(QAbstractListModel):
 
         return None
 
-    def setData(self, index, value, role=...):
+    def setData(self, index, value, role=..., update_db=True):
         if role == Qt.DisplayRole:
             row = index.row()
             task_name = value.strip()
@@ -74,7 +74,8 @@ class TaskListModel(QAbstractListModel):
             row = index.row()
             elapsed_time = value
             self.tasks[row]["elapsed_time"] = elapsed_time
-            self.update_db()
+            if update_db:
+                self.update_db()
             self.dataChanged.emit(index, index)
             return True
         elif role == self.TargetTimeRole:

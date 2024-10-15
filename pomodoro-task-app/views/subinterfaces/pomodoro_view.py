@@ -30,7 +30,7 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.pomodoro_timer_obj = PomodoroTimer()
         self.pomodoro_timer_obj.timerStateChangedSignal.connect(self.initProgressRing)
         self.pomodoro_timer_obj.pomodoro_timer.timeout.connect(self.updateProgressRing)
-        self.pomodoro_timer_obj.sessionEndedSignal.connect(self.resetPauseResumeButton)
+        self.pomodoro_timer_obj.sessionStoppedSignal.connect(self.resetPauseResumeButton)
         self.pomodoro_timer_obj.waitForUserInputSignal.connect(self.resetPauseResumeButton)
 
         self.initProgressRingProperties()
@@ -68,6 +68,12 @@ class PomodoroView(QWidget, Ui_PomodoroView):
                 self.pomodoro_timer_obj.updateSessionProgress()
             self.pomodoro_timer_obj.setDuration()
             self.pomodoro_timer_obj.startDuration()
+
+    def correctPauseResumeButtonIcon(self, timer_state: TimerState):
+        if timer_state == TimerState.NOTHING:
+            self.pauseResumeButton.setIcon(FluentIcon.PLAY)
+        else:
+            self.pauseResumeButton.setIcon(FluentIcon.PAUSE)
 
     def initProgressRing(self, currentTimerState: TimerState):
         self.ProgressRing.setMinimum(0)
@@ -109,6 +115,8 @@ class PomodoroView(QWidget, Ui_PomodoroView):
 
     def skipButtonClicked(self):
         self.pomodoro_timer_obj.skipDuration()
+        self.pauseResumeButton.setIcon(FluentIcon.PAUSE)
+        self.pauseResumeButton.setChecked(False)
 
     def resetPauseResumeButton(self):
         self.pauseResumeButton.setChecked(True)
