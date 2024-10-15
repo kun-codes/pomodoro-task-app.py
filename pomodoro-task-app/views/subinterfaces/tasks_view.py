@@ -42,7 +42,7 @@ class TaskList(ListView):
 
     def commitData(self, editor):
         index = self.currentIndex()
-        self.model().setData(index, editor.text(), Qt.EditRole)
+        self.model().setData(index, editor.text(), Qt.DisplayRole)
         self.setIndexWidget(index, None)
 
 class TaskListView(Ui_TaskView, QWidget):

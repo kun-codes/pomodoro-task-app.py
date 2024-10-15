@@ -10,6 +10,8 @@ from utils.db_utils import get_session
 class TaskListModel(QAbstractListModel):
     IDRole = Qt.UserRole + 1
     IconRole = Qt.UserRole + 3
+    ElapsedTimeRole = Qt.UserRole + 5
+    TargetTimeRole = Qt.UserRole + 7
 
     taskDeletedSignal = Signal(QModelIndex)
     taskMovedSignal = Signal(int, TaskType)  # task_id and TaskType
@@ -44,11 +46,12 @@ class TaskListModel(QAbstractListModel):
     def data(self, index, role=...):
         if role == Qt.DisplayRole:
             return self.tasks[index.row()]["task_name"]
-        elif role == Qt.UserRole:
+        elif role == self.ElapsedTimeRole:
             task = self.tasks[index.row()]
-            elapsed_time = task["elapsed_time"]
-            target_time = task["target_time"]
-            return elapsed_time, target_time
+            return task["elapsed_time"]
+        elif role == self.TargetTimeRole:
+            task = self.tasks[index.row()]
+            return task["target_time"]
         elif role == self.IDRole:
             task = self.tasks[index.row()]
             return task["id"]
@@ -59,14 +62,28 @@ class TaskListModel(QAbstractListModel):
         return None
 
     def setData(self, index, value, role=...):
-        if role == Qt.EditRole:
+        if role == Qt.DisplayRole:
             row = index.row()
             task_name = value.strip()
             if task_name:
-                self.updateTask(row, task_name=task_name)
+                self.tasks[row]["task_name"] = task_name
+                self.update_db()
+                self.dataChanged.emit(index, index)
                 return True
-            else:
-                return False
+        elif role == self.ElapsedTimeRole:
+            row = index.row()
+            elapsed_time = value
+            self.tasks[row]["elapsed_time"] = elapsed_time
+            self.update_db()
+            self.dataChanged.emit(index, index)
+            return True
+        elif role == self.TargetTimeRole:
+            row = index.row()
+            target_time = value
+            self.tasks[row]["target_time"] = target_time
+            self.update_db()
+            self.dataChanged.emit(index, index)
+            return True
         return False
 
     def revert(self):
@@ -278,21 +295,6 @@ class TaskListModel(QAbstractListModel):
         self.update_db()
         self.taskDeletedSignal.emit(index)
         self.layoutChanged.emit()
-        return True
-
-    def updateTask(self, row, task_name=None, elapsed_time=None, target_time=None):
-        """
-        Update the task name and time
-        """
-        if task_name is not None:
-            self.tasks[row]["task_name"] = task_name
-        if elapsed_time is not None:
-            self.tasks[row]["elapsed_time"] = elapsed_time
-        if target_time is not None:
-            self.tasks[row]["target_time"] = target_time
-
-        self.update_db()
-        self.dataChanged.emit(self.index(row, 0), self.index(row, 0))
         return True
 
     def setIconForTask(self, row, icon):

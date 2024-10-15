@@ -146,7 +146,7 @@ class MainWindow(FluentWindow):
         self.current_task_index = self.task_interface.currentTaskIndex()
         if self.current_task_index is not None:
             logger.debug(f"Current Task: {self.current_task_index.data(Qt.DisplayRole)}")
-            self.already_elapsed_time, _ = self.current_task_index.data(Qt.UserRole)  # stores the already elapsed time of the current Task
+            self.already_elapsed_time = self.current_task_index.data(TaskListModel.ElapsedTimeRole) # stores the already elapsed time of the current Task
             current_task_name = self.current_task_index.data(Qt.DisplayRole)
 
             if not self.pomodoro_interface.pauseResumeButton.isChecked():
@@ -161,7 +161,7 @@ class MainWindow(FluentWindow):
 
     def store_already_elapsed_time(self):
         if self.current_task_index is not None:
-            elapsed_time, _ = self.current_task_index.data(Qt.UserRole)
+            elapsed_time = self.current_task_index.data(TaskListModel.ElapsedTimeRole)
             self.already_elapsed_time = elapsed_time
 
     def check_current_task_deleted(self, task_index):
@@ -223,7 +223,7 @@ class MainWindow(FluentWindow):
 
             final_elapsed_time = self.already_elapsed_time + elapsed_time
             if final_elapsed_time % 1000 == 0:  # only update db when the elapsed time is a multiple of 1000
-                self.task_interface.todoTasksList.model().updateTask(self.current_task_index.row(), elapsed_time=final_elapsed_time)
+                self.task_interface.todoTasksList.model().setData(self.current_task_index, final_elapsed_time, TaskListModel.ElapsedTimeRole)
 
     def connectSignalsToSlots(self):
         self.workplace_list_model.current_workspace_changed.connect(load_workspace_settings)

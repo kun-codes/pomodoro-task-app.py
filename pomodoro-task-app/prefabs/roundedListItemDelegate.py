@@ -3,6 +3,8 @@ from PySide6.QtGui import QPainter, QColor, QPen
 from PySide6.QtWidgets import QListView, QStyleOptionViewItem, QStyle, QWidget, QApplication
 from qfluentwidgets import TableItemDelegate, isDarkTheme, themeColor, LineEdit
 
+from models.task_list_model import TaskListModel
+
 
 class RoundedListItemDelegate(TableItemDelegate):
     """ Round List item delegate """
@@ -40,7 +42,8 @@ class RoundedListItemDelegateDisplayTime(RoundedListItemDelegate):
         rect = option.rect
 
         # Fetch the time data from the model
-        elapsed_time, target_time = index.data(Qt.UserRole)
+        elapsed_time = index.data(TaskListModel.ElapsedTimeRole)
+        target_time = index.data(TaskListModel.TargetTimeRole)
 
         # Convert milliseconds to HH:MM format
         def ms_to_hhmm(ms):
