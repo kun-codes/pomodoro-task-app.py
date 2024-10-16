@@ -167,7 +167,6 @@ class TaskListModel(QAbstractListModel):
             self.tasks.insert(row, task)
             row += 1
             self.taskMovedSignal.emit(task["id"], self.task_type)
-            self.layoutChanged.emit()
         self.endInsertRows()
 
 
@@ -256,8 +255,8 @@ class TaskListModel(QAbstractListModel):
         logger.debug(f"Task list new member: {task_list_new_member}")
 
         self.tasks.insert(row, task_list_new_member)
-        self.layoutChanged.emit()
         self.endInsertRows()
+        self.layoutChanged.emit()
         return True
 
 
@@ -271,8 +270,8 @@ class TaskListModel(QAbstractListModel):
             logger.debug(f"Removing task at row: {row}")
             del self.tasks[row]
             logger.debug(f"tasks: {self.tasks}")
-        self.layoutChanged.emit()
         self.endRemoveRows()
+        self.layoutChanged.emit()
         return True
 
     def deleteTask(self, row, parent=QModelIndex()):
