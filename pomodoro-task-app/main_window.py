@@ -17,6 +17,7 @@ from models.workspace_list_model import WorkspaceListModel
 from models.config import load_workspace_settings
 from website_blocker.website_blocker_manager import WebsiteBlockerManager
 from utils.find_mitmdump_executable import get_mitmdump_path
+from models.website_list_manager_model import WebsiteListManager
 
 
 class MainWindow(FluentWindow):
@@ -71,6 +72,12 @@ class MainWindow(FluentWindow):
         self.pomodoro_interface.pomodoro_timer_obj.sessionPausedSignal.connect(
             self.updateTaskTimeDB
         )
+        self.website_filter_interface.blockTypeComboBox.currentIndexChanged.connect(
+            lambda: self.toggle_website_filtering(self.pomodoro_interface.pomodoro_timer_obj.getTimerState())
+        )
+        self.website_filter_interface.saveButton.clicked.connect(
+            lambda: self.toggle_website_filtering(self.pomodoro_interface.pomodoro_timer_obj.getTimerState())
+        )
 
         self.manage_workspace_dialog = None
 
@@ -112,7 +119,6 @@ class MainWindow(FluentWindow):
             self.manage_workspace_dialog = ManageWorkspaceDialog(parent=self.stackedWidget, workspaceListModel=self.workplace_list_model)
 
         self.manage_workspace_dialog.show()
-
 
     def toggleUIElementsBasedOnTimerState(self, timerState):
         # TODO: show a tip to stop the timer before changing settings when timer is running

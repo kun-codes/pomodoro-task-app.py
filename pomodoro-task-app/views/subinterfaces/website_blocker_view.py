@@ -2,11 +2,9 @@ from PySide6.QtWidgets import QWidget
 from qfluentwidgets import FluentIcon, Flyout, InfoBarIcon, FlyoutAnimationType
 
 from constants import WebsiteFilterType, URLListType
-from models.db_tables import engine, Workspace
 from models.website_list_manager_model import WebsiteListManager
 from models.workspace_list_model import WorkspaceListModel
 from ui_py.ui_website_blocker_view import Ui_WebsiteBlockView
-from utils.db_utils import get_session
 from models.workspace_lookup import WorkspaceLookup
 from loguru import logger
 
