@@ -24,9 +24,7 @@ def request(flow):
     addresses = ctx.options.addresses_str.split(',')
     addresses = set(addresses)
 
-    # # write addresses to a file
-    # with open('addresses.txt', 'w') as f:
-    #     f.write('\n'.join(addresses))
+    addresses = {address for address in addresses if address}
 
     has_match = any(address in flow.request.pretty_url for address in addresses)
     if ctx.options.block_type == 'allowlist' and not has_match \
