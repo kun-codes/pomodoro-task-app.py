@@ -21,5 +21,25 @@
       <option name="workingDir" value="$PROJECT_DIR$/pomodoro-task-app" />
       <envs />
     </TaskOptions>
+    <TaskOptions isEnabled="true">
+      <option name="arguments" value="run pyside6-rcc $FilePath$ -o $FileDir$/$FileNameWithoutAllExtensions$_rc.py" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" />
+      <option name="exitCodeBehavior" value="ALWAYS" />
+      <option name="fileExtension" value="qrc" />
+      <option name="immediateSync" value="true" />
+      <option name="name" value="pyside6-rcc" />
+      <option name="output" value="$FileDir$" />
+      <option name="outputFilters">
+        <array />
+      </option>
+      <option name="outputFromStdout" value="false" />
+      <option name="program" value="poetry" />
+      <option name="runOnExternalChanges" value="true" />
+      <option name="scopeName" value="Project Files" />
+      <option name="trackOnlyRoot" value="false" />
+      <option name="workingDir" value="$PROJECT_DIR$/pomodoro-task-app" />
+      <envs />
+    </TaskOptions>
   </component>
 </project>
