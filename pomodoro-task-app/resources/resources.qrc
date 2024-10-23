@@ -1,0 +1,22 @@
+<RCC>
+  <qresource prefix="iconsPrefix">
+    <file>icons/workspace_selector_view_black.svg</file>
+    <file>icons/workspace_selector_view_white.svg</file>
+    <file>icons/website_filter_view_black.svg</file>
+    <file>icons/website_filter_view_white.svg</file>
+    <file>icons/tasks_view_black.svg</file>
+    <file>icons/tasks_view_white.svg</file>
+    <file>icons/autostart_break_black.svg</file>
+    <file>icons/autostart_break_white.svg</file>
+    <file>icons/autostart_work_black.svg</file>
+    <file>icons/autostart_work_white.svg</file>
+    <file>icons/break_black.svg</file>
+    <file>icons/break_white.svg</file>
+    <file>icons/long_break_black.svg</file>
+    <file>icons/long_break_white.svg</file>
+    <file>icons/work_black.svg</file>
+    <file>icons/work_interval_black.svg</file>
+    <file>icons/work_interval_white.svg</file>
+    <file>icons/work_white.svg</file>
+  </qresource>
+</RCC>

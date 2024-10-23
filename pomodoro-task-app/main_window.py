@@ -17,7 +17,7 @@ from models.workspace_list_model import WorkspaceListModel
 from models.config import load_workspace_settings
 from website_blocker.website_blocker_manager import WebsiteBlockerManager
 from utils.find_mitmdump_executable import get_mitmdump_path
-from models.website_list_manager_model import WebsiteListManager
+from prefabs.customFluentIcon import CustomFluentIcon
 
 
 class MainWindow(FluentWindow):
@@ -90,16 +90,18 @@ class MainWindow(FluentWindow):
         self.initNavigation()
         self.initWindow()
 
+        self.navigationInterface.panel.setFixedHeight(48)
+
     def initNavigation(self):
         # Add sub interface
-        self.addSubInterface(self.task_interface, FluentIcon.ADD, 'Tasks')
+        self.addSubInterface(self.task_interface, CustomFluentIcon.TASKS_VIEW, 'Tasks')
         self.addSubInterface(self.pomodoro_interface, FluentIcon.STOP_WATCH, 'Pomodoro')
-        self.addSubInterface(self.website_filter_interface, FluentIcon.VPN, 'Website Filter')
+        self.addSubInterface(self.website_filter_interface, CustomFluentIcon.WEBSITE_FILTER_VIEW, 'Website Filter')
 
         # Add sub interface at bottom
         self.navigationInterface.addItem(
             routeKey="WorkspaceSelector",
-            icon=FluentIcon.VPN,
+            icon=CustomFluentIcon.WORKSPACE_SELECTOR_VIEW,
             text="Select Workspace",
             onClick=lambda: self.onWorkspaceManagerClicked(),
             selectable=False,

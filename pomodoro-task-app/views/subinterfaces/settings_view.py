@@ -10,6 +10,7 @@ from prefabs.setting_cards.RangeSettingCardSQL import RangeSettingCardSQL
 from prefabs.setting_cards.SwitchSettingCardSQL import SwitchSettingCardSQL
 from qfluentwidgets import setTheme, setThemeColor
 from ui_py.ui_settings_view import Ui_SettingsView
+from prefabs.customFluentIcon import CustomFluentIcon
 
 
 class SettingsView(QWidget, Ui_SettingsView):
@@ -31,41 +32,41 @@ class SettingsView(QWidget, Ui_SettingsView):
         )
         self.work_duration_card = RangeSettingCardSQL(
             workspace_specific_settings.work_duration,
-            FluentIcon.VPN,
+            CustomFluentIcon.WORK,
             "Work Duration",
             "Set the work duration in minutes",
             self.pomodoro_settings_group
         )
         self.break_duration_card = RangeSettingCardSQL(
             workspace_specific_settings.break_duration,
-            FluentIcon.VPN,
+            CustomFluentIcon.BREAK,
             "Break Duration",
             "Set the break duration in minutes",
             self.pomodoro_settings_group
         )
         self.long_break_duration_card = RangeSettingCardSQL(
             workspace_specific_settings.long_break_duration,
-            FluentIcon.VPN,
+            CustomFluentIcon.LONG_BREAK,
             "Long Break Duration",
             "Set the long break duration in minutes",
             self.pomodoro_settings_group
         )
         self.work_interval_card = SpinBoxSettingCardSQL(
             workspace_specific_settings.work_intervals,
-            FluentIcon.VPN,
+            CustomFluentIcon.WORK_INTERVAL,
             "Work Intervals",
             "Set the number of work intervals before a long break",
             self.pomodoro_settings_group
         )
         self.autostart_work_card = SwitchSettingCardSQL(
-            FluentIcon.VPN,
+            CustomFluentIcon.AUTOSTART_WORK,
             "Autostart Work",
             "Start work session automatically after break ends",
             workspace_specific_settings.autostart_work,
             self.pomodoro_settings_group
         )
         self.autostart_break_card = SwitchSettingCardSQL(
-            FluentIcon.VPN,
+            CustomFluentIcon.AUTOSTART_BREAK,
             "Autostart Break",
             "Start break session automatically after work ends",
             workspace_specific_settings.autostart_break,

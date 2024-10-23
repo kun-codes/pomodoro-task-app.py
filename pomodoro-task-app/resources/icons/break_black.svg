@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   fill="none"
+   viewBox="2 3 47.999999 48"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="break_black.svg"
+   width="48"
+   height="48"
+   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="8.102265"
+     inkscape:cx="10.614316"
+     inkscape:cy="40.173952"
+     inkscape:window-width="1920"
+     inkscape:window-height="1012"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <path
+     fill="#000000"
+     d="m 17,5.399901 c 6.0384,0 11.244,3.5688005 13.6224,8.712 1.0272,-0.204 2.0904,-0.312 3.1776,-0.312 h 11.1 a 5.1,5.1 0 0 1 5.1,5.1 v 11.1 c 0,8.9472 -7.2528,16.2 -16.2,16.2 a 16.14,16.14 0 0 1 -10.3452,-3.732 l -5.694,5.6928 a 1.5001977,1.5001977 0 0 1 -2.1216,-2.1216 l 5.694,-5.694 a 16.2,16.2 0 0 1 -2.8368,-5.0184 q -0.738,0.072 -1.4964,0.07321 c -8.2847997,0 -14.9999997,-6.7152 -14.9999997,-15 v -9.9 a 5.1,5.1 0 0 1 5.1,-5.100006 z m 8.5872,34.9344 a 13.14,13.14 0 0 0 8.2128,2.8656 c 7.29,0 13.2,-5.91 13.2,-13.2 v -11.1 a 2.1,2.1 0 0 0 -2.1,-2.1 H 33.8 c -7.29,0 -13.2,5.91 -13.2,13.2 0,3.1044 1.0716,5.9592 2.8656,8.2128 l 10.7784,-10.7784 a 1.5001977,1.5001977 0 0 1 2.1216,2.1216 z M 17,32.399901 q 0.3888,0 0.7728,-0.024 a 16.8,16.8 0 0 1 -0.1728,-2.376 c 0,-2.0472 0.3804,-4.0068 1.0728,-5.8104 l -7.8336,-7.8336 a 1.5001977,1.5001977 0 0 1 2.1216,-2.1216 l 7.1304,7.1304 a 16.26,16.26 0 0 1 7.62,-6.3816 A 12,12 0 0 0 17,8.3999015 H 7.1000003 a 2.1,2.1 0 0 0 -2.1,2.0999995 v 9.9 c 0,6.6276 5.3723997,12 11.9999997,12"
+     id="path1"
+     style="fill:#000000;fill-opacity:1;stroke-width:1.2" />
+</svg>
