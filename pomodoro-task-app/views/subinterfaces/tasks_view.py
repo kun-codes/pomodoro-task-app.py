@@ -85,7 +85,7 @@ class TaskListView(Ui_TaskView, QWidget):
         self.completedTasksCard.setLayout(QVBoxLayout())
         self.scrollAreaWidgetContents.layout().addWidget(self.completedTasksCard)
 
-        self.completedTasksList = TaskList(self)
+        self.completedTasksList = TaskList(self.completedTasksCard)
         self.completedTasksList.setModel(TaskListModel(TaskType.COMPLETED))
         self.completedTasksList.setObjectName("completedTasksList")
         self.completedTasksCard.layout().addWidget(self.completedTasksList)
