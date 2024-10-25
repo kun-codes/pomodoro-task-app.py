@@ -40,45 +40,6 @@ class MainWindow(FluentWindow):
         self.website_filter_interface = WebsiteBlockerView(self.workplace_list_model)
         self.website_filter_interface.setObjectName('website_filter_interface')
 
-        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.toggleUIElementsBasedOnTimerState)
-        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.toggle_website_filtering
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.store_current_task
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.store_already_elapsed_time
-        )
-        self.pomodoro_interface.pauseResumeButton.clicked.connect(
-            self.spawnTaskStartedInfoBar
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(
-            self.updateTaskTime
-        )
-        self.task_interface.todoTasksList.model().taskDeletedSignal.connect(
-            self.check_current_task_deleted
-        )
-        self.task_interface.completedTasksList.model().taskMovedSignal.connect(
-            self.check_current_task_moved
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.sessionStoppedSignal.connect(
-            self.updateTaskTimeDB
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.durationSkippedSignal.connect(
-            self.updateTaskTimeDB
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.sessionPausedSignal.connect(
-            self.updateTaskTimeDB
-        )
-        self.website_filter_interface.blockTypeComboBox.currentIndexChanged.connect(
-            lambda: self.toggle_website_filtering(self.pomodoro_interface.pomodoro_timer_obj.getTimerState())
-        )
-        self.website_filter_interface.saveButton.clicked.connect(
-            lambda: self.toggle_website_filtering(self.pomodoro_interface.pomodoro_timer_obj.getTimerState())
-        )
-
         self.manage_workspace_dialog = None
 
         self.website_blocker_manager = WebsiteBlockerManager()
@@ -259,6 +220,44 @@ class MainWindow(FluentWindow):
         logger.debug(f"Updated DB with elapsed time: {final_elapsed_time}")
 
     def connectSignalsToSlots(self):
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
+            self.toggleUIElementsBasedOnTimerState)
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
+            self.toggle_website_filtering
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
+            self.store_current_task
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
+            self.store_already_elapsed_time
+        )
+        self.pomodoro_interface.pauseResumeButton.clicked.connect(
+            self.spawnTaskStartedInfoBar
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(
+            self.updateTaskTime
+        )
+        self.task_interface.todoTasksList.model().taskDeletedSignal.connect(
+            self.check_current_task_deleted
+        )
+        self.task_interface.completedTasksList.model().taskMovedSignal.connect(
+            self.check_current_task_moved
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.sessionStoppedSignal.connect(
+            self.updateTaskTimeDB
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.durationSkippedSignal.connect(
+            self.updateTaskTimeDB
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.sessionPausedSignal.connect(
+            self.updateTaskTimeDB
+        )
+        self.website_filter_interface.blockTypeComboBox.currentIndexChanged.connect(
+            lambda: self.toggle_website_filtering(self.pomodoro_interface.pomodoro_timer_obj.getTimerState())
+        )
+        self.website_filter_interface.saveButton.clicked.connect(
+            lambda: self.toggle_website_filtering(self.pomodoro_interface.pomodoro_timer_obj.getTimerState())
+        )
         self.workplace_list_model.current_workspace_changed.connect(load_workspace_settings)
         self.workplace_list_model.current_workspace_changed.connect(
             self.website_filter_interface.onCurrentWorkspaceChanged
