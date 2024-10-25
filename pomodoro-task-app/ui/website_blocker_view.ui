@@ -96,10 +96,24 @@
         </layout>
        </item>
        <item>
-        <widget class="PlainTextEdit" name="blockListTextEdit"/>
+        <widget class="CodeEditor" name="blockListTextEdit">
+         <property name="frameShape">
+          <enum>QFrame::Shape::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Shadow::Raised</enum>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="PlainTextEdit" name="allowListTextEdit"/>
+        <widget class="CodeEditor" name="allowListTextEdit">
+         <property name="frameShape">
+          <enum>QFrame::Shape::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Shadow::Raised</enum>
+         </property>
+        </widget>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -185,9 +199,10 @@
    <header>qfluentwidgets</header>
   </customwidget>
   <customwidget>
-   <class>PlainTextEdit</class>
-   <extends>QPlainTextEdit</extends>
-   <header>qfluentwidgets</header>
+   <class>CodeEditor</class>
+   <extends>QFrame</extends>
+   <header>prefabs.codeEditor</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'website_blocker_view.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,11 +15,12 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QSizePolicy, QSpacerItem,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QSizePolicy,
+    QSpacerItem, QVBoxLayout, QWidget)
 
-from qfluentwidgets import (BodyLabel, ComboBox, PlainTextEdit, PrimaryPushButton,
-    PushButton, SingleDirectionScrollArea, TitleLabel, ToolButton)
+from prefabs.codeEditor import CodeEditor
+from qfluentwidgets import (BodyLabel, ComboBox, PrimaryPushButton, PushButton,
+    SingleDirectionScrollArea, TitleLabel, ToolButton)
 
 class Ui_WebsiteBlockView(object):
     def setupUi(self, WebsiteBlockView):
@@ -68,13 +69,17 @@ class Ui_WebsiteBlockView(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 
-        self.blockListTextEdit = PlainTextEdit(self.scrollAreaWidgetContents)
+        self.blockListTextEdit = CodeEditor(self.scrollAreaWidgetContents)
         self.blockListTextEdit.setObjectName(u"blockListTextEdit")
+        self.blockListTextEdit.setFrameShape(QFrame.Shape.StyledPanel)
+        self.blockListTextEdit.setFrameShadow(QFrame.Shadow.Raised)
 
         self.verticalLayout.addWidget(self.blockListTextEdit)
 
-        self.allowListTextEdit = PlainTextEdit(self.scrollAreaWidgetContents)
+        self.allowListTextEdit = CodeEditor(self.scrollAreaWidgetContents)
         self.allowListTextEdit.setObjectName(u"allowListTextEdit")
+        self.allowListTextEdit.setFrameShape(QFrame.Shape.StyledPanel)
+        self.allowListTextEdit.setFrameShadow(QFrame.Shadow.Raised)
 
         self.verticalLayout.addWidget(self.allowListTextEdit)
 
