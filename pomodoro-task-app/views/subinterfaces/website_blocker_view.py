@@ -86,8 +86,6 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
             self.model.update_target_list_urls(URLListType.ALLOWLIST, urls)
             self.initTextEdits(WebsiteFilterType.ALLOWLIST)
 
-        self.initTextEdits()
-
         self.saveButton.setDisabled(True)
         self.blockTypeComboBox.setDisabled(False)
 
