@@ -64,11 +64,19 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         current_website_filter_type = self.model.get_website_filter_type()
 
         if current_website_filter_type == WebsiteFilterType.BLOCKLIST:
-            urls = [url for url in blockListTextBeforeSave.split('\n')]  # not removing empty strings as it can cause
+            urls = []
+            block_count = self.blockListTextEdit.blockCount()
+            for i in range(block_count):
+                block = self.blockListTextEdit.document().findBlockByNumber(i)
+                urls.append(block.text())
             # problems in showing the line numbers of invalid urls
             # using list comprehension instead of set comprehension to maintain the order of urls
         elif current_website_filter_type == WebsiteFilterType.ALLOWLIST:
-            urls = [url for url in allowListTextBeforeSave.split('\n')]
+            urls = []
+            block_count = self.allowListTextEdit.blockCount()
+            for i in range(block_count):
+                block = self.allowListTextEdit.document().findBlockByNumber(i)
+                urls.append(block.text())
 
         is_all_urls_valid = self.model.validate_urls(urls)
         if not is_all_urls_valid:
