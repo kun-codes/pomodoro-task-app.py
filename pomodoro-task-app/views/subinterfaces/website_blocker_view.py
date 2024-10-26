@@ -104,7 +104,9 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         # show infobar
         InfoBar.error(
             "Invalid URLs",
-            f"URLs at line numbers {', '.join(map(str, line_numbers))} are invalid.",
+    f"URLs at line numbers {', '.join(map(str, line_numbers[:10]))}"
+            f"{'...' if len(line_numbers) > 10 else ''} are invalid.",  # only show first 10 invalid url,
+            # if there are more than 10 that then show ... after the first 10 invalid url line numbers
             orient=Qt.Orientation.Vertical,
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,
