@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 
-from PySide6.QtCore import QObject
+from PySide6.QtCore import QObject, Signal
 from enum import Enum
 from models.workspace_list_model import WorkspaceListModel
 from models.db_tables import engine, Workspace
@@ -11,9 +11,13 @@ from urllib.parse import urlparse
 from loguru import logger
 from models.workspace_lookup import WorkspaceLookup
 import re
+import validators
 
 
 class WebsiteListManager(QObject):
+
+    invalidURLSignal = Signal(list)  # list is line numbers of invalid urls. it is a list of integers
+
     def __init__(self):
         super().__init__()
 
@@ -62,15 +66,10 @@ class WebsiteListManager(QObject):
         return self.website_filter_type
 
     def update_target_list_urls(self, target_list: URLListType, target_list_urls: set):
-        valid_urls = set()
-        for line_number, url in enumerate(target_list_urls):
-            result = self.validate_url(url)
-            if not result:
-                # todo: show error message in UI
-                logger.error(f"Invalid URL at line {line_number + 1}: {url}")
-            else:
-                valid_urls.add(url)
-
+        """
+        This method updates the target list of urls with the new set of urls. It assumes that all urls are valid.
+        Use validate_urls() to check if the urls are valid before calling this method.
+        """
         with get_session() as session:
 
             current_urls = set()
@@ -90,8 +89,8 @@ class WebsiteListManager(QObject):
                 target_class = AllowlistExceptionURL
 
 
-            urls_to_add = valid_urls - current_urls  # new url = url not in old set but in new set
-            urls_to_remove = current_urls - valid_urls # removed url = url not in new set but in old set
+            urls_to_add = target_list_urls - current_urls  # new url = url not in old set but in new set
+            urls_to_remove = current_urls - target_list_urls # removed url = url not in new set but in old set
 
             if urls_to_remove:
                 self.remove_urls(session, urls_to_remove, target_class)
@@ -103,34 +102,30 @@ class WebsiteListManager(QObject):
 
     # helper function for validate_url()
     def add_default_scheme(self, url):
-        if not urlparse(url).scheme:
-            return f"https://{url}"
-
-    # helper function for is_valid_url()
-    def is_valid_url(self, url):
-        try:
-            result = urlparse(url)
-            return all([result.scheme, result.netloc])
-        except ValueError:
-            return False
-
-    # helper function for is_valid_url()
-    def is_valid_domain(self, domain):
-        regex = r'^(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+\.[a-zA-Z]{2,11}?$'
-        return re.match(regex, domain) is not None
-
-    def validate_url(self, url):
-        url = self.add_default_scheme(url)
-        if not self.is_valid_url(url):
-            return False
-
         parsed_url = urlparse(url)
-        result = self.is_valid_domain(parsed_url.netloc)
+        if not parsed_url.scheme:
+            return f"https://{url}"
+        return url
 
-        if result:
-            return (result, url)
+    def validate_urls(self, urls: list):
+        invalid_urls_line_numbers = list()
+        for n, url in enumerate(urls, start=1):
+            # logger.debug(f"{n} {url} empty?={not url}")
+            if not url.strip():  # skip empty strings
+                continue
+
+            url = self.add_default_scheme(url)  # add default scheme if not present
+
+            if not validators.url(url):
+                invalid_urls_line_numbers.append(n)
+
+        logger.debug(f"Invalid urls: {invalid_urls_line_numbers}")
+
+        if invalid_urls_line_numbers:
+            self.invalidURLSignal.emit(invalid_urls_line_numbers)
+            return False
         else:
-            return (result, None)
+            return True
 
     # helper function for update_target_list_urls()
     def add_urls(self, session, urls: set, target_class):

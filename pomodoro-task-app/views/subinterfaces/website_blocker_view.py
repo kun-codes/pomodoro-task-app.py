@@ -1,5 +1,7 @@
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget
-from qfluentwidgets import FluentIcon, Flyout, InfoBarIcon, FlyoutAnimationType
+from qfluentwidgets import FluentIcon, Flyout, InfoBarIcon, FlyoutAnimationType, InfoBar, InfoBadgePosition, \
+    InfoBarPosition
 
 from constants import WebsiteFilterType, URLListType
 from models.website_list_manager_model import WebsiteListManager
@@ -25,6 +27,8 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
 
         self.initWidget()
         self.connectSignalsToSlots()
+
+        self.model.invalidURLSignal.connect(self.onInvalidURLSignal)
 
         self.saveButton.setDisabled(True)
 
@@ -54,17 +58,31 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         # todo: show the user a tip that they can enable the combo box again by clicking on save or cancel buttons
 
     def onSaveButtonClicked(self):
-        self.blockListText = self.blockListTextEdit.toPlainText().strip()
-        self.allowListText = self.allowListTextEdit.toPlainText().strip()
+        blockListTextBeforeSave = self.blockListTextEdit.toPlainText().strip()
+        allowListTextBeforeSave = self.allowListTextEdit.toPlainText().strip()
 
         current_website_filter_type = self.model.get_website_filter_type()
+
         if current_website_filter_type == WebsiteFilterType.BLOCKLIST:
-            # assuming all urls are separated by new line and are valid
-            urls = {url.strip() for url in self.blockListText.split('\n') if url.strip()}
+            urls = [url for url in blockListTextBeforeSave.split('\n')]  # not removing empty strings as it can cause
+            # problems in showing the line numbers of invalid urls
+            # using list comprehension instead of set comprehension to maintain the order of urls
+        elif current_website_filter_type == WebsiteFilterType.ALLOWLIST:
+            urls = [url for url in allowListTextBeforeSave.split('\n')]
+
+        is_all_urls_valid = self.model.validate_urls(urls)
+        if not is_all_urls_valid:
+            # InvalidURLSignal will be emitted and trigger onInvalidURLSignal() method
+            return  # return and don't save the urls
+
+        # urls are now valid
+        urls = set(urls)  # converting to set as self.model.update_target_list_urls() expects a set
+        urls = {url.strip() for url in urls if url.strip()}  # removing empty strings and strings with only whitespaces
+
+        if current_website_filter_type == WebsiteFilterType.BLOCKLIST:
             self.model.update_target_list_urls(URLListType.BLOCKLIST, urls)
             self.initTextEdits(WebsiteFilterType.BLOCKLIST)
         elif current_website_filter_type == WebsiteFilterType.ALLOWLIST:
-            urls = {url.strip() for url in self.allowListText.split('\n') if url.strip()}
             self.model.update_target_list_urls(URLListType.ALLOWLIST, urls)
             self.initTextEdits(WebsiteFilterType.ALLOWLIST)
 
@@ -72,6 +90,18 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
 
         self.saveButton.setDisabled(True)
         self.blockTypeComboBox.setDisabled(False)
+
+    def onInvalidURLSignal(self, line_numbers: list[int]):
+        # show infobar
+        InfoBar.error(
+            "Invalid URLs",
+            f"URLs at line numbers {', '.join(map(str, line_numbers))} are invalid.",
+            orient=Qt.Orientation.Vertical,
+            isClosable=True,
+            position=InfoBarPosition.TOP_RIGHT,
+            duration=4000,
+            parent=self
+        )
 
     def onCancelButtonClicked(self):
         self.blockListTextEdit.setPlainText(self.blockListText)
