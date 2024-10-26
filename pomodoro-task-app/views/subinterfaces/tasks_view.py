@@ -101,7 +101,7 @@ class TaskListView(Ui_TaskView, QWidget):
         self.editTaskTimeButton.clicked.connect(self.editTaskTime)
 
     def addTask(self):
-        dialog = AddTaskDialog(self)
+        dialog = AddTaskDialog(self.window())
         # if user clicks on add task inside dialog
         if dialog.exec():
             task_name = dialog.taskEdit.text()

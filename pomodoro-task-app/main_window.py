@@ -78,8 +78,7 @@ class MainWindow(FluentWindow):
 
     def onWorkspaceManagerClicked(self):
         if self.manage_workspace_dialog is None:
-            # parent is set according to: https://pyqt-fluent-widgets.readthedocs.io/en/latest/navigation.html
-            self.manage_workspace_dialog = ManageWorkspaceDialog(parent=self.stackedWidget, workspaceListModel=self.workplace_list_model)
+            self.manage_workspace_dialog = ManageWorkspaceDialog(parent=self.window(), workspaceListModel=self.workplace_list_model)
 
         self.manage_workspace_dialog.show()
 
