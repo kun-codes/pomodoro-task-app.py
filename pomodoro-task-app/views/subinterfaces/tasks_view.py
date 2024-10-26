@@ -120,42 +120,23 @@ class TaskListView(Ui_TaskView, QWidget):
 
     def editTaskTime(self):
         row = None
+        task_list_model = None
         if self.todoTasksList.selectionModel().hasSelection():
             row = self.todoTasksList.selectionModel().currentIndex()
+            task_list_model = self.todoTasksList.model()
         elif self.completedTasksList.selectionModel().hasSelection():
             row = self.completedTasksList.selectionModel().currentIndex()
+            task_list_model = self.completedTasksList.model()
 
         if row is not None:
             task_id = row.data(TaskListModel.IDRole)
-            dialog = EditTaskTimeDialog(self, task_id)
+            dialog = EditTaskTimeDialog(self.window(), task_id)
 
             if dialog.exec():
                 elapsed_time = dialog.getElapsedTime()
-                self.onTaskElapsedTimeChanged(elapsed_time)
+                task_list_model.setData(row, elapsed_time, TaskListModel.ElapsedTimeRole)
                 estimated_time = dialog.getTargetTime()
-                self.onTaskEstimateTimeChanged(estimated_time)
-
-    def onTaskElapsedTimeChanged(self, time):
-        row = None
-        if self.todoTasksList.selectionModel().hasSelection():
-            row = self.todoTasksList.selectionModel().currentIndex()
-        elif self.completedTasksList.selectionModel().hasSelection():
-            row = self.completedTasksList.selectionModel().currentIndex()
-
-        if row is not None:
-            row = row.row()
-            self.todoTasksList.model().updateTask(row, elapsed_time=time)
-
-    def onTaskEstimateTimeChanged(self, time):
-        row = None
-        if self.todoTasksList.selectionModel().hasSelection():
-            row = self.todoTasksList.selectionModel().currentIndex()
-        elif self.completedTasksList.selectionModel().hasSelection():
-            row = self.completedTasksList.selectionModel().currentIndex()
-
-        if row is not None:
-            row = row.row()
-            self.todoTasksList.model().updateTask(row, target_time=time)
+                task_list_model.setData(row, estimated_time, TaskListModel.TargetTimeRole)
 
     def setupSelectionBehavior(self):
         """

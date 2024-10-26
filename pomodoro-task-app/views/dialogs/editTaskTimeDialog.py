@@ -10,8 +10,8 @@ class EditTaskTimeDialog(MessageBoxBase):
         self.elapsedTimeLabel = SubtitleLabel("Elapsed Time", self)
         self.estimateTimeLabel = SubtitleLabel("Estimated Time", self)
 
-        self.elapsedTimePicker = TimePicker(self)
-        self.estimateTimePicker = TimePicker(self)
+        self.elapsedTimePicker = TimePicker(self, showSeconds=True)
+        self.estimateTimePicker = TimePicker(self, showSeconds=True)
 
         elapsed_time = TaskLookup.get_elapsed_time(task_id)
         target_time = TaskLookup.get_target_time(task_id)
