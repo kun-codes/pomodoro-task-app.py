@@ -1,6 +1,6 @@
 from PySide6.QtCore import QSize, QRect, Qt, Slot
-from PySide6.QtGui import QPainter, QColor, QTextFormat, QFont
-from PySide6.QtWidgets import QWidget
+from PySide6.QtGui import QPainter, QColor, QTextFormat, QFont, QTextCharFormat, QTextCursor
+from PySide6.QtWidgets import QWidget, QTextEdit
 from qfluentwidgets import PlainTextEdit, TextEdit, isDarkTheme, setCustomStyleSheet, qconfig
 
 from models.config import AppSettings
@@ -30,6 +30,8 @@ class CodeEditor(PlainTextEdit):
 
         self._currentLineHighlightLightColor = QColor(230, 230, 230)
         self._currentLineHighlightDarkColor = QColor(53, 53, 53)
+
+        self._underline_selections = []
 
         self.blockCountChanged[int].connect(self.update_line_number_area_width)
         self.updateRequest[QRect, int].connect(self.update_line_number_area)
@@ -142,7 +144,7 @@ class CodeEditor(PlainTextEdit):
         extra_selections = []
 
         if not self.isReadOnly() and self.hasFocus():
-            selection = TextEdit.ExtraSelection()
+            selection = QTextEdit.ExtraSelection()
             line_color = self._currentLineHighlightDarkColor if isDarkTheme() else self._currentLineHighlightLightColor
             selection.format.setBackground(line_color)
             selection.format.setProperty(QTextFormat.FullWidthSelection, True)
@@ -150,12 +152,31 @@ class CodeEditor(PlainTextEdit):
             selection.cursor.clearSelection()
             extra_selections.append(selection)
 
+        extra_selections.extend(self._underline_selections)
+
         self.setExtraSelections(extra_selections)
 
     def focusOutEvent(self, e):
         super().focusOutEvent(e)
-        self.setExtraSelections([])
+        self.setExtraSelections(self._underline_selections)
 
+    def underline_lines(self, line_numbers: list[int]):
+        self._underline_selections = []
+        for line_number in line_numbers:
+            selection = QTextEdit.ExtraSelection()
+            line_color = QColor(Qt.GlobalColor.red)
+            format = QTextCharFormat()
+            format.setUnderlineStyle(QTextCharFormat.UnderlineStyle.WaveUnderline)
+            format.setUnderlineColor(line_color)
+            selection.format = format
+
+            cursor = QTextCursor(self.document().findBlockByNumber(line_number - 1))
+            cursor.select(QTextCursor.BlockUnderCursor)
+            selection.cursor = cursor
+
+            self._underline_selections.append(selection)
+
+        self.highlight_current_line()
 
 if __name__ == "__main__":
     from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget

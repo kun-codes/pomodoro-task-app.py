@@ -15,9 +15,6 @@ import validators
 
 
 class WebsiteListManager(QObject):
-
-    invalidURLSignal = Signal(list)  # list is line numbers of invalid urls. it is a list of integers
-
     def __init__(self):
         super().__init__()
 
@@ -122,10 +119,9 @@ class WebsiteListManager(QObject):
         logger.debug(f"Invalid urls: {invalid_urls_line_numbers}")
 
         if invalid_urls_line_numbers:
-            self.invalidURLSignal.emit(invalid_urls_line_numbers)
-            return False
+            return False, invalid_urls_line_numbers
         else:
-            return True
+            return True, None  # returning None as there are no invalid urls
 
     # helper function for update_target_list_urls()
     def add_urls(self, session, urls: set, target_class):

@@ -256,7 +256,7 @@ class MainWindow(FluentWindow):
         )
         self.website_filter_interface.saveButton.clicked.connect(
             lambda: self.toggle_website_filtering(self.pomodoro_interface.pomodoro_timer_obj.getTimerState())
-        )
+        )  # todo: check if the list has changed before restarting the filtering
         self.workplace_list_model.current_workspace_changed.connect(load_workspace_settings)
         self.workplace_list_model.current_workspace_changed.connect(
             self.website_filter_interface.onCurrentWorkspaceChanged

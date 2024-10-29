@@ -22,13 +22,15 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.blockListText = ""
         self.allowListText = ""
 
+        self.is_editing = False
+
         self.model = WebsiteListManager()
         self.workspace_list_model = workspace_list_model
 
         self.initWidget()
         self.connectSignalsToSlots()
 
-        self.model.invalidURLSignal.connect(self.onInvalidURLSignal)
+        # self.model.invalidURLSignal.connect(self.onInvalidURLSignal)
 
         self.saveButton.setDisabled(True)
 
@@ -52,15 +54,39 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.blockListTextEdit.textChanged.connect(self.onTextChanged)
         self.allowListTextEdit.textChanged.connect(self.onTextChanged)
 
+        self.blockListTextEdit.textChanged.connect(self.checkURLs)
+        self.allowListTextEdit.textChanged.connect(self.checkURLs)
+
     def onTextChanged(self):
+        self.is_editing = True
+
         self.saveButton.setDisabled(False)
         self.blockTypeComboBox.setDisabled(True)
         # todo: show the user a tip that they can enable the combo box again by clicking on save or cancel buttons
 
-    def onSaveButtonClicked(self):
-        blockListTextBeforeSave = self.blockListTextEdit.toPlainText().strip()
-        allowListTextBeforeSave = self.allowListTextEdit.toPlainText().strip()
+    def checkURLs(self):
+        urls = self.getListOfURLs()
 
+        is_all_urls_valid, invalid_url_line_numbers = self.model.validate_urls(urls)
+
+        # todo: underline invalid urls
+        current_website_filter_type = self.model.get_website_filter_type()
+
+        if is_all_urls_valid:
+            if current_website_filter_type == WebsiteFilterType.BLOCKLIST:
+                self.blockListTextEdit.underline_lines([])
+            elif current_website_filter_type == WebsiteFilterType.ALLOWLIST:
+                self.allowListTextEdit.underline_lines([])
+
+            return True, urls
+        else:
+            if current_website_filter_type == WebsiteFilterType.BLOCKLIST:
+                self.blockListTextEdit.underline_lines(invalid_url_line_numbers)
+            elif current_website_filter_type == WebsiteFilterType.ALLOWLIST:
+                self.allowListTextEdit.underline_lines(invalid_url_line_numbers)
+            return False, invalid_url_line_numbers
+
+    def getListOfURLs(self):
         current_website_filter_type = self.model.get_website_filter_type()
 
         if current_website_filter_type == WebsiteFilterType.BLOCKLIST:
@@ -78,10 +104,18 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
                 block = self.allowListTextEdit.document().findBlockByNumber(i)
                 urls.append(block.text())
 
-        is_all_urls_valid = self.model.validate_urls(urls)
-        if not is_all_urls_valid:
-            # InvalidURLSignal will be emitted and trigger onInvalidURLSignal() method
-            return  # return and don't save the urls
+        return urls
+
+    def onSaveButtonClicked(self):
+        is_all_urls_valid, result = self.checkURLs()
+
+        if is_all_urls_valid:
+            urls = result
+        else:
+            self.spawnInvalidURLInfoBar(result)
+            return
+
+        current_website_filter_type = self.model.get_website_filter_type()
 
         # urls are now valid
         urls = set(urls)  # converting to set as self.model.update_target_list_urls() expects a set
@@ -93,6 +127,8 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         elif current_website_filter_type == WebsiteFilterType.ALLOWLIST:
             self.model.update_target_list_urls(URLListType.ALLOWLIST, urls)
             self.initTextEdits(WebsiteFilterType.ALLOWLIST)
+
+        self.is_editing = False
 
         self.saveButton.setDisabled(True)
         self.blockTypeComboBox.setDisabled(False)
@@ -108,11 +144,10 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
             parent=self
         )
 
-    def onInvalidURLSignal(self, line_numbers: list[int]):
-        # show infobar
+    def spawnInvalidURLInfoBar(self, line_numbers: list[int]):
         InfoBar.error(
             "Invalid URLs",
-    f"URLs at line numbers {', '.join(map(str, line_numbers[:10]))}"
+            f"URLs at line numbers {', '.join(map(str, line_numbers[:10]))}"
             f"{'...' if len(line_numbers) > 10 else ''} are invalid.",  # only show first 10 invalid url,
             # if there are more than 10 that then show ... after the first 10 invalid url line numbers
             orient=Qt.Orientation.Vertical,
@@ -125,6 +160,8 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
     def onCancelButtonClicked(self):
         self.blockListTextEdit.setPlainText(self.blockListText)
         self.allowListTextEdit.setPlainText(self.allowListText)
+
+        self.is_editing = False
 
         self.saveButton.setDisabled(True)
         self.blockTypeComboBox.setDisabled(False)
@@ -197,6 +234,8 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.blockTypeComboBox.setCurrentIndex(current_workspace.website_filter_type.value)
 
         self.initTextEdits()
+
+        self.is_editing = False
 
         self.saveButton.setDisabled(True)
         self.blockTypeComboBox.setDisabled(False)
