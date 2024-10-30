@@ -1,49 +1,15 @@
-from PySide6.QtCore import Qt, QModelIndex, QSize
-from PySide6.QtWidgets import QWidget, QApplication, QSizePolicy, QAbstractItemView, QVBoxLayout
-from qfluentwidgets import FluentIcon, TitleLabel, ListView, SimpleCardWidget, LineEdit
+from PySide6.QtCore import QModelIndex
+from PySide6.QtWidgets import QWidget, QApplication, QSizePolicy, QVBoxLayout
 from loguru import logger
+from qfluentwidgets import FluentIcon, TitleLabel, SimpleCardWidget
 
 from models.db_tables import TaskType
-from models.drag_and_drop import DragItem
 from models.task_list_model import TaskListModel
+from prefabs.taskList import TaskList
 from ui_py.ui_tasks_list_view import Ui_TaskView
 from views.dialogs.addTaskDialog import AddTaskDialog
-from prefabs.roundedListItemDelegate import RoundedListItemDelegateDisplayTime
 from views.dialogs.editTaskTimeDialog import EditTaskTimeDialog
 
-
-class TaskList(ListView):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setDragEnabled(True)
-        self.setAcceptDrops(True)
-        self.setDropIndicatorShown(True)
-        self.setDefaultDropAction(Qt.DropAction.MoveAction)
-        self.setDragDropMode(QAbstractItemView.DragDropMode.DragDrop)
-        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
-        self.setAutoScroll(True)
-
-        self.setItemDelegate(RoundedListItemDelegateDisplayTime(self))
-
-    def edit(self, index, trigger, event):
-        """
-        Override the edit method to show lineedit which is pre-filled with the task name
-        """
-        if trigger == QAbstractItemView.DoubleClicked:
-            task_name = self.model().data(index, Qt.DisplayRole)
-            editor = LineEdit(self)
-            editor.setProperty("transparent", False)
-            editor.setText(task_name)
-            self.setIndexWidget(index, editor)
-            editor.setFocus()
-            editor.editingFinished.connect(lambda: self.commitData(editor))
-            return True
-        return super().edit(index, trigger, event)
-
-    def commitData(self, editor):
-        index = self.currentIndex()
-        self.model().setData(index, editor.text(), Qt.DisplayRole)
-        self.setIndexWidget(index, None)
 
 class TaskListView(Ui_TaskView, QWidget):
     """
