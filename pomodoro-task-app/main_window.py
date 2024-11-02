@@ -1,4 +1,5 @@
-from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition, InfoBar, InfoBarPosition
+from PySide6.QtWidgets import QWidget
+from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition, InfoBar, InfoBarPosition, TitleLabel
 from loguru import logger
 from PySide6.QtCore import Qt
 
@@ -18,9 +19,10 @@ from models.config import load_workspace_settings
 from website_blocker.website_blocker_manager import WebsiteBlockerManager
 from utils.find_mitmdump_executable import get_mitmdump_path
 from prefabs.customFluentIcon import CustomFluentIcon
+from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
 
 
-class MainWindow(FluentWindow):
+class MainWindow(PomodoroFluentWindow):
     def __init__(self):
         super().__init__()
 
