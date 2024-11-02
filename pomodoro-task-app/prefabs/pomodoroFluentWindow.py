@@ -1,7 +1,7 @@
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QHBoxLayout
+from PySide6.QtWidgets import QVBoxLayout, QWidget
 from qfluentwidgets import FluentWindow, setCustomStyleSheet
-from qfluentwidgets import TitleLabel
 from qfluentwidgets.window.fluent_window import FluentWindowBase
+from prefabs.bottomBar import BottomBar
 
 
 class VBoxLayoutInitializer(QWidget):
@@ -32,11 +32,7 @@ class PomodoroFluentWindow(PomodoroFluentWindowBase, FluentWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.bottomBar = QWidget(self)
-        self.bottomBarLayout = QHBoxLayout(self.bottomBar)
-        self.bottomBarLabel = TitleLabel(self.bottomBar)
-        self.bottomBarLabel.setText("Bottom bar")
-        self.bottomBarLayout.addWidget(self.bottomBarLabel)
+        self.bottomBar = BottomBar(self)
 
         self.vBoxLayout.addLayout(self.hBoxLayout)
         self.vBoxLayout.addWidget(self.bottomBar)

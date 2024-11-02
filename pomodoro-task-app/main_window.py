@@ -3,6 +3,7 @@ from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition, Inf
 from loguru import logger
 from PySide6.QtCore import Qt
 
+from utils.time_conversion import convert_ms_to_hh_mm_ss
 from constants import WebsiteFilterType, URLListType
 from config_values import ConfigValues
 from models.task_list_model import TaskListModel
@@ -52,6 +53,7 @@ class MainWindow(PomodoroFluentWindow):
         self.connectSignalsToSlots()
         self.initNavigation()
         self.initWindow()
+        self.initBottomBar()
 
         self.navigationInterface.panel.setFixedHeight(48)
 
@@ -77,6 +79,9 @@ class MainWindow(PomodoroFluentWindow):
     def initWindow(self):
         self.resize(1000, 800)
         self.setWindowTitle('Pomodoro Task List App')
+
+    def initBottomBar(self):
+        self.update_bottom_bar_timer_label()
 
     def onWorkspaceManagerClicked(self):
         if self.manage_workspace_dialog is None:
@@ -266,6 +271,45 @@ class MainWindow(PomodoroFluentWindow):
         self.workplace_list_model.current_workspace_changed.connect(
             self.task_interface.onCurrentWorkspaceChanged  # update task list when workspace is changed
         )
+        self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(
+            self.update_bottom_bar_timer_label
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
+            self.update_bottom_bar_timer_label
+        )
+
+    def update_bottom_bar_timer_label(self):
+        # check if timer is running
+        current_timer_state = self.pomodoro_interface.pomodoro_timer_obj.getTimerState()
+        if current_timer_state in [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
+            # timer is running
+
+            total_session_length_ms = 0
+            if current_timer_state == TimerState.WORK:
+                total_session_length_ms = ConfigValues.WORK_DURATION * 60 * 1000
+            elif current_timer_state == TimerState.BREAK:
+                total_session_length_ms = ConfigValues.BREAK_DURATION * 60 * 1000
+            elif current_timer_state == TimerState.LONG_BREAK:
+                total_session_length_ms = ConfigValues.LONG_BREAK_DURATION * 60 * 1000
+
+            remaining_time_ms = self.pomodoro_interface.pomodoro_timer_obj.remaining_time
+
+            if remaining_time_ms <= 0:  # have to compensate that the first second is not shown
+                remaining_time_ms = total_session_length_ms
+
+            hh, mm, ss = convert_ms_to_hh_mm_ss(remaining_time_ms)
+            t_hh, t_mm, t_ss = convert_ms_to_hh_mm_ss(total_session_length_ms)
+
+            self.bottomBar.timerLabel.setText(f"{current_timer_state.value}\n"
+                                              f"{hh:02d}:{mm:02d}:{ss:02d} / {t_hh:02d}:{t_mm:02d}:{t_ss:02d}")
+
+        else:
+            # timer is not running
+            hh, mm, ss = 0, 0, 0
+            t_hh, t_mm, t_ss = 0, 0, 0
+
+            self.bottomBar.timerLabel.setText(f"Timer is not running\n"
+                                              f"{hh:02d}:{mm:02d}:{ss:02d} / {t_hh:02d}:{t_mm:02d}:{t_ss:02d}")
 
     def check_valid_db(self):
         with get_session() as session:
