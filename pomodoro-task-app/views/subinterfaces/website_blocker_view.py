@@ -35,8 +35,6 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.saveButton.setDisabled(True)
 
     def initWidget(self):
-        self.websiteExceptionHintButton.setIcon(FluentIcon.QUESTION)
-
         self.blockListTextEdit.setHidden(True)
         self.allowListTextEdit.setHidden(True)
 
@@ -49,7 +47,6 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.cancelButton.clicked.connect(self.onCancelButtonClicked)
         self.workspace_list_model.current_workspace_deleted.connect(self.onCurrentWorkspaceDeleted)
         self.workspace_list_model.current_workspace_changed.connect(self.onCurrentWorkspaceChanged)
-        self.websiteExceptionHintButton.clicked.connect(self.onExceptionHelpButtonClicked)
 
         self.blockListTextEdit.textChanged.connect(self.onTextChanged)
         self.allowListTextEdit.textChanged.connect(self.onTextChanged)
@@ -165,17 +162,6 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
 
         self.saveButton.setDisabled(True)
         self.blockTypeComboBox.setDisabled(False)
-
-    def onExceptionHelpButtonClicked(self):
-        Flyout.create(
-            icon=InfoBarIcon.INFORMATION,
-            title="Exceptions for website filtering",
-            content="Add '+' in front of URLs which you want to allow in blocklist and vice versa.",
-            target=self.websiteExceptionHintButton,
-            parent=self,
-            isClosable=False,
-            aniType=FlyoutAnimationType.SLIDE_RIGHT
-        )
 
     def load_data(self):
         # todo: check for invalid urls

@@ -20,7 +20,6 @@ class TaskList(ListView):
 
         self.entered.disconnect()  # see mouseMoveEvent method's docstring
 
-        print(self.children())
 
         # self.setItemDelegate(RoundedListItemDelegateDisplayTime(self))
 

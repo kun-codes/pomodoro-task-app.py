@@ -17,6 +17,3 @@ class BottomBar(Ui_BottomBarWidget, QWidget):
         self.pauseResumeButton.setCheckable(True)
         self.pauseResumeButton.setChecked(True)
         self.skipButton.setCheckable(False)
-
-        print(self.timerLabel)
-        print(self.taskLabel)
