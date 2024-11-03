@@ -119,7 +119,7 @@ class Ui_WebsiteBlockView(object):
 
     def retranslateUi(self, WebsiteBlockView):
         WebsiteBlockView.setWindowTitle(QCoreApplication.translate("WebsiteBlockView", u"Form", None))
-        self.titleLabel.setText(QCoreApplication.translate("WebsiteBlockView", u"Website Blocker", None))
+        self.titleLabel.setText(QCoreApplication.translate("WebsiteBlockView", u"Website Filter", None))
         self.blockTypeLabel.setText(QCoreApplication.translate("WebsiteBlockView", u"Select type of website filtering: ", None))
         self.cancelButton.setText(QCoreApplication.translate("WebsiteBlockView", u"Cancel", None))
         self.saveButton.setText(QCoreApplication.translate("WebsiteBlockView", u"Save", None))
