@@ -1,11 +1,11 @@
-from PySide6.QtWidgets import QWidget
-from flask import Config
-from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition, InfoBar, InfoBarPosition, TitleLabel
+from qfluentwidgets import FluentIcon, NavigationItemPosition, InfoBar, InfoBarPosition
 from loguru import logger
 from PySide6.QtCore import Qt
+from pathlib import Path
 
 from utils.time_conversion import convert_ms_to_hh_mm_ss
-from constants import WebsiteFilterType, URLListType
+from config_paths import settings_dir
+from constants import WebsiteFilterType, URLListType, FIRST_RUN_DOTFILE_NAME
 from config_values import ConfigValues
 from models.config import workspace_specific_settings
 from models.task_list_model import TaskListModel
@@ -29,6 +29,7 @@ class MainWindow(PomodoroFluentWindow):
     def __init__(self):
         super().__init__()
 
+        self.check_first_run()
         self.check_valid_db()
 
         self.workplace_list_model = WorkspaceListModel()
@@ -374,6 +375,16 @@ class MainWindow(PomodoroFluentWindow):
                 current_workspace = CurrentWorkspace(current_workspace_id=workspace.id)
                 session.add(current_workspace)
                 session.commit()
+
+    def check_first_run(self):
+        settings_dir_path = Path(settings_dir)
+        first_run_dotfile_path = settings_dir_path.joinpath(FIRST_RUN_DOTFILE_NAME)
+
+        if not first_run_dotfile_path.exists():
+            logger.debug("First run detected")
+
+            # create the first run dotfile
+            first_run_dotfile_path.touch()
 
 
     def closeEvent(self, event):
