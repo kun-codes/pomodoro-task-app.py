@@ -48,7 +48,7 @@ class SpinBoxSettingCardSQL(SettingCard):
         self.spinBox.valueChanged.connect(self.__onValueChanged)
 
     def __onValueChanged(self, value: int):
-        """ spim box value changed slot """
+        """ spin box value changed slot """
         self.setValue(value)
         self.valueChanged.emit(value)
 

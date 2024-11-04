@@ -1,4 +1,4 @@
-from models.config import workspace_specific_settings
+from models.config import workspace_specific_settings, app_settings
 
 
 class ConfigValues:
@@ -9,4 +9,5 @@ class ConfigValues:
     AUTOSTART_WORK = workspace_specific_settings.get(workspace_specific_settings.autostart_work)
     AUTOSTART_BREAK = workspace_specific_settings.get(workspace_specific_settings.autostart_break)
     ENABLE_WEBSITE_FILTER = workspace_specific_settings.get(workspace_specific_settings.enable_website_filter)
+    PROXY_PORT = app_settings.get(app_settings.proxy_port)
 

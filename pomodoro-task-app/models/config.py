@@ -1,4 +1,4 @@
-from qfluentwidgets import RangeValidator, BoolValidator, Theme, qconfig, QConfig
+from qfluentwidgets import RangeValidator, BoolValidator, Theme, qconfig, QConfig, RangeConfigItem
 from prefabs.config.qconfig_sql import qconfig_custom
 
 from constants import WORK_DURATION, BREAK_DURATION, LONG_BREAK_DURATION, WORK_INTERVALS, AUTOSTART_WORK, \
@@ -30,7 +30,8 @@ class AppSettings(QConfig):
     Used for storing settings that are not workspace specific and global to the app.
     Documentation for QConfig is here: https://qfluentwidgets.com/pages/components/config/#usage
     """
-    pass
+    proxy_port = RangeConfigItem("AppSettings", "ProxyPort", 8080, RangeValidator(
+        1024, 65535))
 
 
 workspace_specific_settings = WorkspaceSettings()

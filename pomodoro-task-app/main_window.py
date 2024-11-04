@@ -7,7 +7,7 @@ from utils.time_conversion import convert_ms_to_hh_mm_ss
 from config_paths import settings_dir
 from constants import WebsiteFilterType, URLListType, FIRST_RUN_DOTFILE_NAME
 from config_values import ConfigValues
-from models.config import workspace_specific_settings
+from models.config import workspace_specific_settings, app_settings
 from models.task_list_model import TaskListModel
 from models.timer import TimerState
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
@@ -100,9 +100,11 @@ class MainWindow(PomodoroFluentWindow):
         if timerState in [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
             self.settings_interface.pomodoro_settings_group.setDisabled(True)
             workspace_selector_button.setDisabled(True)
+            self.settings_interface.proxy_port_card.setDisabled(True)
         else:
             self.settings_interface.pomodoro_settings_group.setDisabled(False)
             workspace_selector_button.setDisabled(False)
+            self.settings_interface.proxy_port_card.setDisabled(False)
 
     def toggle_website_filtering(self, timerState):
         if not ConfigValues.ENABLE_WEBSITE_FILTER:
@@ -134,7 +136,7 @@ class MainWindow(PomodoroFluentWindow):
 
         if timerState == TimerState.WORK:
             logger.debug("Starting website filtering")
-            self.website_blocker_manager.start_filtering(8080, joined_urls, block_type, mitmdump_path)
+            self.website_blocker_manager.start_filtering(ConfigValues.PROXY_PORT, joined_urls, block_type, mitmdump_path)
         else:
             logger.debug("Stopping website filtering")
             self.website_blocker_manager.stop_filtering(delete_proxy=True)
@@ -295,6 +297,9 @@ class MainWindow(PomodoroFluentWindow):
             lambda: self.toggle_website_filtering(self.pomodoro_interface.pomodoro_timer_obj.getTimerState())
         )
         self.stackedWidget.mousePressEvent = self.onStackedWidgetClicked
+        self.settings_interface.proxy_port_card.valueChanged.connect(
+            self.update_proxy_port
+        )
 
     def on_website_filter_enabled_setting_changed(self):
         enable_website_filter_setting_value = ConfigValues.ENABLE_WEBSITE_FILTER
@@ -312,6 +317,9 @@ class MainWindow(PomodoroFluentWindow):
                 duration=5000,
                 parent=self
             )
+
+    def update_proxy_port(self):
+        self.website_blocker_manager.proxy.port = ConfigValues.PROXY_PORT
 
     def update_bottom_bar_timer_label(self):
         # check if timer is running

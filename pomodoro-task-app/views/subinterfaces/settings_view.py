@@ -1,10 +1,11 @@
-from PySide6.QtWidgets import QWidget, QApplication
+from PySide6.QtWidgets import QWidget, QApplication, QAbstractSpinBox
 from loguru import logger
 from qfluentwidgets import SettingCardGroup, RangeSettingCard, FluentIcon, SwitchSettingCard, OptionsSettingCard, \
-    CustomColorSettingCard, ColorSettingCard, setCustomStyleSheet
+    CustomColorSettingCard, ColorSettingCard, setCustomStyleSheet, ComboBoxSettingCard
 
 from config_values import ConfigValues
 from models.config import workspace_specific_settings, app_settings
+from prefabs.setting_cards.SpinBoxSettingCard import SpinBoxSettingCard
 from prefabs.setting_cards.SpinBoxSettingCardSQL import SpinBoxSettingCardSQL
 from prefabs.setting_cards.RangeSettingCardSQL import RangeSettingCardSQL
 from prefabs.setting_cards.SwitchSettingCardSQL import SwitchSettingCardSQL
@@ -17,6 +18,7 @@ class SettingsView(QWidget, Ui_SettingsView):
     """
     For settings view of the app
     """
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -77,7 +79,7 @@ class SettingsView(QWidget, Ui_SettingsView):
         # Website Filter Settings
         self.website_filter_settings_group = SettingCardGroup(
             "Website Filter", self.scrollArea
-            )
+        )
         self.enable_website_filter_card = SwitchSettingCardSQL(
             CustomFluentIcon.WEBSITE_FILTER_VIEW,
             "Enable Website Filter",
@@ -85,6 +87,14 @@ class SettingsView(QWidget, Ui_SettingsView):
             workspace_specific_settings.enable_website_filter,
             self.website_filter_settings_group
         )
+        self.proxy_port_card = SpinBoxSettingCard(
+            app_settings.proxy_port,
+            CustomFluentIcon.PORT,
+            "Proxy Port",
+            "Select the port where the website filter runs",
+            self.website_filter_settings_group
+        )
+
 
         # Personalization Settings
         self.personalization_settings_group = SettingCardGroup(
@@ -121,6 +131,10 @@ class SettingsView(QWidget, Ui_SettingsView):
         self.scrollAreaWidgetContents.layout().addWidget(self.pomodoro_settings_group)
 
         self.website_filter_settings_group.addSettingCard(self.enable_website_filter_card)
+        self.website_filter_settings_group.addSettingCard(self.proxy_port_card)
+
+        self.proxy_port_card.spinBox.setSymbolVisible(False)
+        self.proxy_port_card.spinBox.setMinimumWidth(150)
 
         self.scrollAreaWidgetContents.layout().addWidget(self.website_filter_settings_group)
 
@@ -152,6 +166,8 @@ class SettingsView(QWidget, Ui_SettingsView):
     #
     #     self.TitleLabel.setDisabled(True)
     #
+
+
     def onValueChanged(self):
         workspace_specific_settings.work_duration.valueChanged.connect(self.updateWorkDuration)
         workspace_specific_settings.break_duration.valueChanged.connect(self.updateBreakDuration)
@@ -160,7 +176,7 @@ class SettingsView(QWidget, Ui_SettingsView):
         workspace_specific_settings.autostart_work.valueChanged.connect(self.updateAutostartWork)
         workspace_specific_settings.autostart_break.valueChanged.connect(self.updateAutostartBreak)
         workspace_specific_settings.enable_website_filter.valueChanged.connect(self.updateEnableWebsiteFilter)
-
+        app_settings.proxy_port.valueChanged.connect(self.updateProxyPort)
 
     def updateBreakDuration(self):
         ConfigValues.BREAK_DURATION = workspace_specific_settings.get(workspace_specific_settings.break_duration)
@@ -171,8 +187,10 @@ class SettingsView(QWidget, Ui_SettingsView):
         logger.debug(f"Work Duration: {workspace_specific_settings.get(workspace_specific_settings.work_duration)}")
 
     def updateLongBreakDuration(self):
-        ConfigValues.LONG_BREAK_DURATION = workspace_specific_settings.get(workspace_specific_settings.long_break_duration)
-        logger.debug(f"Long Break Duration: {workspace_specific_settings.get(workspace_specific_settings.long_break_duration)}")
+        ConfigValues.LONG_BREAK_DURATION = workspace_specific_settings.get(
+            workspace_specific_settings.long_break_duration)
+        logger.debug(
+            f"Long Break Duration: {workspace_specific_settings.get(workspace_specific_settings.long_break_duration)}")
 
     def updateWorkIntervals(self):
         ConfigValues.WORK_INTERVALS = workspace_specific_settings.get(workspace_specific_settings.work_intervals)
@@ -187,12 +205,20 @@ class SettingsView(QWidget, Ui_SettingsView):
         logger.debug(f"Autostart Break: {workspace_specific_settings.get(workspace_specific_settings.autostart_break)}")
 
     def updateEnableWebsiteFilter(self):
-        ConfigValues.ENABLE_WEBSITE_FILTER = workspace_specific_settings.get(workspace_specific_settings.enable_website_filter)
-        logger.debug(f"Enable Website Filter: {workspace_specific_settings.get(workspace_specific_settings.enable_website_filter)}")
+        ConfigValues.ENABLE_WEBSITE_FILTER = workspace_specific_settings.get(
+            workspace_specific_settings.enable_website_filter)
+        logger.debug(
+            f"Enable Website Filter: {workspace_specific_settings.get(workspace_specific_settings.enable_website_filter)}")
+
+    def updateProxyPort(self):
+        ConfigValues.PROXY_PORT = app_settings.get(app_settings.proxy_port)
+        logger.debug(f"Proxy Port: {app_settings.get(app_settings.proxy_port)}")
 
     def __connectSignalToSlot(self):
         self.theme_card.optionChanged.connect(lambda ci: setTheme(workspace_specific_settings.get(ci)))
         self.theme_color_card.colorChanged.connect(lambda c: setThemeColor(c))
+        # self.proxy_port_card.valueChanged.connect
+
 
 if __name__ == "__main__":
     app = QApplication()

@@ -16,6 +16,7 @@ class CustomFluentIcon(FluentIconBase, Enum):
     WORK = "work"
     WORK_INTERVAL = "work_interval"
     WORKSPACE_SELECTOR_VIEW = "workspace_selector_view"
+    PORT = "port"
 
     def path(self, theme=Theme.AUTO):
         # getIconColor() return "white" or "black" according to current theme

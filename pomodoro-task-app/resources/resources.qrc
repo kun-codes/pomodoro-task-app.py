@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="iconsPrefix">
+    <file>icons/port_white.svg</file>
+    <file>icons/port_black.svg</file>
     <file>icons/workspace_selector_view_black.svg</file>
     <file>icons/workspace_selector_view_white.svg</file>
     <file>icons/website_filter_view_black.svg</file>
