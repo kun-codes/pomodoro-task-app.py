@@ -1,7 +1,9 @@
 from sqlalchemy import URL, create_engine, Column, Integer, String, Enum as SQLEnum, Boolean, ForeignKey, event, Engine
 from sqlalchemy.orm import declarative_base, relationship
 from enum import Enum
-from config_paths import db_path
+from pathlib import Path
+
+from config_paths import db_path, settings_dir
 from constants import WORK_DURATION, BREAK_DURATION, LONG_BREAK_DURATION, WORK_INTERVALS, AUTOSTART_WORK, \
     AUTOSTART_BREAK
 from constants import WebsiteFilterType, URLListType
@@ -11,6 +13,12 @@ url_object = URL.create(
     database=db_path,
 )
 engine = create_engine(url_object)
+
+settings_dir = Path(settings_dir)
+# if the settings directory does not exist, create it
+if not settings_dir.exists():
+    settings_dir.mkdir(parents=True)
+
 Base = declarative_base()
 
 # from: https://docs.sqlalchemy.org/en/20/dialects/sqlite.html#foreign-key-support
