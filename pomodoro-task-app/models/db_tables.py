@@ -5,7 +5,7 @@ from pathlib import Path
 
 from config_paths import db_path, settings_dir
 from constants import WORK_DURATION, BREAK_DURATION, LONG_BREAK_DURATION, WORK_INTERVALS, AUTOSTART_WORK, \
-    AUTOSTART_BREAK
+    AUTOSTART_BREAK, ENABLE_WEBSITE_FILTER
 from constants import WebsiteFilterType, URLListType
 
 url_object = URL.create(
@@ -64,6 +64,7 @@ class Workspace(Base):
     work_intervals = Column(Integer, default=WORK_INTERVALS)
     autostart_work = Column(Boolean, default=AUTOSTART_WORK)
     autostart_break = Column(Boolean, default=AUTOSTART_BREAK)
+    enable_website_filter = Column(Boolean, default=ENABLE_WEBSITE_FILTER)
     website_filter_type = Column(SQLEnum(WebsiteFilterType), default=WebsiteFilterType.BLOCKLIST)
 
     blocklist_urls = relationship("BlocklistURL", back_populates="workspace", cascade="all, delete-orphan")

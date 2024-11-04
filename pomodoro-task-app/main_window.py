@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QWidget
+from flask import Config
 from qfluentwidgets import FluentIcon, FluentWindow, NavigationItemPosition, InfoBar, InfoBarPosition, TitleLabel
 from loguru import logger
 from PySide6.QtCore import Qt
@@ -6,6 +7,7 @@ from PySide6.QtCore import Qt
 from utils.time_conversion import convert_ms_to_hh_mm_ss
 from constants import WebsiteFilterType, URLListType
 from config_values import ConfigValues
+from models.config import workspace_specific_settings
 from models.task_list_model import TaskListModel
 from models.timer import TimerState
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
@@ -55,6 +57,8 @@ class MainWindow(PomodoroFluentWindow):
         self.initWindow()
         self.initBottomBar()
 
+        self.website_filter_interface.setEnabled(ConfigValues.ENABLE_WEBSITE_FILTER)
+
         self.navigationInterface.panel.setFixedHeight(48)
 
     def initNavigation(self):
@@ -100,6 +104,12 @@ class MainWindow(PomodoroFluentWindow):
             workspace_selector_button.setDisabled(False)
 
     def toggle_website_filtering(self, timerState):
+        if not ConfigValues.ENABLE_WEBSITE_FILTER:
+            logger.debug("Website filtering is disabled, so not starting website filtering")
+            self.website_blocker_manager.stop_filtering(delete_proxy=True)
+            return
+
+        logger.debug("Website filtering is enabled, so starting website filtering")
         website_filter_type = self.website_filter_interface.model.get_website_filter_type()
         logger.debug(f"website_filter_type: {website_filter_type}")
 
@@ -277,6 +287,30 @@ class MainWindow(PomodoroFluentWindow):
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             self.update_bottom_bar_timer_label
         )
+        workspace_specific_settings.enable_website_filter.valueChanged.connect(
+            self.on_website_filter_enabled_setting_changed
+        )
+        workspace_specific_settings.enable_website_filter.valueChanged.connect(
+            lambda: self.toggle_website_filtering(self.pomodoro_interface.pomodoro_timer_obj.getTimerState())
+        )
+        self.stackedWidget.mousePressEvent = self.onStackedWidgetClicked
+
+    def on_website_filter_enabled_setting_changed(self):
+        enable_website_filter_setting_value = ConfigValues.ENABLE_WEBSITE_FILTER
+
+        self.website_filter_interface.setEnabled(enable_website_filter_setting_value)
+
+    def onStackedWidgetClicked(self, event):
+        if self.stackedWidget.currentIndex() == 2 and not self.website_filter_interface.isEnabled():
+            # show an infobar to inform the user that website filter is disabled and how it can be enabled
+            InfoBar.warning(
+                title="Website Filter is Disabled",
+                content="You can enable the website filter from the settings view",
+                isClosable=True,
+                position=InfoBarPosition.TOP_RIGHT,
+                duration=5000,
+                parent=self
+            )
 
     def update_bottom_bar_timer_label(self):
         # check if timer is running

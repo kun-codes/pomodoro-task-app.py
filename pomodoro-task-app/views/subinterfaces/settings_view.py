@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget, QApplication
 from loguru import logger
 from qfluentwidgets import SettingCardGroup, RangeSettingCard, FluentIcon, SwitchSettingCard, OptionsSettingCard, \
-    CustomColorSettingCard, ColorSettingCard
+    CustomColorSettingCard, ColorSettingCard, setCustomStyleSheet
 
 from config_values import ConfigValues
 from models.config import workspace_specific_settings, app_settings
@@ -23,6 +23,7 @@ class SettingsView(QWidget, Ui_SettingsView):
 
         self.initSettings()
         self.initLayout()
+        # self.initQss()
         self.onValueChanged()
 
     def initSettings(self):
@@ -73,6 +74,18 @@ class SettingsView(QWidget, Ui_SettingsView):
             self.pomodoro_settings_group
         )
 
+        # Website Filter Settings
+        self.website_filter_settings_group = SettingCardGroup(
+            "Website Filter", self.scrollArea
+            )
+        self.enable_website_filter_card = SwitchSettingCardSQL(
+            CustomFluentIcon.WEBSITE_FILTER_VIEW,
+            "Enable Website Filter",
+            "Enable website filtering",
+            workspace_specific_settings.enable_website_filter,
+            self.website_filter_settings_group
+        )
+
         # Personalization Settings
         self.personalization_settings_group = SettingCardGroup(
             self.tr('Personalization'), self.scrollArea)
@@ -107,11 +120,38 @@ class SettingsView(QWidget, Ui_SettingsView):
 
         self.scrollAreaWidgetContents.layout().addWidget(self.pomodoro_settings_group)
 
+        self.website_filter_settings_group.addSettingCard(self.enable_website_filter_card)
+
+        self.scrollAreaWidgetContents.layout().addWidget(self.website_filter_settings_group)
+
         self.personalization_settings_group.addSettingCard(self.theme_card)
         self.personalization_settings_group.addSettingCard(self.theme_color_card)
 
         self.scrollAreaWidgetContents.layout().addWidget(self.personalization_settings_group)
 
+    # todo: change colour of Labels when in disabled state
+    # https://github.com/zhiyiYo/PyQt-Fluent-Widgets/issues/314#issuecomment-1614427404
+    # def initQss(self):
+    #     qss_light = """
+    #     FluentLabelBase:disabled {
+    #         color: lightgray;
+    #     }
+    #     """
+    #     qss_dark = """
+    #     FluentLabelBase:disabled {
+    #         color: darkgray;
+    #     }
+    #     """
+    #
+    #
+    #     # from: https://github.com/zhiyiYo/PyQt-Fluent-Widgets/issues/707
+    #     self.style().unpolish(self)
+    #     self.style().polish(self)
+    #
+    #     setCustomStyleSheet(self, qss_light, qss_dark)
+    #
+    #     self.TitleLabel.setDisabled(True)
+    #
     def onValueChanged(self):
         workspace_specific_settings.work_duration.valueChanged.connect(self.updateWorkDuration)
         workspace_specific_settings.break_duration.valueChanged.connect(self.updateBreakDuration)
@@ -119,6 +159,7 @@ class SettingsView(QWidget, Ui_SettingsView):
         workspace_specific_settings.work_intervals.valueChanged.connect(self.updateWorkIntervals)
         workspace_specific_settings.autostart_work.valueChanged.connect(self.updateAutostartWork)
         workspace_specific_settings.autostart_break.valueChanged.connect(self.updateAutostartBreak)
+        workspace_specific_settings.enable_website_filter.valueChanged.connect(self.updateEnableWebsiteFilter)
 
 
     def updateBreakDuration(self):
@@ -144,6 +185,10 @@ class SettingsView(QWidget, Ui_SettingsView):
     def updateAutostartBreak(self):
         ConfigValues.AUTOSTART_BREAK = workspace_specific_settings.get(workspace_specific_settings.autostart_break)
         logger.debug(f"Autostart Break: {workspace_specific_settings.get(workspace_specific_settings.autostart_break)}")
+
+    def updateEnableWebsiteFilter(self):
+        ConfigValues.ENABLE_WEBSITE_FILTER = workspace_specific_settings.get(workspace_specific_settings.enable_website_filter)
+        logger.debug(f"Enable Website Filter: {workspace_specific_settings.get(workspace_specific_settings.enable_website_filter)}")
 
     def __connectSignalToSlot(self):
         self.theme_card.optionChanged.connect(lambda ci: setTheme(workspace_specific_settings.get(ci)))

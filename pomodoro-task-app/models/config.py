@@ -2,7 +2,7 @@ from qfluentwidgets import RangeValidator, BoolValidator, Theme, qconfig, QConfi
 from prefabs.config.qconfig_sql import qconfig_custom
 
 from constants import WORK_DURATION, BREAK_DURATION, LONG_BREAK_DURATION, WORK_INTERVALS, AUTOSTART_WORK, \
-    AUTOSTART_BREAK
+    AUTOSTART_BREAK, ENABLE_WEBSITE_FILTER
 from config_paths import settings_file_path
 from prefabs.config.config_item_sql import RangeConfigItemSQL, ConfigItemSQL
 from models.db_tables import Workspace
@@ -22,6 +22,7 @@ class WorkspaceSettings(QConfigSQL):
     work_intervals = RangeConfigItemSQL(Workspace, Workspace.work_intervals, WORK_INTERVALS, RangeValidator(1, 10))
     autostart_work = ConfigItemSQL(Workspace, Workspace.autostart_work, AUTOSTART_WORK, BoolValidator())
     autostart_break = ConfigItemSQL(Workspace, Workspace.autostart_break, AUTOSTART_BREAK, BoolValidator())
+    enable_website_filter = ConfigItemSQL(Workspace, Workspace.enable_website_filter, ENABLE_WEBSITE_FILTER, BoolValidator())
 
 
 class AppSettings(QConfig):

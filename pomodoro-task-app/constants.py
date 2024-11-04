@@ -14,6 +14,7 @@ LONG_BREAK_DURATION = 15
 WORK_INTERVALS = 2
 AUTOSTART_WORK = True
 AUTOSTART_BREAK = True
+ENABLE_WEBSITE_FILTER = True
 
 MITMDUMP_COMMAND_LINUX = '{} --set allow_remote=true --showhost -s {} --set "addresses_str={}" --set "block_type={}"'.format(
     '{}', os.path.join(getattr(sys, '_MEIPASS', Path(__file__).parent), 'website_blocker', 'filter.py'), '{}', '{}'
