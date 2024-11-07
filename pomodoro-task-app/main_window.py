@@ -153,6 +153,10 @@ class MainWindow(PomodoroFluentWindow):
         self.current_task_index = self.task_interface.currentTaskIndex()
 
     def spawnTaskStartedInfoBar(self):
+        if self.current_task_index is None:
+            return  # current task index can be None only when there is no tasks in todo list since when timer starts
+        # a task would be automatically selected as the current task if any number of tasks other than zero are present
+        # in the todo list
         current_task_name = self.current_task_index.data(Qt.DisplayRole)
         if not self.pomodoro_interface.pauseResumeButton.isChecked():
             InfoBar.success(
