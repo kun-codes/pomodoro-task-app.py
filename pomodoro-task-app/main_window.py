@@ -234,6 +234,12 @@ class MainWindow(PomodoroFluentWindow):
                 self.updateTaskTimeDB()
 
     def updateTaskTimeDB(self):
+        # since sessionStoppedSignal is emitted when the timer is stopped, we have to check if the current task index
+        # is valid or not. Current Task Index can be invalid due to it being None when there are no tasks in todo list
+        # when timer began or when current task is deleted and session is stopped automatically
+        if self.current_task_index is None:
+            return
+
         final_elapsed_time = self.task_interface.todoTasksList.model().data(self.current_task_index, TaskListModel.ElapsedTimeRole)
         self.task_interface.todoTasksList.model().setData(self.current_task_index, final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=True)
         logger.debug(f"Updated DB with elapsed time: {final_elapsed_time}")
