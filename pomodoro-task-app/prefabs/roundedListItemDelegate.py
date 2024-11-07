@@ -1,12 +1,12 @@
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtGui import QPainter, QColor, QPen
-from PySide6.QtWidgets import QListView, QStyleOptionViewItem, QStyle, QWidget, QApplication
-from qfluentwidgets import TableItemDelegate, isDarkTheme, themeColor, LineEdit
+from PySide6.QtWidgets import QListView, QStyleOptionViewItem, QStyle, QWidget
+from qfluentwidgets import isDarkTheme, themeColor, ListItemDelegate
 
 from models.task_list_model import TaskListModel
 
 
-class RoundedListItemDelegate(TableItemDelegate):
+class RoundedListItemDelegate(ListItemDelegate):
     """ Round List item delegate """
 
     def __init__(self, parent: QListView):

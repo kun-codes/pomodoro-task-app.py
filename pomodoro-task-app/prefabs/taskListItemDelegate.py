@@ -1,8 +1,7 @@
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPainter, QColor
-from PySide6.QtWidgets import QListView, QStyledItemDelegate
-from loguru import logger
-from qfluentwidgets import ListItemDelegate, isDarkTheme
+from PySide6.QtCore import Qt, QModelIndex, QMargins
+from PySide6.QtGui import QPainter, QColor, QPen
+from PySide6.QtWidgets import QListView, QStyledItemDelegate, QStyleOptionViewItem
+from qfluentwidgets import ListItemDelegate, isDarkTheme, themeColor
 
 
 class TaskListItemDelegate(ListItemDelegate):
@@ -10,7 +9,6 @@ class TaskListItemDelegate(ListItemDelegate):
 
     def __init__(self, parent: QListView):
         super().__init__(parent)
-
 
     def paint(self, painter, option, index):
         # I had to copy-paste the method from TableItemDelegate
