@@ -1,4 +1,7 @@
 from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex, QByteArray, QMimeData, QDataStream, QIODevice, Signal
+from PySide6.QtGui import QColor
+
+from models.config import AppSettings
 from sqlalchemy import update
 from loguru import logger
 
@@ -19,8 +22,15 @@ class TaskListModel(QAbstractListModel):
     def __init__(self, task_type: TaskType, parent=None):
         super().__init__(parent)
         self.task_type = task_type
+        self.current_task_index = None
         self.tasks = []
         self.load_data()
+
+    def setCurrentTaskIndex(self, index):
+        self.current_task_index = index
+
+    def currentTaskIndex(self):
+        return self.current_task_index
 
     def load_data(self):
         current_workspace_id = WorkspaceLookup.get_current_workspace_id()
@@ -58,6 +68,12 @@ class TaskListModel(QAbstractListModel):
         elif role == self.IconRole:
             task = self.tasks[index.row()]
             return task["icon"]
+        elif role == Qt.ItemDataRole.BackgroundRole:
+            if self.current_task_index == index:
+                theme_color: QColor = AppSettings.get(AppSettings, AppSettings.themeColor)
+                return theme_color  # use theme color to color current task
+            else:
+                return None  # use default color according to dark/light theme
 
         return None
 

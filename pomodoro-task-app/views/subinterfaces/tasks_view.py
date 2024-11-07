@@ -133,10 +133,14 @@ class TaskListView(Ui_TaskView, QWidget):
 
     def currentTaskIndex(self):
         if self.todoTasksList.selectionModel().hasSelection():
+            self.todoTasksList.model().setCurrentTaskIndex(self.todoTasksList.selectionModel().currentIndex())
+            # store current task in the model
             return self.todoTasksList.selectionModel().currentIndex()
         elif self.todoTasksList.model().rowCount(QModelIndex()) > 0:
+            self.todoTasksList.model().setCurrentTaskIndex(self.todoTasksList.model().index(0))
             return self.todoTasksList.model().index(0)
         else:
+            self.todoTasksList.model().setCurrentTaskIndex(None)
             return None  # no task is there in todotask list
 
 

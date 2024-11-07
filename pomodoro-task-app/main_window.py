@@ -50,7 +50,6 @@ class MainWindow(PomodoroFluentWindow):
 
         self.website_blocker_manager = WebsiteBlockerManager()
 
-        self.current_task_index = None
         self.already_elapsed_time = 0
 
         self.connectSignalsToSlots()
@@ -148,16 +147,18 @@ class MainWindow(PomodoroFluentWindow):
         return previous_state in [TimerState.NOTHING, TimerState.BREAK, TimerState.LONG_BREAK] and \
             current_state == TimerState.WORK
 
-
-    def store_current_task(self):
-        self.current_task_index = self.task_interface.currentTaskIndex()
+    def get_current_task_index(self):
+        """
+        Convenience method to get the current task index from the todoTasksList model
+        """
+        return self.task_interface.todoTasksList.model().currentTaskIndex()
 
     def spawnTaskStartedInfoBar(self):
-        if self.current_task_index is None:
+        if self.get_current_task_index() is None:
             return  # current task index can be None only when there is no tasks in todo list since when timer starts
         # a task would be automatically selected as the current task if any number of tasks other than zero are present
         # in the todo list
-        current_task_name = self.current_task_index.data(Qt.DisplayRole)
+        current_task_name = self.get_current_task_index().data(Qt.DisplayRole)
         if not self.pomodoro_interface.pauseResumeButton.isChecked():
             InfoBar.success(
                 title="Task Started",
@@ -170,18 +171,18 @@ class MainWindow(PomodoroFluentWindow):
 
     def store_already_elapsed_time(self):
         logger.debug("Storing already elapsed time")
-        if self.current_task_index is not None and self.is_task_beginning():
-            elapsed_time = self.current_task_index.data(TaskListModel.ElapsedTimeRole)
+        if self.get_current_task_index() is not None and self.is_task_beginning():
+            elapsed_time = self.get_current_task_index().data(TaskListModel.ElapsedTimeRole)
             self.already_elapsed_time = elapsed_time
 
     def check_current_task_deleted(self, task_index):
-        if self.current_task_index is not None and self.current_task_index == task_index and \
+        if self.get_current_task_index() is not None and self.get_current_task_index() == task_index and \
             self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in \
                 [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
             # make sure that the current task is deleted and the timer is running, without timer being running
             # there is no need to stop the timer and show infobar
             self.pomodoro_interface.pomodoro_timer_obj.stopSession()
-            self.current_task_index = None
+            self.task_interface.todoTasksList.model().setCurrentTaskIndex(None)
             self.already_elapsed_time = 0
             InfoBar.warning(
                 title="Pomodoro Timer Stopped",
@@ -196,8 +197,8 @@ class MainWindow(PomodoroFluentWindow):
             logger.debug("Current Task has been deleted")
 
     def check_current_task_moved(self, task_id, task_type:TaskType):
-        if self.current_task_index is not None:
-            current_task_id = self.current_task_index.data(TaskListModel.IDRole)
+        if self.get_current_task_index() is not None:
+            current_task_id = self.get_current_task_index().data(TaskListModel.IDRole)
         else:
             return  # no need to check if current task is moved if there is no current task
 
@@ -207,7 +208,7 @@ class MainWindow(PomodoroFluentWindow):
             # make sure that the current task is moved into completed task list and the timer is running,
             # without timer being running there is no need to stop the timer and show infobar
             self.pomodoro_interface.pomodoro_timer_obj.stopSession()
-            self.current_task_index = None
+            self.task_interface.todoTasksList.model().setCurrentTaskIndex(None)
             self.already_elapsed_time = 0
             InfoBar.warning(
                 title="Pomodoro Timer Stopped",
@@ -222,7 +223,7 @@ class MainWindow(PomodoroFluentWindow):
             logger.debug("Current Task has been moved")
 
     def updateTaskTime(self):
-        if self.current_task_index is not None:
+        if self.get_current_task_index() is not None:
             if self.pomodoro_interface.pomodoro_timer_obj.getTimerState() == TimerState.WORK:
                 duration = ConfigValues.WORK_DURATION * 60 * 1000  ## in ms
             elif self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in [TimerState.BREAK, TimerState.LONG_BREAK]:
@@ -233,7 +234,7 @@ class MainWindow(PomodoroFluentWindow):
 
             final_elapsed_time = self.already_elapsed_time + elapsed_time
             if final_elapsed_time % 1000 == 0:  # only update db when the elapsed time is a multiple of 1000
-                self.task_interface.todoTasksList.model().setData(self.current_task_index, final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=False)
+                self.task_interface.todoTasksList.model().setData(self.get_current_task_index(), final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=False)
             if final_elapsed_time % 5000 == 0:
                 self.updateTaskTimeDB()
 
@@ -241,11 +242,12 @@ class MainWindow(PomodoroFluentWindow):
         # since sessionStoppedSignal is emitted when the timer is stopped, we have to check if the current task index
         # is valid or not. Current Task Index can be invalid due to it being None when there are no tasks in todo list
         # when timer began or when current task is deleted and session is stopped automatically
-        if self.current_task_index is None:
+        current_task_index = self.get_current_task_index()
+        if current_task_index is None:
             return
 
-        final_elapsed_time = self.task_interface.todoTasksList.model().data(self.current_task_index, TaskListModel.ElapsedTimeRole)
-        self.task_interface.todoTasksList.model().setData(self.current_task_index, final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=True)
+        final_elapsed_time = self.task_interface.todoTasksList.model().data(self.get_current_task_index(), TaskListModel.ElapsedTimeRole)
+        self.task_interface.todoTasksList.model().setData(self.get_current_task_index(), final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=True)
         logger.debug(f"Updated DB with elapsed time: {final_elapsed_time}")
 
     def connectSignalsToSlots(self):
@@ -255,7 +257,7 @@ class MainWindow(PomodoroFluentWindow):
             self.toggle_website_filtering
         )
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.store_current_task
+            self.task_interface.currentTaskIndex
         )
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             self.store_already_elapsed_time
@@ -266,14 +268,14 @@ class MainWindow(PomodoroFluentWindow):
         self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(
             self.updateTaskTime
         )
-        self.task_interface.todoTasksList.model().taskDeletedSignal.connect(
-            self.check_current_task_deleted
-        )
         self.task_interface.completedTasksList.model().taskMovedSignal.connect(
             self.check_current_task_moved
         )
         self.pomodoro_interface.pomodoro_timer_obj.sessionStoppedSignal.connect(
             self.updateTaskTimeDB
+        )
+        self.task_interface.todoTasksList.model().taskDeletedSignal.connect(
+            self.check_current_task_deleted
         )
         self.pomodoro_interface.pomodoro_timer_obj.durationSkippedSignal.connect(
             self.updateTaskTimeDB

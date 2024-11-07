@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QWidget, QAbstractItemView, QListView
 from qfluentwidgets import ListView, LineEdit, ListItemDelegate
 from prefabs.roundedListItemDelegate import RoundedListItemDelegateDisplayTime
 from ui_py.ui_tasks_list_view import Ui_TaskView
+from prefabs.taskListItemDelegate import TaskListItemDelegate
 
 
 class TaskList(ListView):
@@ -20,8 +21,7 @@ class TaskList(ListView):
 
         self.entered.disconnect()  # see mouseMoveEvent method's docstring
 
-
-        # self.setItemDelegate(RoundedListItemDelegateDisplayTime(self))
+        self.setItemDelegate(TaskListItemDelegate(self))
 
     def edit(self, index, trigger, event):
         """
