@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QAbstractItemView, QListView
-from qfluentwidgets import ListView, LineEdit, ListItemDelegate
+from PySide6.QtWidgets import QWidget, QAbstractItemView, QListView, QSizePolicy, QLineEdit
+from qfluentwidgets import ListView, LineEdit, ListItemDelegate, setCustomStyleSheet
 from prefabs.roundedListItemDelegate import RoundedListItemDelegateDisplayTime
 from ui_py.ui_tasks_list_view import Ui_TaskView
 from prefabs.taskListItemDelegate import TaskListItemDelegate
@@ -17,11 +17,17 @@ class TaskList(ListView):
         self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.setAutoScroll(True)
 
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        self.current_editor = None
+
         self._mousePressedOnItem = False
 
         self.entered.disconnect()  # see mouseMoveEvent method's docstring
 
         self.setItemDelegate(TaskListItemDelegate(self))
+
+        self.editor_width_reduction = 11  # so that editor doesn't go out of the view of TaskList
 
     def edit(self, index, trigger, event):
         """
@@ -29,18 +35,30 @@ class TaskList(ListView):
         """
         if trigger == QAbstractItemView.DoubleClicked:
             task_name = self.model().data(index, Qt.DisplayRole)
+
             editor = LineEdit(self)
             editor.setProperty("transparent", False)
             editor.setText(task_name)
+            editor.setFixedWidth(self.viewport().width() - self.editor_width_reduction)
+            editor.editingFinished.connect(lambda: self.commitData(editor))
+            editor.setCursorPosition(0)
+            editor.setObjectName("editor")
             self.setIndexWidget(index, editor)
             editor.setFocus()
-            editor.editingFinished.connect(lambda: self.commitData(editor))
+
+            self.current_editor = editor
             return True
         return super().edit(index, trigger, event)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if self.current_editor:
+            self.current_editor.setFixedWidth(self.viewport().width() - self.editor_width_reduction)
 
     def commitData(self, editor):
         index = self.currentIndex()
         self.model().setData(index, editor.text(), Qt.DisplayRole)
+        self.current_editor = None
         self.setIndexWidget(index, None)
 
     def mousePressEvent(self, e):
