@@ -1,9 +1,9 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QAbstractItemView, QListView, QSizePolicy, QLineEdit
-from qfluentwidgets import ListView, LineEdit, ListItemDelegate, setCustomStyleSheet
-from prefabs.roundedListItemDelegate import RoundedListItemDelegateDisplayTime
-from ui_py.ui_tasks_list_view import Ui_TaskView
+from PySide6.QtWidgets import QWidget, QAbstractItemView, QListView
+from qfluentwidgets import ListView, LineEdit, ListItemDelegate
+
 from prefabs.taskListItemDelegate import TaskListItemDelegate
+from ui_py.ui_tasks_list_view import Ui_TaskView
 
 
 class TaskList(ListView):

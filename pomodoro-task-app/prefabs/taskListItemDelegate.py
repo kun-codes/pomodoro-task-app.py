@@ -1,7 +1,10 @@
-from PySide6.QtCore import Qt, QModelIndex, QMargins
-from PySide6.QtGui import QPainter, QColor, QPen
-from PySide6.QtWidgets import QListView, QStyledItemDelegate, QStyleOptionViewItem
-from qfluentwidgets import ListItemDelegate, isDarkTheme, themeColor
+from PySide6.QtCore import Qt, QRect
+from PySide6.QtGui import QPainter, QColor, QFontMetrics
+from PySide6.QtWidgets import QListView, QStyledItemDelegate
+from qfluentwidgets import ListItemDelegate, isDarkTheme
+
+from models.task_list_model import TaskListModel
+from utils.time_conversion import convert_ms_to_hh_mm_ss
 
 
 class TaskListItemDelegate(ListItemDelegate):
@@ -65,6 +68,26 @@ class TaskListItemDelegate(ListItemDelegate):
         if index.data(Qt.CheckStateRole) is not None:
             self._drawCheckBox(painter, option, index)
 
+
+        painter.setPen(Qt.GlobalColor.white if isDark else Qt.GlobalColor.black)
+        font_metrics = QFontMetrics(option.font)
+
+        elapsed_time_ms = index.data(TaskListModel.ElapsedTimeRole)
+        target_time_ms = index.data(TaskListModel.TargetTimeRole)
+
+        ehh, emm, ess = convert_ms_to_hh_mm_ss(elapsed_time_ms)
+        thh, tmm, tss = convert_ms_to_hh_mm_ss(target_time_ms)
+
+        time_text = f"{ehh:02d}:{emm:02d}:{ess:02d} / {thh:02d}:{tmm:02d}:{tss:02d}"
+        time_text_width = font_metrics.horizontalAdvance(time_text)
+        hello_world_x = option.rect.right() - time_text_width - 10
+        hello_world_rect = QRect(hello_world_x, option.rect.top(), time_text_width, option.rect.height())
+        painter.drawText(hello_world_rect, Qt.AlignRight | Qt.AlignVCenter, time_text)
+
         painter.restore()
+
+        # reduce option.rect from the right by the width of the hello world text
+        option.rect.adjust(0, 0, -time_text_width-10, 0)
         QStyledItemDelegate.paint(self, painter, option, index)  # manually calling parent class paint method to avoid
         # multiple calls to _drawBackground and _drawIndicator
+
