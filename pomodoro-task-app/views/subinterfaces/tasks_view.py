@@ -5,6 +5,7 @@ from qfluentwidgets import FluentIcon, TitleLabel, SimpleCardWidget
 
 from models.db_tables import TaskType
 from models.task_list_model import TaskListModel
+from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.taskList import TaskList
 from ui_py.ui_tasks_list_view import Ui_TaskView
 from views.dialogs.addTaskDialog import AddTaskDialog
@@ -60,6 +61,7 @@ class TaskListView(Ui_TaskView, QWidget):
         self.addTaskButton.setIcon(FluentIcon.ADD)
         self.deleteTaskButton.setIcon(FluentIcon.DELETE)
         self.editTaskTimeButton.setIcon(FluentIcon.EDIT)
+        self.changeCurrentTaskButton.setIcon(CustomFluentIcon.CHANGE_CURRENT_TASK)
 
     def connectSignalsToSlots(self):
         self.addTaskButton.clicked.connect(self.addTask)

@@ -51,6 +51,9 @@
           </spacer>
          </item>
          <item>
+          <widget class="ToolButton" name="changeCurrentTaskButton"/>
+         </item>
+         <item>
           <widget class="ToolButton" name="editTaskTimeButton"/>
          </item>
          <item>
