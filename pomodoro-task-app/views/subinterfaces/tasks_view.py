@@ -67,6 +67,7 @@ class TaskListView(Ui_TaskView, QWidget):
         self.addTaskButton.clicked.connect(self.addTask)
         self.deleteTaskButton.clicked.connect(self.deleteTask)
         self.editTaskTimeButton.clicked.connect(self.editTaskTime)
+        self.changeCurrentTaskButton.clicked.connect(self.setCurrentTaskIndex)
 
     def addTask(self):
         dialog = AddTaskDialog(self.window())
@@ -133,17 +134,21 @@ class TaskListView(Ui_TaskView, QWidget):
         self.todoTasksList.model().load_data()
         self.completedTasksList.model().load_data()
 
-    def currentTaskIndex(self):
+    def autoSetCurrentTaskIndex(self):
+        if self.todoTasksList.model().currentTaskIndex() is not None:  # if current task is already set then return
+            return
+        # else set current task according to below rules
         if self.todoTasksList.selectionModel().hasSelection():
             self.todoTasksList.model().setCurrentTaskIndex(self.todoTasksList.selectionModel().currentIndex())
-            # store current task in the model
-            return self.todoTasksList.selectionModel().currentIndex()
         elif self.todoTasksList.model().rowCount(QModelIndex()) > 0:
             self.todoTasksList.model().setCurrentTaskIndex(self.todoTasksList.model().index(0))
-            return self.todoTasksList.model().index(0)
         else:
             self.todoTasksList.model().setCurrentTaskIndex(None)
-            return None  # no task is there in todotask list
+
+    def setCurrentTaskIndex(self):
+        self.todoTasksList.model().setCurrentTaskIndex(self.todoTasksList.selectionModel().currentIndex())
+
+        self.todoTasksList.viewport().update()
 
 
 if __name__ == "__main__":

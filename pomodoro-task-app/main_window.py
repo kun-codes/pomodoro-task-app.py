@@ -256,8 +256,9 @@ class MainWindow(PomodoroFluentWindow):
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             self.toggle_website_filtering
         )
+        # Auto set current task whenever a work session begins. current task won't be overwritten if it is already set
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.task_interface.currentTaskIndex
+            lambda timerState: self.task_interface.autoSetCurrentTaskIndex() if timerState == TimerState.WORK else None
         )
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             self.store_already_elapsed_time
