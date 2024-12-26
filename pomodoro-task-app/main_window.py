@@ -84,8 +84,39 @@ class MainWindow(PomodoroFluentWindow):
         self.resize(1000, 800)
         self.setWindowTitle('Pomodoro Task List App')
 
+    # below 4 methods are for the bottom bar
     def initBottomBar(self):
         self.update_bottom_bar_timer_label()
+        self.bottomBar.pauseResumeButton.setCheckable(True)
+        self.bottomBar.pauseResumeButton.setChecked(True)
+        self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
+        self.bottomBar.pauseResumeButton.clicked.connect(self.bottomBarPauseResumeClicked)
+        self.bottomBar.skipButton.clicked.connect(self.pomodoro_interface.skipButtonClicked)
+        self.bottomBar.stopButton.clicked.connect(self.pomodoro_interface.stopButtonClicked)
+
+    def bottomBarPauseResumeClicked(self):
+        # Sync state with pomodoro view button
+        self.pomodoro_interface.pauseResumeButton.setChecked(self.bottomBar.pauseResumeButton.isChecked())
+        self.pomodoro_interface.pauseResumeButtonClicked()
+        
+        # Update bottom bar button icon
+        if self.bottomBar.pauseResumeButton.isChecked():
+            self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
+        else:
+            self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PAUSE)
+
+    def syncBottomBarPauseResumeButton(self):
+        """Sync bottom bar button state with pomodoro view button"""
+        self.bottomBar.pauseResumeButton.setChecked(self.pomodoro_interface.pauseResumeButton.isChecked())
+        if self.bottomBar.pauseResumeButton.isChecked():
+            self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
+        else:
+            self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PAUSE)
+
+    def resetBottomBarPauseResumeButton(self):
+        """Reset bottom bar button to initial state"""
+        self.bottomBar.pauseResumeButton.setChecked(True)
+        self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
 
     def onWorkspaceManagerClicked(self):
         if self.manage_workspace_dialog is None:
@@ -316,6 +347,19 @@ class MainWindow(PomodoroFluentWindow):
         self.settings_interface.proxy_port_card.valueChanged.connect(
             self.update_proxy_port
         )
+        # Sync pomodoro view button state with bottom bar button
+        self.pomodoro_interface.pauseResumeButton.clicked.connect(
+            lambda: self.syncBottomBarPauseResumeButton()
+        )
+        
+        self.pomodoro_interface.pomodoro_timer_obj.sessionStoppedSignal.connect(
+            lambda: self.resetBottomBarPauseResumeButton()
+        )
+        
+        self.pomodoro_interface.pomodoro_timer_obj.waitForUserInputSignal.connect(
+            lambda: self.resetBottomBarPauseResumeButton()
+        )
+
 
     def on_website_filter_enabled_setting_changed(self):
         enable_website_filter_setting_value = ConfigValues.ENABLE_WEBSITE_FILTER
