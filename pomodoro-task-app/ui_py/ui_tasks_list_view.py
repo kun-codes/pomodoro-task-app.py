@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'tasks_list_view.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -36,8 +36,11 @@ class Ui_TaskView(object):
         self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 782, 582))
         self.scrollAreaWidgetContents.setStyleSheet(u"QWidget#scrollAreaWidgetContents { background: transparent }")
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_2.setSpacing(12)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(24, 24, 24, 24)
         self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setSpacing(4)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
