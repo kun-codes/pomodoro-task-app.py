@@ -24,9 +24,9 @@ class Ui_BottomBarWidget(object):
     def setupUi(self, BottomBarWidget):
         if not BottomBarWidget.objectName():
             BottomBarWidget.setObjectName(u"BottomBarWidget")
-        BottomBarWidget.resize(778, 52)
+        BottomBarWidget.resize(778, 64)
         self.horizontalLayout = QHBoxLayout(BottomBarWidget)
-        self.horizontalLayout.setSpacing(4)
+        self.horizontalLayout.setSpacing(12)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(12, 12, 12, 12)
         self.spacer = QSpacerItem(48, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
@@ -46,8 +46,8 @@ class Ui_BottomBarWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.stopButton.sizePolicy().hasHeightForWidth())
         self.stopButton.setSizePolicy(sizePolicy)
-        self.stopButton.setMinimumSize(QSize(34, 34))
-        self.stopButton.setMaximumSize(QSize(34, 34))
+        self.stopButton.setMinimumSize(QSize(40, 40))
+        self.stopButton.setMaximumSize(QSize(40, 40))
         self.stopButton.setIconSize(QSize(16, 16))
         self.stopButton.setChecked(False)
 
@@ -58,8 +58,8 @@ class Ui_BottomBarWidget(object):
         self.pauseResumeButton.setEnabled(True)
         sizePolicy.setHeightForWidth(self.pauseResumeButton.sizePolicy().hasHeightForWidth())
         self.pauseResumeButton.setSizePolicy(sizePolicy)
-        self.pauseResumeButton.setMinimumSize(QSize(34, 34))
-        self.pauseResumeButton.setMaximumSize(QSize(34, 34))
+        self.pauseResumeButton.setMinimumSize(QSize(40, 40))
+        self.pauseResumeButton.setMaximumSize(QSize(40, 40))
         self.pauseResumeButton.setIconSize(QSize(16, 16))
         self.pauseResumeButton.setChecked(False)
 
@@ -67,8 +67,8 @@ class Ui_BottomBarWidget(object):
 
         self.skipButton = PillToolButton(BottomBarWidget)
         self.skipButton.setObjectName(u"skipButton")
-        self.skipButton.setMinimumSize(QSize(34, 34))
-        self.skipButton.setMaximumSize(QSize(34, 34))
+        self.skipButton.setMinimumSize(QSize(40, 40))
+        self.skipButton.setMaximumSize(QSize(40, 40))
         self.skipButton.setIconSize(QSize(16, 16))
         self.skipButton.setChecked(False)
 

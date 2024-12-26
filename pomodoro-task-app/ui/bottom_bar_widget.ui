@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>778</width>
-    <height>52</height>
+    <height>64</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <property name="spacing">
-    <number>4</number>
+    <number>12</number>
    </property>
    <property name="leftMargin">
     <number>12</number>
@@ -65,14 +65,14 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>34</width>
-       <height>34</height>
+       <width>40</width>
+       <height>40</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>34</width>
-       <height>34</height>
+       <width>40</width>
+       <height>40</height>
       </size>
      </property>
      <property name="iconSize">
@@ -99,14 +99,14 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>34</width>
-       <height>34</height>
+       <width>40</width>
+       <height>40</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>34</width>
-       <height>34</height>
+       <width>40</width>
+       <height>40</height>
       </size>
      </property>
      <property name="iconSize">
@@ -124,14 +124,14 @@
     <widget class="PillToolButton" name="skipButton">
      <property name="minimumSize">
       <size>
-       <width>34</width>
-       <height>34</height>
+       <width>40</width>
+       <height>40</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>34</width>
-       <height>34</height>
+       <width>40</width>
+       <height>40</height>
       </size>
      </property>
      <property name="iconSize">
