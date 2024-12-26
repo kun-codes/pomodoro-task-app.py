@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'bottom_bar_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -26,8 +26,9 @@ class Ui_BottomBarWidget(object):
             BottomBarWidget.setObjectName(u"BottomBarWidget")
         BottomBarWidget.resize(778, 52)
         self.horizontalLayout = QHBoxLayout(BottomBarWidget)
+        self.horizontalLayout.setSpacing(4)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setContentsMargins(48, -1, 33, -1)
+        self.horizontalLayout.setContentsMargins(12, 12, 12, 12)
         self.spacer = QSpacerItem(48, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.spacer)
@@ -37,12 +38,24 @@ class Ui_BottomBarWidget(object):
 
         self.horizontalLayout.addWidget(self.taskLabel)
 
-        self.pauseResumeButton = PillToolButton(BottomBarWidget)
-        self.pauseResumeButton.setObjectName(u"pauseResumeButton")
-        self.pauseResumeButton.setEnabled(True)
+        self.stopButton = PillToolButton(BottomBarWidget)
+        self.stopButton.setObjectName(u"stopButton")
+        self.stopButton.setEnabled(True)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.stopButton.sizePolicy().hasHeightForWidth())
+        self.stopButton.setSizePolicy(sizePolicy)
+        self.stopButton.setMinimumSize(QSize(34, 34))
+        self.stopButton.setMaximumSize(QSize(34, 34))
+        self.stopButton.setIconSize(QSize(16, 16))
+        self.stopButton.setChecked(False)
+
+        self.horizontalLayout.addWidget(self.stopButton)
+
+        self.pauseResumeButton = PillToolButton(BottomBarWidget)
+        self.pauseResumeButton.setObjectName(u"pauseResumeButton")
+        self.pauseResumeButton.setEnabled(True)
         sizePolicy.setHeightForWidth(self.pauseResumeButton.sizePolicy().hasHeightForWidth())
         self.pauseResumeButton.setSizePolicy(sizePolicy)
         self.pauseResumeButton.setMinimumSize(QSize(34, 34))

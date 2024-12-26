@@ -11,9 +11,11 @@ class BottomBar(Ui_BottomBarWidget, QWidget):
         self.initWidget()
 
     def initWidget(self):
+        self.stopButton.setIcon(FluentIcon.CLOSE)
         self.pauseResumeButton.setIcon(FluentIcon.PLAY)
         self.skipButton.setIcon(FluentIcon.CHEVRON_RIGHT)
 
+        self.stopButton.setCheckable(False)
         self.pauseResumeButton.setCheckable(True)
         self.pauseResumeButton.setChecked(True)
         self.skipButton.setCheckable(False)
