@@ -145,6 +145,8 @@ class TaskListView(Ui_TaskView, QWidget):
         else:
             self.todoTasksList.model().setCurrentTaskID(None)
 
+        self.todoTasksList.viewport().update()
+
     def setCurrentTaskID(self):
         # self.todoTasksList.model().setCurrentTaskIndex(self.todoTasksList.selectionModel().currentIndex())
         self.todoTasksList.model().setCurrentTaskID(self.todoTasksList.selectionModel().currentIndex().data(TaskListModel.IDRole))
