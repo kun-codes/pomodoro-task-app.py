@@ -18,6 +18,7 @@ class TaskListModel(QAbstractListModel):
 
     taskDeletedSignal = Signal(int)  # task_id
     taskMovedSignal = Signal(int, TaskType)  # task_id and TaskType
+    currentTaskChangedSignal = Signal(int)  # task_id
 
     def __init__(self, task_type: TaskType, parent=None):
         super().__init__(parent)
@@ -28,6 +29,7 @@ class TaskListModel(QAbstractListModel):
 
     def setCurrentTaskID(self, id):
         self.current_task_id = id
+        self.currentTaskChangedSignal.emit(id)
 
     def currentTaskID(self):
         return self.current_task_id

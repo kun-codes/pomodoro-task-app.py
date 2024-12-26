@@ -87,12 +87,15 @@ class MainWindow(PomodoroFluentWindow):
     # below 4 methods are for the bottom bar
     def initBottomBar(self):
         self.update_bottom_bar_timer_label()
+
         self.bottomBar.pauseResumeButton.setCheckable(True)
         self.bottomBar.pauseResumeButton.setChecked(True)
         self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
         self.bottomBar.pauseResumeButton.clicked.connect(self.bottomBarPauseResumeClicked)
         self.bottomBar.skipButton.clicked.connect(self.pomodoro_interface.skipButtonClicked)
         self.bottomBar.stopButton.clicked.connect(self.pomodoro_interface.stopButtonClicked)
+
+        self.bottomBar.taskLabel.setText("Current Task: None")
 
     def bottomBarPauseResumeClicked(self):
         # Sync state with pomodoro view button
@@ -351,15 +354,15 @@ class MainWindow(PomodoroFluentWindow):
         self.pomodoro_interface.pauseResumeButton.clicked.connect(
             lambda: self.syncBottomBarPauseResumeButton()
         )
-        
         self.pomodoro_interface.pomodoro_timer_obj.sessionStoppedSignal.connect(
             lambda: self.resetBottomBarPauseResumeButton()
         )
-        
         self.pomodoro_interface.pomodoro_timer_obj.waitForUserInputSignal.connect(
             lambda: self.resetBottomBarPauseResumeButton()
         )
-
+        self.task_interface.todoTasksList.model().currentTaskChangedSignal.connect(
+            lambda task_id: self.bottomBar.taskLabel.setText(f"Current Task: {self.task_interface.todoTasksList.model().getTaskNameById(task_id)}")
+        )
 
     def on_website_filter_enabled_setting_changed(self):
         enable_website_filter_setting_value = ConfigValues.ENABLE_WEBSITE_FILTER
