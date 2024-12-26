@@ -52,8 +52,6 @@ class MainWindow(PomodoroFluentWindow):
 
         self.website_blocker_manager = WebsiteBlockerManager()
 
-        self.already_elapsed_time = 0
-
         self.connectSignalsToSlots()
         self.initNavigation()
         self.initWindow()
@@ -184,7 +182,6 @@ class MainWindow(PomodoroFluentWindow):
         logger.debug("Storing already elapsed time")
         if self.get_current_task_id() is not None and self.is_task_beginning():
             elapsed_time = self.get_current_task_index().data(TaskListModel.ElapsedTimeRole)
-            self.already_elapsed_time = elapsed_time
 
     def check_current_task_deleted(self, task_id):
         if self.get_current_task_id() is not None and self.get_current_task_id() == task_id:
@@ -194,7 +191,6 @@ class MainWindow(PomodoroFluentWindow):
                 # make sure that the current task is deleted and the timer is running, without timer being running
                 # there is no need to stop the timer and show infobar
                 self.pomodoro_interface.pomodoro_timer_obj.stopSession()
-                self.already_elapsed_time = 0
                 InfoBar.warning(
                     title="Pomodoro Timer Stopped",
                     content="The task you were working on has been deleted. Please select another task to continue." \
@@ -220,7 +216,6 @@ class MainWindow(PomodoroFluentWindow):
                 # make sure that the current task is moved into completed task list and the timer is running,
                 # without timer being running there is no need to stop the timer and show infobar
                 self.pomodoro_interface.pomodoro_timer_obj.stopSession()
-                self.already_elapsed_time = 0
                 InfoBar.warning(
                     title="Pomodoro Timer Stopped",
                     content="The task you were working on has been completed. Please select another task to continue." \
@@ -237,15 +232,10 @@ class MainWindow(PomodoroFluentWindow):
 
     def updateTaskTime(self):
         if self.get_current_task_id() is not None:
-            if self.pomodoro_interface.pomodoro_timer_obj.getTimerState() == TimerState.WORK:
-                duration = ConfigValues.WORK_DURATION * 60 * 1000  ## in ms
-            elif self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in [TimerState.BREAK, TimerState.LONG_BREAK]:
+            if self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in [TimerState.BREAK, TimerState.LONG_BREAK]:
                 return
 
-            remaining_duration = self.pomodoro_interface.pomodoro_timer_obj.remaining_time
-            elapsed_time = duration - remaining_duration
-
-            final_elapsed_time = self.already_elapsed_time + elapsed_time
+            final_elapsed_time = self.task_interface.todoTasksList.model().data(self.get_current_task_index(), TaskListModel.ElapsedTimeRole) + self.pomodoro_interface.pomodoro_timer_obj.timer_resolution
             if final_elapsed_time % 1000 == 0:  # only update db when the elapsed time is a multiple of 1000
                 self.task_interface.todoTasksList.model().setData(self.get_current_task_index(), final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=False)
             if final_elapsed_time % 5000 == 0:
