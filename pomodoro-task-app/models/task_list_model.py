@@ -16,21 +16,21 @@ class TaskListModel(QAbstractListModel):
     ElapsedTimeRole = Qt.UserRole + 5
     TargetTimeRole = Qt.UserRole + 7
 
-    taskDeletedSignal = Signal(QModelIndex)
+    taskDeletedSignal = Signal(int)  # task_id
     taskMovedSignal = Signal(int, TaskType)  # task_id and TaskType
 
     def __init__(self, task_type: TaskType, parent=None):
         super().__init__(parent)
         self.task_type = task_type
-        self.current_task_index = None
+        self.current_task_id = None
         self.tasks = []
         self.load_data()
 
-    def setCurrentTaskIndex(self, index):
-        self.current_task_index = index
+    def setCurrentTaskID(self, id):
+        self.current_task_id = id
 
-    def currentTaskIndex(self):
-        return self.current_task_index
+    def currentTaskID(self):
+        return self.current_task_id
 
     def load_data(self):
         current_workspace_id = WorkspaceLookup.get_current_workspace_id()
@@ -69,7 +69,7 @@ class TaskListModel(QAbstractListModel):
             task = self.tasks[index.row()]
             return task["icon"]
         elif role == Qt.ItemDataRole.BackgroundRole:
-            if self.current_task_index == index:
+            if self.current_task_id == self.tasks[index.row()]["id"]:
                 theme_color: QColor = AppSettings.get(AppSettings, AppSettings.themeColor)
                 return theme_color  # use theme color to color current task
             else:
@@ -305,14 +305,22 @@ class TaskListModel(QAbstractListModel):
         logger.debug(f"tasks: {self.tasks}")
         self.removeRows(row, 1, parent)
 
+
+
         for i, task in enumerate(self.tasks):
             task["task_position"] = i
 
         self.update_db()
-        self.taskDeletedSignal.emit(index)
+        self.taskDeletedSignal.emit(task_id)
         self.layoutChanged.emit()
         return True
 
     def setIconForTask(self, row, icon):
         self.tasks[row]["icon"] = icon
         self.dataChanged.emit(self.index(row, 0), self.index(row, 0), [self.IconRole])
+
+    def getTaskNameById(self, task_id):
+        for task in self.tasks:
+            if task["id"] == task_id:
+                return task["task_name"]
+        return None
