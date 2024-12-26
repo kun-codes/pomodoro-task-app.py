@@ -9,12 +9,13 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.13"
-PySide6-Fluent-Widgets = "^1.6.0"
-sqlalchemy = "^2.0.31"
-mitmproxy = "^11.0.0"
-psutil = "^6.0.0"
-uniproxy = "^0.1.1"
 validators = "^0.34.0"
+PySide6-Fluent-Widgets = "^1.7.4"
+pyside6 = "!=6.8.1.1"
+sqlalchemy = "^2.0.36"
+mitmproxy = "^11.0.2"
+psutil = "^6.1.1"
+uniproxy = "^0.1.4"
 
 [tool.poetry.group.dev.dependencies]
 loguru = "^0.7.2"
