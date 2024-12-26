@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="logosPrefix">
+    <file>logos/logo-monochrome-black.svg</file>
+    <file>logos/logo-monochrome-white.svg</file>
+    <file>logos/logo.svg</file>
+  </qresource>
+</RCC>
