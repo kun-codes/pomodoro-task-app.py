@@ -1,9 +1,10 @@
-from qfluentwidgets import FluentIcon, NavigationItemPosition, InfoBar, InfoBarPosition
+from qfluentwidgets import FluentIcon, NavigationItemPosition, InfoBar, InfoBarPosition, SystemThemeListener
 from loguru import logger
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QSystemTrayIcon
+from PySide6.QtGui import QIcon
 from pathlib import Path
 
-from tornado.process import task_id
 
 from utils.time_conversion import convert_ms_to_hh_mm_ss
 from config_paths import settings_dir
@@ -25,6 +26,10 @@ from website_blocker.website_blocker_manager import WebsiteBlockerManager
 from utils.find_mitmdump_executable import get_mitmdump_path
 from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
+from resources import logos_rc
+
+
+import darkdetect
 
 
 class MainWindow(PomodoroFluentWindow):
@@ -52,10 +57,14 @@ class MainWindow(PomodoroFluentWindow):
 
         self.website_blocker_manager = WebsiteBlockerManager()
 
+        self.themeListener = SystemThemeListener(self)
+        self.themeListener.start()
+
         self.connectSignalsToSlots()
         self.initNavigation()
         self.initWindow()
         self.initBottomBar()
+        self.initSystemTray()
 
         self.website_filter_interface.setEnabled(ConfigValues.ENABLE_WEBSITE_FILTER)
 
@@ -83,6 +92,30 @@ class MainWindow(PomodoroFluentWindow):
     def initWindow(self):
         self.resize(1000, 800)
         self.setWindowTitle('Pomodoro Task List App')
+
+    def initSystemTray(self):
+        """Initialize system tray icon and notifications"""
+        self.tray = QSystemTrayIcon(self)
+
+        self.system_tray_white_icon = QIcon(":/logosPrefix/logos/logo-monochrome-white.svg")
+        self.system_tray_black_icon = QIcon(":/logosPrefix/logos/logo-monochrome-black.svg")
+
+        if darkdetect.isDark():
+            initial_icon = self.system_tray_white_icon
+        else:
+            initial_icon = self.system_tray_black_icon
+
+        self.tray.setIcon(initial_icon)
+        self.tray.setVisible(True)
+
+    def updateSystemTrayIcon(self):
+        logger.debug("Updating system tray icon")
+        if darkdetect.isDark():
+            new_icon = self.system_tray_white_icon
+        else:
+            new_icon = self.system_tray_black_icon
+
+        self.tray.setIcon(new_icon)
 
     # below 4 methods are for the bottom bar
     def initBottomBar(self):
@@ -363,6 +396,9 @@ class MainWindow(PomodoroFluentWindow):
         self.task_interface.todoTasksList.model().currentTaskChangedSignal.connect(
             lambda task_id: self.bottomBar.taskLabel.setText(f"Current Task: {self.task_interface.todoTasksList.model().getTaskNameById(task_id)}")
         )
+        self.themeListener.systemThemeChanged.connect(
+            self.updateSystemTrayIcon
+        )
 
     def on_website_filter_enabled_setting_changed(self):
         enable_website_filter_setting_value = ConfigValues.ENABLE_WEBSITE_FILTER
@@ -460,4 +496,6 @@ class MainWindow(PomodoroFluentWindow):
 
     def closeEvent(self, event):
         self.website_blocker_manager.stop_filtering(delete_proxy=True)
+        self.themeListener.terminate()
+        self.themeListener.deleteLater()
         event.accept()
