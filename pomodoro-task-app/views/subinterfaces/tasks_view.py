@@ -67,7 +67,7 @@ class TaskListView(Ui_TaskView, QWidget):
         self.addTaskButton.clicked.connect(self.addTask)
         self.deleteTaskButton.clicked.connect(self.deleteTask)
         self.editTaskTimeButton.clicked.connect(self.editTaskTime)
-        self.changeCurrentTaskButton.clicked.connect(self.setCurrentTaskIndex)
+        self.changeCurrentTaskButton.clicked.connect(self.setCurrentTaskID)
 
     def addTask(self):
         dialog = AddTaskDialog(self.window())
@@ -134,18 +134,18 @@ class TaskListView(Ui_TaskView, QWidget):
         self.todoTasksList.model().load_data()
         self.completedTasksList.model().load_data()
 
-    def autoSetCurrentTaskIndex(self):
-        if self.todoTasksList.model().currentTaskIndex() is not None:  # if current task is already set then return
+    def autoSetCurrentTaskID(self):
+        if self.todoTasksList.model().currentTaskID() is not None:  # if current task is already set then return
             return
         # else set current task according to below rules
         if self.todoTasksList.selectionModel().hasSelection():
-            self.todoTasksList.model().setCurrentTaskIndex(self.todoTasksList.selectionModel().currentIndex())
+            self.todoTasksList.model().setCurrentTaskID(self.todoTasksList.selectionModel().currentIndex().data(TaskListModel.IDRole))
         elif self.todoTasksList.model().rowCount(QModelIndex()) > 0:
-            self.todoTasksList.model().setCurrentTaskIndex(self.todoTasksList.model().index(0))
+            self.todoTasksList.model().setCurrentTaskID(self.todoTasksList.model().index(0).data(TaskListModel.IDRole))
         else:
-            self.todoTasksList.model().setCurrentTaskIndex(None)
+            self.todoTasksList.model().setCurrentTaskID(None)
 
-    def setCurrentTaskIndex(self):
+    def setCurrentTaskID(self):
         # self.todoTasksList.model().setCurrentTaskIndex(self.todoTasksList.selectionModel().currentIndex())
         self.todoTasksList.model().setCurrentTaskID(self.todoTasksList.selectionModel().currentIndex().data(TaskListModel.IDRole))
 

@@ -155,6 +155,12 @@ class MainWindow(PomodoroFluentWindow):
         """
         return self.task_interface.todoTasksList.model().currentTaskID()
 
+    def get_current_task_index(self):
+        """
+        Convenience method to get the current task index from the todoTasksList model
+        """
+        return self.task_interface.todoTasksList.model().currentTaskIndex()
+
     def spawnTaskStartedInfoBar(self):
         if self.get_current_task_id() is None:
             return  # current task index can be None only when there is no tasks in todo list since when timer starts
@@ -177,7 +183,7 @@ class MainWindow(PomodoroFluentWindow):
     def store_already_elapsed_time(self):
         logger.debug("Storing already elapsed time")
         if self.get_current_task_id() is not None and self.is_task_beginning():
-            elapsed_time = self.get_current_task_id().data(TaskListModel.ElapsedTimeRole)
+            elapsed_time = self.get_current_task_index().data(TaskListModel.ElapsedTimeRole)
             self.already_elapsed_time = elapsed_time
 
     def check_current_task_deleted(self, task_id):
@@ -241,7 +247,7 @@ class MainWindow(PomodoroFluentWindow):
 
             final_elapsed_time = self.already_elapsed_time + elapsed_time
             if final_elapsed_time % 1000 == 0:  # only update db when the elapsed time is a multiple of 1000
-                self.task_interface.todoTasksList.model().setData(self.get_current_task_id(), final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=False)
+                self.task_interface.todoTasksList.model().setData(self.get_current_task_index(), final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=False)
             if final_elapsed_time % 5000 == 0:
                 self.updateTaskTimeDB()
 
@@ -253,8 +259,8 @@ class MainWindow(PomodoroFluentWindow):
         if current_task_index is None:
             return
 
-        final_elapsed_time = self.task_interface.todoTasksList.model().data(self.get_current_task_id(), TaskListModel.ElapsedTimeRole)
-        self.task_interface.todoTasksList.model().setData(self.get_current_task_id(), final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=True)
+        final_elapsed_time = self.task_interface.todoTasksList.model().data(self.get_current_task_index(), TaskListModel.ElapsedTimeRole)
+        self.task_interface.todoTasksList.model().setData(self.get_current_task_index(), final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=True)
         logger.debug(f"Updated DB with elapsed time: {final_elapsed_time}")
 
     def connectSignalsToSlots(self):
@@ -265,7 +271,7 @@ class MainWindow(PomodoroFluentWindow):
         )
         # Auto set current task whenever a work session begins. current task won't be overwritten if it is already set
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.task_interface.autoSetCurrentTaskIndex
+            lambda timerState: self.task_interface.autoSetCurrentTaskID() if timerState == TimerState.WORK else None
         )
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             self.store_already_elapsed_time

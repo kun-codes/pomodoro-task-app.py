@@ -324,3 +324,9 @@ class TaskListModel(QAbstractListModel):
             if task["id"] == task_id:
                 return task["task_name"]
         return None
+
+    def currentTaskIndex(self):
+        for task in self.tasks:
+            if task["id"] == self.current_task_id:
+                return self.index(task["task_position"], 0)
+
