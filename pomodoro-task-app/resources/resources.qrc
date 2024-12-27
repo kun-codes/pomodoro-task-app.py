@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="iconsPrefix">
+    <file>icons/exit_black.svg</file>
+    <file>icons/exit_white.svg</file>
+    <file>icons/play_pause_black.svg</file>
+    <file>icons/play_pause_white.svg</file>
     <file>icons/change_current_task_black.svg</file>
     <file>icons/change_current_task_white.svg</file>
     <file>icons/port_white.svg</file>
