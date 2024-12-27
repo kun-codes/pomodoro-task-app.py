@@ -105,10 +105,16 @@ class MainWindow(PomodoroFluentWindow):
         self.tray_menu.addSeparator()
 
         # Timer control actions
-        self.tray_menu_pause_resume_action = self.tray_menu.addAction("Start")
+        self.tray_menu_start_action = self.tray_menu.addAction("Start")
+        self.tray_menu_start_action.triggered.connect(
+            lambda: self.pomodoro_interface.pauseResumeButton.click()
+        )
+
+        self.tray_menu_pause_resume_action = self.tray_menu.addAction("Pause/Resume")
         self.tray_menu_pause_resume_action.triggered.connect(
             lambda: self.pomodoro_interface.pauseResumeButton.click()
         )
+        self.tray_menu_pause_resume_action.setEnabled(False)
 
         self.tray_menu_stop_action = self.tray_menu.addAction("Stop")
         self.tray_menu_stop_action.triggered.connect(
@@ -146,6 +152,14 @@ class MainWindow(PomodoroFluentWindow):
             new_icon = self.tray_black_icon
 
         self.tray.setIcon(new_icon)
+
+    def updateSystemTrayActions(self, timerState):
+        if timerState in [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
+            self.tray_menu_pause_resume_action.setEnabled(True)
+            self.tray_menu_start_action.setEnabled(False)
+        else:
+            self.tray_menu_pause_resume_action.setEnabled(False)
+            self.tray_menu_start_action.setEnabled(True)
 
     # below 4 methods are for the bottom bar
     def initBottomBar(self):
@@ -428,6 +442,10 @@ class MainWindow(PomodoroFluentWindow):
         )
         self.themeListener.systemThemeChanged.connect(
             self.updateSystemTrayIcon
+        )
+        # for system tray
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
+            self.updateSystemTrayActions
         )
 
     def on_website_filter_enabled_setting_changed(self):
