@@ -1,4 +1,4 @@
-from qfluentwidgets import FluentIcon, NavigationItemPosition, InfoBar, InfoBarPosition, SystemThemeListener
+from qfluentwidgets import FluentIcon, NavigationItemPosition, InfoBar, InfoBarPosition, SystemThemeListener, Theme
 from loguru import logger
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu
@@ -99,36 +99,36 @@ class MainWindow(PomodoroFluentWindow):
 
         self.tray_menu = QMenu()
 
+        is_os_dark_mode = darkdetect.isDark()
+
         self.tray_menu_timer_status_action = self.tray_menu.addAction("Timer not running")
+        self.tray_menu_timer_status_action.setIcon(FluentIcon.STOP_WATCH.icon(Theme.DARK if is_os_dark_mode else Theme.LIGHT))
         self.tray_menu_timer_status_action.setEnabled(False)  # Make it non-clickable
 
         self.tray_menu.addSeparator()
 
         # Timer control actions
         self.tray_menu_start_action = self.tray_menu.addAction("Start")
-        self.tray_menu_start_action.triggered.connect(
-            lambda: self.pomodoro_interface.pauseResumeButton.click()
-        )
+        self.tray_menu_start_action.setIcon(FluentIcon.PLAY.icon(Theme.DARK if is_os_dark_mode else Theme.LIGHT))
+        self.tray_menu_start_action.triggered.connect(lambda: self.pomodoro_interface.pauseResumeButton.click())
 
         self.tray_menu_pause_resume_action = self.tray_menu.addAction("Pause/Resume")
-        self.tray_menu_pause_resume_action.triggered.connect(
-            lambda: self.pomodoro_interface.pauseResumeButton.click()
-        )
+        self.tray_menu_pause_resume_action.setIcon(CustomFluentIcon.PLAY_PAUSE.icon(Theme.DARK if is_os_dark_mode else Theme.LIGHT))
+        self.tray_menu_pause_resume_action.triggered.connect(lambda: self.pomodoro_interface.pauseResumeButton.click())
         self.tray_menu_pause_resume_action.setEnabled(False)
 
         self.tray_menu_stop_action = self.tray_menu.addAction("Stop")
-        self.tray_menu_stop_action.triggered.connect(
-            lambda: self.pomodoro_interface.stopButton.click()
-        )
+        self.tray_menu_stop_action.setIcon(FluentIcon.CLOSE.icon(Theme.DARK if is_os_dark_mode else Theme.LIGHT))
+        self.tray_menu_stop_action.triggered.connect(lambda: self.pomodoro_interface.stopButton.click())
 
         self.tray_menu_skip_action = self.tray_menu.addAction("Skip")
-        self.tray_menu_skip_action.triggered.connect(
-            lambda: self.pomodoro_interface.skipButton.click()
-        )
+        self.tray_menu_skip_action.setIcon(FluentIcon.CHEVRON_RIGHT.icon(Theme.DARK if is_os_dark_mode else Theme.LIGHT))
+        self.tray_menu_skip_action.triggered.connect(lambda: self.pomodoro_interface.skipButton.click())
 
         self.tray_menu.addSeparator()
 
         self.tray_menu_quit_action = self.tray_menu.addAction("Quit")
+        self.tray_menu_quit_action.setIcon(CustomFluentIcon.EXIT.icon(Theme.DARK if is_os_dark_mode else Theme.LIGHT))
         self.tray_menu_quit_action.triggered.connect(self.close)
 
         self.tray.setContextMenu(self.tray_menu)
@@ -136,7 +136,7 @@ class MainWindow(PomodoroFluentWindow):
         self.tray_white_icon = QIcon(":/logosPrefix/logos/logo-monochrome-white.svg")
         self.tray_black_icon = QIcon(":/logosPrefix/logos/logo-monochrome-black.svg")
 
-        if darkdetect.isDark():
+        if is_os_dark_mode:
             initial_icon = self.tray_white_icon
         else:
             initial_icon = self.tray_black_icon
@@ -147,11 +147,21 @@ class MainWindow(PomodoroFluentWindow):
     def updateSystemTrayIcon(self):
         logger.debug("Updating system tray icon")
         if darkdetect.isDark():
-            new_icon = self.tray_white_icon
+            self.tray.setIcon(self.tray_white_icon)
+            self.tray_menu_timer_status_action.setIcon(FluentIcon.STOP_WATCH.icon(Theme.DARK))
+            self.tray_menu_start_action.setIcon(FluentIcon.PLAY.icon(Theme.DARK))
+            self.tray_menu_pause_resume_action.setIcon(CustomFluentIcon.PLAY_PAUSE.icon(Theme.DARK))
+            self.tray_menu_stop_action.setIcon(FluentIcon.CLOSE.icon(Theme.DARK))
+            self.tray_menu_skip_action.setIcon(FluentIcon.CHEVRON_RIGHT.icon(Theme.DARK))
+            self.tray_menu_quit_action.setIcon(CustomFluentIcon.EXIT.icon(Theme.DARK))
         else:
-            new_icon = self.tray_black_icon
-
-        self.tray.setIcon(new_icon)
+            self.tray.setIcon(self.tray_black_icon)
+            self.tray_menu_timer_status_action.setIcon(FluentIcon.STOP_WATCH.icon(Theme.LIGHT))
+            self.tray_menu_start_action.setIcon(FluentIcon.PLAY.icon(Theme.LIGHT))
+            self.tray_menu_pause_resume_action.setIcon(CustomFluentIcon.PLAY_PAUSE.icon(Theme.LIGHT))
+            self.tray_menu_stop_action.setIcon(FluentIcon.CLOSE.icon(Theme.LIGHT))
+            self.tray_menu_skip_action.setIcon(FluentIcon.CHEVRON_RIGHT.icon(Theme.LIGHT))
+            self.tray_menu_quit_action.setIcon(CustomFluentIcon.EXIT.icon(Theme.LIGHT))
 
     def updateSystemTrayActions(self, timerState):
         if timerState in [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
