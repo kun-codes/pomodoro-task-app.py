@@ -1,7 +1,7 @@
 from qfluentwidgets import FluentIcon, NavigationItemPosition, InfoBar, InfoBarPosition, SystemThemeListener
 from loguru import logger
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QSystemTrayIcon
+from PySide6.QtWidgets import QSystemTrayIcon, QMenu
 from PySide6.QtGui import QIcon
 from pathlib import Path
 
@@ -63,8 +63,8 @@ class MainWindow(PomodoroFluentWindow):
         self.connectSignalsToSlots()
         self.initNavigation()
         self.initWindow()
-        self.initBottomBar()
         self.initSystemTray()
+        self.initBottomBar()
 
         self.website_filter_interface.setEnabled(ConfigValues.ENABLE_WEBSITE_FILTER)
 
@@ -95,7 +95,16 @@ class MainWindow(PomodoroFluentWindow):
 
     def initSystemTray(self):
         """Initialize system tray icon and notifications"""
-        self.tray = QSystemTrayIcon(self)
+        self.system_tray = QSystemTrayIcon(self)
+
+        self.system_tray_menu = QMenu()
+        self.system_tray_menu_timer_status_action = self.system_tray_menu.addAction("Timer not running")
+        self.system_tray_menu_timer_status_action.setEnabled(False)  # Make it non-clickable
+        self.system_tray_menu.addSeparator()
+        self.system_tray_menu_quit_action = self.system_tray_menu.addAction("Quit")
+        self.system_tray_menu_quit_action.triggered.connect(self.close)
+
+        self.system_tray.setContextMenu(self.system_tray_menu)
 
         self.system_tray_white_icon = QIcon(":/logosPrefix/logos/logo-monochrome-white.svg")
         self.system_tray_black_icon = QIcon(":/logosPrefix/logos/logo-monochrome-black.svg")
@@ -105,8 +114,8 @@ class MainWindow(PomodoroFluentWindow):
         else:
             initial_icon = self.system_tray_black_icon
 
-        self.tray.setIcon(initial_icon)
-        self.tray.setVisible(True)
+        self.system_tray.setIcon(initial_icon)
+        self.system_tray.setVisible(True)
 
     def updateSystemTrayIcon(self):
         logger.debug("Updating system tray icon")
@@ -115,7 +124,7 @@ class MainWindow(PomodoroFluentWindow):
         else:
             new_icon = self.system_tray_black_icon
 
-        self.tray.setIcon(new_icon)
+        self.system_tray.setIcon(new_icon)
 
     # below 4 methods are for the bottom bar
     def initBottomBar(self):
@@ -442,16 +451,18 @@ class MainWindow(PomodoroFluentWindow):
             hh, mm, ss = convert_ms_to_hh_mm_ss(remaining_time_ms)
             t_hh, t_mm, t_ss = convert_ms_to_hh_mm_ss(total_session_length_ms)
 
-            self.bottomBar.timerLabel.setText(f"{current_timer_state.value}\n"
-                                              f"{hh:02d}:{mm:02d}:{ss:02d} / {t_hh:02d}:{t_mm:02d}:{t_ss:02d}")
+            timer_text = f"{current_timer_state.value}\n{hh:02d}:{mm:02d}:{ss:02d} / {t_hh:02d}:{t_mm:02d}:{t_ss:02d}"
+            self.bottomBar.timerLabel.setText(timer_text)
+            self.system_tray_menu_timer_status_action.setText(timer_text)
 
         else:
             # timer is not running
             hh, mm, ss = 0, 0, 0
             t_hh, t_mm, t_ss = 0, 0, 0
 
-            self.bottomBar.timerLabel.setText(f"Timer is not running\n"
-                                              f"{hh:02d}:{mm:02d}:{ss:02d} / {t_hh:02d}:{t_mm:02d}:{t_ss:02d}")
+            timer_text = f"Timer is not running\n{hh:02d}:{mm:02d}:{ss:02d} / {t_hh:02d}:{t_mm:02d}:{t_ss:02d}"
+            self.bottomBar.timerLabel.setText(timer_text)
+            self.system_tray_menu_timer_status_action.setText(timer_text)
 
     def check_valid_db(self):
         with get_session() as session:
