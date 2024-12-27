@@ -95,36 +95,57 @@ class MainWindow(PomodoroFluentWindow):
 
     def initSystemTray(self):
         """Initialize system tray icon and notifications"""
-        self.system_tray = QSystemTrayIcon(self)
+        self.tray = QSystemTrayIcon(self)
 
-        self.system_tray_menu = QMenu()
-        self.system_tray_menu_timer_status_action = self.system_tray_menu.addAction("Timer not running")
-        self.system_tray_menu_timer_status_action.setEnabled(False)  # Make it non-clickable
-        self.system_tray_menu.addSeparator()
-        self.system_tray_menu_quit_action = self.system_tray_menu.addAction("Quit")
-        self.system_tray_menu_quit_action.triggered.connect(self.close)
+        self.tray_menu = QMenu()
 
-        self.system_tray.setContextMenu(self.system_tray_menu)
+        self.tray_menu_timer_status_action = self.tray_menu.addAction("Timer not running")
+        self.tray_menu_timer_status_action.setEnabled(False)  # Make it non-clickable
 
-        self.system_tray_white_icon = QIcon(":/logosPrefix/logos/logo-monochrome-white.svg")
-        self.system_tray_black_icon = QIcon(":/logosPrefix/logos/logo-monochrome-black.svg")
+        self.tray_menu.addSeparator()
+
+        # Timer control actions
+        self.tray_menu_pause_resume_action = self.tray_menu.addAction("Start")
+        self.tray_menu_pause_resume_action.triggered.connect(
+            lambda: self.pomodoro_interface.pauseResumeButton.click()
+        )
+
+        self.tray_menu_stop_action = self.tray_menu.addAction("Stop")
+        self.tray_menu_stop_action.triggered.connect(
+            lambda: self.pomodoro_interface.stopButton.click()
+        )
+
+        self.tray_menu_skip_action = self.tray_menu.addAction("Skip")
+        self.tray_menu_skip_action.triggered.connect(
+            lambda: self.pomodoro_interface.skipButton.click()
+        )
+
+        self.tray_menu.addSeparator()
+
+        self.tray_menu_quit_action = self.tray_menu.addAction("Quit")
+        self.tray_menu_quit_action.triggered.connect(self.close)
+
+        self.tray.setContextMenu(self.tray_menu)
+
+        self.tray_white_icon = QIcon(":/logosPrefix/logos/logo-monochrome-white.svg")
+        self.tray_black_icon = QIcon(":/logosPrefix/logos/logo-monochrome-black.svg")
 
         if darkdetect.isDark():
-            initial_icon = self.system_tray_white_icon
+            initial_icon = self.tray_white_icon
         else:
-            initial_icon = self.system_tray_black_icon
+            initial_icon = self.tray_black_icon
 
-        self.system_tray.setIcon(initial_icon)
-        self.system_tray.setVisible(True)
+        self.tray.setIcon(initial_icon)
+        self.tray.setVisible(True)
 
     def updateSystemTrayIcon(self):
         logger.debug("Updating system tray icon")
         if darkdetect.isDark():
-            new_icon = self.system_tray_white_icon
+            new_icon = self.tray_white_icon
         else:
-            new_icon = self.system_tray_black_icon
+            new_icon = self.tray_black_icon
 
-        self.system_tray.setIcon(new_icon)
+        self.tray.setIcon(new_icon)
 
     # below 4 methods are for the bottom bar
     def initBottomBar(self):
@@ -453,7 +474,7 @@ class MainWindow(PomodoroFluentWindow):
 
             timer_text = f"{current_timer_state.value}\n{hh:02d}:{mm:02d}:{ss:02d} / {t_hh:02d}:{t_mm:02d}:{t_ss:02d}"
             self.bottomBar.timerLabel.setText(timer_text)
-            self.system_tray_menu_timer_status_action.setText(timer_text)
+            self.tray_menu_timer_status_action.setText(timer_text)
 
         else:
             # timer is not running
@@ -462,7 +483,7 @@ class MainWindow(PomodoroFluentWindow):
 
             timer_text = f"Timer is not running\n{hh:02d}:{mm:02d}:{ss:02d} / {t_hh:02d}:{t_mm:02d}:{t_ss:02d}"
             self.bottomBar.timerLabel.setText(timer_text)
-            self.system_tray_menu_timer_status_action.setText(timer_text)
+            self.tray_menu_timer_status_action.setText(timer_text)
 
     def check_valid_db(self):
         with get_session() as session:
