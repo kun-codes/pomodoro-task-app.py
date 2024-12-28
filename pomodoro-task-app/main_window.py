@@ -179,13 +179,13 @@ class MainWindow(PomodoroFluentWindow):
         self.bottomBar.pauseResumeButton.setCheckable(True)
         self.bottomBar.pauseResumeButton.setChecked(True)
         self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
-        self.bottomBar.pauseResumeButton.clicked.connect(self.bottomBarPauseResumeClicked)
+        self.bottomBar.pauseResumeButton.clicked.connect(self.bottomBarPauseResumeButtonClicked)
         self.bottomBar.skipButton.clicked.connect(self.pomodoro_interface.skipButtonClicked)
         self.bottomBar.stopButton.clicked.connect(self.pomodoro_interface.stopButtonClicked)
 
         self.bottomBar.taskLabel.setText("Current Task: None")
 
-    def bottomBarPauseResumeClicked(self):
+    def bottomBarPauseResumeButtonClicked(self):
         # Sync state with pomodoro view button
         self.pomodoro_interface.pauseResumeButton.setChecked(self.bottomBar.pauseResumeButton.isChecked())
         self.pomodoro_interface.pauseResumeButtonClicked()
@@ -204,10 +204,14 @@ class MainWindow(PomodoroFluentWindow):
         else:
             self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PAUSE)
 
-    def resetBottomBarPauseResumeButton(self):
+    def changeBottomBarPauseResumeButtonCheckedState(self, checked_state: bool):
         """Reset bottom bar button to initial state"""
-        self.bottomBar.pauseResumeButton.setChecked(True)
-        self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
+        if checked_state:
+            self.bottomBar.pauseResumeButton.setChecked(True)
+            self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
+        else:
+            self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PAUSE)
+            self.bottomBar.pauseResumeButton.setChecked(False)
 
     def onWorkspaceManagerClicked(self):
         if self.manage_workspace_dialog is None:
@@ -443,10 +447,13 @@ class MainWindow(PomodoroFluentWindow):
             lambda: self.syncBottomBarPauseResumeButton()
         )
         self.pomodoro_interface.pomodoro_timer_obj.sessionStoppedSignal.connect(
-            lambda: self.resetBottomBarPauseResumeButton()
+            lambda: self.changeBottomBarPauseResumeButtonCheckedState(True)
         )
         self.pomodoro_interface.pomodoro_timer_obj.waitForUserInputSignal.connect(
-            lambda: self.resetBottomBarPauseResumeButton()
+            lambda: self.changeBottomBarPauseResumeButtonCheckedState(True)
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.durationSkippedSignal.connect(
+            lambda: self.changeBottomBarPauseResumeButtonCheckedState(False)
         )
         self.task_interface.todoTasksList.model().currentTaskChangedSignal.connect(
             lambda task_id: self.bottomBar.taskLabel.setText(f"Current Task: {self.task_interface.todoTasksList.model().getTaskNameById(task_id)}")
