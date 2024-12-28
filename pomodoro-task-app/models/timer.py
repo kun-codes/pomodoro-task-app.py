@@ -14,7 +14,8 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
     """
 
     # first argument for current timer state
-    timerStateChangedSignal = Signal(TimerState)
+    timerStateChangedSignal = Signal(TimerState, bool)  # bool is for saying is for saying if timer state has
+    # changed due to skipping the duration or not, true if duration is skipped, false otherwise
     sessionStoppedSignal = Signal()
     waitForUserInputSignal = Signal()
     sessionPausedSignal = Signal()
@@ -41,7 +42,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
     def getTimerState(self):
         return self.timer_state
 
-    def updateSessionProgress(self):
+    def updateSessionProgress(self, is_skipped: bool = False):
         """
         Increments the session tracking variable session_progress by 0.5 or resets to 0 depending on the timer state
         """
@@ -73,7 +74,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             # remainder which is 0.5
 
         if self.previous_timer_state != self.timer_state:
-            self.timerStateChangedSignal.emit(self.timer_state)
+            self.timerStateChangedSignal.emit(self.timer_state, is_skipped)
 
         logger.debug(f"Session Progress (after): {self.session_progress}")
         logger.debug(f"Timer State (after): {self.timer_state}")
@@ -121,7 +122,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
 
         self.pomodoro_timer.stop()
         if self.timer_state == TimerState.WORK:
-            self.updateSessionProgress()
+            self.updateSessionProgress(isSkipped)
             self.setDuration()
             if isSkipped:  # if session is skipped then value of autostart_break is not checked as it doesn't matter
                 # and start the next duration automatically
@@ -136,7 +137,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
                 # if self.previous_timer_state != self.timer_state:
                 #     self.timerStateChangedSignal.emit(self.timer_state)
         elif self.timer_state in [TimerState.BREAK, TimerState.LONG_BREAK]:
-            self.updateSessionProgress()
+            self.updateSessionProgress(isSkipped)
             self.setDuration()
             if isSkipped:
                 self.startDuration()
@@ -203,7 +204,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         self.session_progress = 0
         self.timer_state = TimerState.NOTHING
         if self.previous_timer_state != self.timer_state:
-            self.timerStateChangedSignal.emit(self.timer_state)
+            self.timerStateChangedSignal.emit(self.timer_state, False)
         self.sessionStoppedSignal.emit()
         logger.debug(f"Session Progress: {self.session_progress}")
 

@@ -66,7 +66,7 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         else:
             self.pauseResumeButton.setIcon(FluentIcon.PAUSE)
             if self.pomodoro_timer_obj.getTimerState() == TimerState.NOTHING:
-                self.pomodoro_timer_obj.updateSessionProgress()
+                self.pomodoro_timer_obj.updateSessionProgress(False)
             self.pomodoro_timer_obj.setDuration()
             self.pomodoro_timer_obj.startDuration()
 
@@ -76,7 +76,7 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         else:
             self.pauseResumeButton.setIcon(FluentIcon.PAUSE)
 
-    def initProgressRing(self, currentTimerState: TimerState):
+    def initProgressRing(self, currentTimerState: TimerState, _):
         self.ProgressRing.setMinimum(0)
 
         if currentTimerState == TimerState.WORK:
