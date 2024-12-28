@@ -4,7 +4,8 @@ from loguru import logger
 from qfluentwidgets import FluentIcon
 
 from config_values import ConfigValues
-from models.timer import PomodoroTimer, TimerState
+from models.timer import PomodoroTimer
+from constants import TimerState
 from ui_py.ui_pomodoro_view import Ui_PomodoroView
 
 

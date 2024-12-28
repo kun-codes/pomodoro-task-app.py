@@ -41,3 +41,13 @@ class URLListType(Enum):
     BLOCKLIST_EXCEPTION = "blocklist_exception_urls"
     ALLOWLIST = "allowlist_urls"
     ALLOWLIST_EXCEPTION = "allowlist_exception_urls"
+
+
+class TimerState(Enum):
+    """
+    Tells what state the timer is in
+    """
+    NOTHING = "Begin Timer"
+    WORK = "Focus"
+    BREAK = "Break"
+    LONG_BREAK = "Long Break"

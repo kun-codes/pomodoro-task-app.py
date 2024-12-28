@@ -1,21 +1,11 @@
 import sys
-from enum import Enum
 
 from PySide6.QtCore import QTimer, Signal, QObject
 from PySide6.QtWidgets import QApplication
 from loguru import logger
 
 from config_values import ConfigValues
-
-
-class TimerState(Enum):
-    """
-    Tells what state the timer is in
-    """
-    NOTHING = "Begin Timer"
-    WORK = "Focus"
-    BREAK = "Break"
-    LONG_BREAK = "Long Break"
+from constants import TimerState
 
 
 class PomodoroTimer(QObject):  # Inherit from QObject to support signals

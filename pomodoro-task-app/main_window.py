@@ -8,11 +8,10 @@ from pathlib import Path
 
 from utils.time_conversion import convert_ms_to_hh_mm_ss
 from config_paths import settings_dir
-from constants import WebsiteFilterType, URLListType, FIRST_RUN_DOTFILE_NAME
+from constants import WebsiteFilterType, URLListType, FIRST_RUN_DOTFILE_NAME, TimerState
 from config_values import ConfigValues
 from models.config import workspace_specific_settings, app_settings
 from models.task_list_model import TaskListModel
-from models.timer import TimerState
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
 from views.subinterfaces.pomodoro_view import PomodoroView
 from views.subinterfaces.settings_view import SettingsView
