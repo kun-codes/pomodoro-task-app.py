@@ -267,6 +267,9 @@ class MainWindow(PomodoroFluentWindow):
         self.manage_workspace_dialog.show()
 
     def toggleUIElementsBasedOnTimerState(self, timerState):
+        logger.warning(f"timerState: {timerState}")
+        logger.warning("timerStateChangedSignal emited")
+        logger.warning(f"Time left in current duration: {self.pomodoro_interface.pomodoro_timer_obj.getRemainingTime()}")
         # TODO: show a tip to stop the timer before changing settings when timer is running
         workspace_selector_button = self.navigationInterface.panel.widget("WorkspaceSelector")
         if timerState in [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
