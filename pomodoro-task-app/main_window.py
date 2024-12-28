@@ -310,6 +310,8 @@ class MainWindow(PomodoroFluentWindow):
         mitmdump_path = get_mitmdump_path()
 
         if timerState == TimerState.WORK:
+            # todo: check if the timer is running before starting the website filtering, because in case autostart work
+            #   is off, the website filter would start even when the timer is not running
             logger.debug("Starting website filtering")
             self.website_blocker_manager.start_filtering(ConfigValues.PROXY_PORT, joined_urls, block_type, mitmdump_path)
         else:
