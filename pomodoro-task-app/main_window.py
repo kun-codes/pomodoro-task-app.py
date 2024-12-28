@@ -212,6 +212,54 @@ class MainWindow(PomodoroFluentWindow):
             self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PAUSE)
             self.bottomBar.pauseResumeButton.setChecked(False)
 
+    def showNotifications(self, timerState, isSkipped):
+        title = ""
+        message = ""
+
+        work_duration = ConfigValues.WORK_DURATION
+        break_duration = ConfigValues.BREAK_DURATION
+        long_break_duration = ConfigValues.LONG_BREAK_DURATION
+
+        if timerState == TimerState.WORK:
+            if ConfigValues.AUTOSTART_WORK or (not ConfigValues.AUTOSTART_WORK and isSkipped):
+            # if ConfigValues.AUTOSTART_WORK:
+                title = "Work Session Started"
+                message = f"{work_duration}m work session has started"
+            elif not ConfigValues.AUTOSTART_WORK and not self.pomodoro_interface.isInitialWorkSession():
+                # no point in showing that break has ended when work session is for the first time
+                if self.pomodoro_interface.pomodoro_timer_obj.getSessionProgress() == 0.5:  # long break ended
+                    title = "Long Break Ended"
+                    message = "Long break has ended. Start the next work session"
+                else:  # break ended
+                    title = "Break Ended"
+                    message = "Break has ended. Start the next work session"
+        elif timerState in [TimerState.BREAK, TimerState.LONG_BREAK]:
+            if ConfigValues.AUTOSTART_BREAK or (not ConfigValues.AUTOSTART_BREAK and isSkipped):
+                if self.pomodoro_interface.pomodoro_timer_obj.getSessionProgress() == ConfigValues.WORK_INTERVALS:
+                    title = "Long Break Session Started"
+                    message = f"{long_break_duration}m long break session has started"
+                else:
+                    title = "Break Session Started"
+                    message = f"{break_duration}m break session has started"
+            else:
+                if self.pomodoro_interface.pomodoro_timer_obj.getSessionProgress() == ConfigValues.WORK_INTERVALS:
+                    title = "Work Session Ended"
+                    message = "Work session has ended. Start the next long break session"
+                else:
+                    title = "Work Session Ended"
+                    message = "Work session has ended. Start the next break session"
+        elif timerState == TimerState.NOTHING:
+            title = "Timer Stopped"
+            message = "Timer has stopped"
+
+        if title and message:
+            self.tray.showMessage(
+                title,
+                message,
+                QSystemTrayIcon.Information,
+                5000,
+            )
+
     def onWorkspaceManagerClicked(self):
         if self.manage_workspace_dialog is None:
             self.manage_workspace_dialog = ManageWorkspaceDialog(parent=self.window(), workspaceListModel=self.workplace_list_model)
@@ -219,6 +267,9 @@ class MainWindow(PomodoroFluentWindow):
         self.manage_workspace_dialog.show()
 
     def toggleUIElementsBasedOnTimerState(self, timerState):
+        logger.warning(f"timerState: {timerState}")
+        logger.warning("timerStateChangedSignal emited")
+        logger.warning(f"Time left in current duration: {self.pomodoro_interface.pomodoro_timer_obj.getRemainingTime()}")
         # TODO: show a tip to stop the timer before changing settings when timer is running
         workspace_selector_button = self.navigationInterface.panel.widget("WorkspaceSelector")
         if timerState in [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
@@ -463,6 +514,10 @@ class MainWindow(PomodoroFluentWindow):
         # for system tray
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             self.updateSystemTrayActions
+        )
+        # for notifications
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
+            self.showNotifications
         )
 
     def on_website_filter_enabled_setting_changed(self):
