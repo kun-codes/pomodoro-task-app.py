@@ -133,8 +133,8 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             else:
                 logger.info("Waiting for user input after ending work session")
                 self.waitForUserInputSignal.emit()  # resets the pause resume button to its checked state
-                if self.previous_timer_state != self.timer_state:
-                    self.timerStateChangedSignal.emit(self.timer_state)
+                # if self.previous_timer_state != self.timer_state:
+                #     self.timerStateChangedSignal.emit(self.timer_state)
         elif self.timer_state in [TimerState.BREAK, TimerState.LONG_BREAK]:
             self.updateSessionProgress()
             self.setDuration()
@@ -147,8 +147,8 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             else:
                 logger.info("Waiting for user input after ending break session")
                 self.waitForUserInputSignal.emit()
-                if self.previous_timer_state != self.timer_state:
-                    self.timerStateChangedSignal.emit(self.timer_state)
+                # if self.previous_timer_state != self.timer_state:
+                #     self.timerStateChangedSignal.emit(self.timer_state)
 
     def skipDuration(self):
         # self.previous_timer_state = self.timer_state  # should I remove it???
