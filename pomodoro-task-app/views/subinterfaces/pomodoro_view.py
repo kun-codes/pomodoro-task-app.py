@@ -122,6 +122,13 @@ class PomodoroView(QWidget, Ui_PomodoroView):
     def resetPauseResumeButton(self):
         self.pauseResumeButton.setChecked(True)
         self.pauseResumeButton.setIcon(FluentIcon.PLAY)
+    
+    def isInitialWorkSession(self):
+        return (
+            self.pomodoro_timer_obj.previous_timer_state == TimerState.NOTHING and
+            self.pomodoro_timer_obj.getTimerState() == TimerState.WORK  # and
+            # self.pomodoro_timer_obj.getSessionProgress() == 0  # not adding this condition as it is redundant
+        )
 
     def convert_milliseconds(self, milliseconds):
         seconds, milliseconds = divmod(milliseconds, 1000)
