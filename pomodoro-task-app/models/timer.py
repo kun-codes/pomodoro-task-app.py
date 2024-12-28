@@ -40,6 +40,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         # starts out at 0 which means that the timer state is NOTHING
         # whole number means that break is going on
         # would be reset to zero after every long break
+        self.sessions_completed = 0  # would be incremented by 1 after every long break is ended
 
         self.remaining_time = 0  # will change according to BREAK_DURATION, WORK_DURATION, LONG_BREAK_DURATION
         self.timer_resolution = 1000  # in milliseconds
@@ -123,6 +124,11 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         """
         Handles the end of the work session, break session or long break session
         """
+        # increment sessions_completed if long break has ended
+        if self.timer_state == TimerState.LONG_BREAK:
+            self.sessions_completed += 1
+            logger.info(f"Sessions completed: {self.sessions_completed}")
+
         self.pomodoro_timer.stop()
         if self.timer_state == TimerState.WORK:
             self.updateSessionProgress()
@@ -201,6 +207,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
     def stopSession(self):
         logger.info("Stopping Pomodoro Session")
         self.previous_timer_state = self.timer_state
+        self.sessions_completed = 0
         self.pomodoro_timer.stop()
         self.remaining_time = 0
         self.session_progress = 0
@@ -209,6 +216,12 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             self.timerStateChangedSignal.emit(self.timer_state)
         self.sessionStoppedSignal.emit()
         logger.debug(f"Session Progress: {self.session_progress}")
+
+    def getSessionProgress(self):
+        return self.session_progress
+
+    def getSessionsCompleted(self):
+        return self.sessions_completed
 
     # def skipDuration(self):
     #     logger.info("Skipping duration")
