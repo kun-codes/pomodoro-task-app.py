@@ -130,7 +130,7 @@ class WebsiteListManager(QObject):
 
     # helper function for update_target_list_urls()
     def remove_urls(self, session, urls: set, target_class):
-        session.query(target_class).filter(target_class.url.in_(urls)).delete(synchronize_session=False)
+        session.query(target_class).filter(target_class.url.in_(urls), target_class.workspace_id == WorkspaceLookup.get_current_workspace_id()).delete(synchronize_session=False)
 
     def get_urls(self, target_list: URLListType):
         if target_list == URLListType.BLOCKLIST:
