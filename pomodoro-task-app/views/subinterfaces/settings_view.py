@@ -128,6 +128,8 @@ class SettingsView(QWidget, Ui_SettingsView):
         self.pomodoro_settings_group.addSettingCard(self.autostart_work_card)
         self.pomodoro_settings_group.addSettingCard(self.autostart_break_card)
 
+        self.work_interval_card.spinBox.setMinimumWidth(125)
+
         self.scrollAreaWidgetContents.layout().addWidget(self.pomodoro_settings_group)
 
         self.website_filter_settings_group.addSettingCard(self.enable_website_filter_card)
