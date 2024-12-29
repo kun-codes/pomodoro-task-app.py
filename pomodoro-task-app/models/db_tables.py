@@ -1,4 +1,7 @@
-from sqlalchemy import URL, create_engine, Column, Integer, String, Enum as SQLEnum, Boolean, ForeignKey, event, Engine
+from datetime import datetime, timezone
+
+from sqlalchemy import URL, create_engine, Column, Integer, String, Enum as SQLEnum, Boolean, ForeignKey, event, Engine, \
+    DateTime
 from sqlalchemy.orm import declarative_base, relationship
 from enum import Enum
 from pathlib import Path
@@ -33,6 +36,15 @@ class TaskType(Enum):
     TODO = "todo"
     COMPLETED = "completed"
 
+class Version(Base):
+    """Stores application and database schema version"""
+    __tablename__ = 'version'
+
+    id = Column(Integer, primary_key=True)
+    app_version = Column(String, nullable=False)
+    schema_version = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
 class Task(Base):
     """

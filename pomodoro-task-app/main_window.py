@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QSystemTrayIcon, QMenu
 from PySide6.QtGui import QIcon
 from pathlib import Path
 
-
+from utils.get_app_version import get_app_version
 from utils.time_conversion import convert_ms_to_hh_mm_ss
 from config_paths import settings_dir
 from constants import WebsiteFilterType, URLListType, FIRST_RUN_DOTFILE_NAME, TimerState
@@ -17,7 +17,7 @@ from views.subinterfaces.pomodoro_view import PomodoroView
 from views.subinterfaces.settings_view import SettingsView
 from views.subinterfaces.tasks_view import TaskListView
 from views.subinterfaces.website_blocker_view import WebsiteBlockerView
-from models.db_tables import Workspace, CurrentWorkspace, TaskType, Task
+from models.db_tables import Workspace, CurrentWorkspace, TaskType, Task, Version
 from utils.db_utils import get_session
 from models.workspace_list_model import WorkspaceListModel
 from models.config import load_workspace_settings
@@ -579,6 +579,16 @@ class MainWindow(PomodoroFluentWindow):
 
     def check_valid_db(self):
         with get_session() as session:
+            # Initialize version info if not exists
+            # todo: make a upgrade db function too for future app versions
+            if not session.query(Version).first():
+                version = Version(
+                    app_version=get_app_version(),
+                    schema_version='1'
+                )
+            session.add(version)
+            session.commit()
+
             workspace = session.query(Workspace).first()
             # create a default workspace if none exists
             if not workspace:
