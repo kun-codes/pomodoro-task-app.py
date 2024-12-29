@@ -3,7 +3,7 @@ import sys
 from PySide6.QtCore import Qt, QModelIndex, QItemSelectionModel
 from PySide6.QtGui import QColor, QPainter, QPen, QKeyEvent
 from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QMainWindow, QWidget, \
-    QListView, QStyleOptionViewItem, QStyle
+    QListView, QStyleOptionViewItem, QStyle, QAbstractItemView
 from loguru import logger
 from qfluentwidgets import FluentStyleSheet, PrimaryPushButton, SubtitleLabel, ListView, setCustomStyleSheet, \
     PushButton, LineEdit, InfoBar, InfoBarPosition, TableItemDelegate, themeColor, isDarkTheme
@@ -13,6 +13,7 @@ from models.db_tables import Workspace, engine
 from models.workspace_list_model import WorkspaceListModel
 from models.workspace_lookup import WorkspaceLookup
 from prefabs.roundedListItemDelegate import RoundedListItemDelegate
+from prefabs.workspaceListView import WorkspaceListView
 
 
 class ManageWorkspaceDialog(MaskDialogBase):
@@ -38,7 +39,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
 
         self.titleLabel = SubtitleLabel('Manage Workspaces', parent=None)
         self.newWorkspaceLineEdit = LineEdit()
-        self.workspaceList = ListView()
+        self.workspaceList = WorkspaceListView()
         self.model = workspaceListModel
         self.workspaceList.setModel(self.model)
 

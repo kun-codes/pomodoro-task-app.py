@@ -1,6 +1,7 @@
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtGui import QPainter, QColor, QPen
 from PySide6.QtWidgets import QListView, QStyleOptionViewItem, QStyle, QWidget
+from loguru import logger
 from qfluentwidgets import isDarkTheme, themeColor, ListItemDelegate
 
 from models.task_list_model import TaskListModel
@@ -31,6 +32,15 @@ class RoundedListItemDelegate(ListItemDelegate):
             rect = option.rect.adjusted(1, 1, -1, -1)  # Adjust to fit within the background
             painter.setPen(QPen(themeColor(), 2))  # Set pen with theme color and width 2
             painter.drawRoundedRect(rect, 5, 5)  # Draw rounded rectangle border
+
+    def updateEditorGeometry(self, editor: QWidget, option: QStyleOptionViewItem, index: QModelIndex):
+        rect = option.rect
+        y = rect.y() + (rect.height() - editor.height()) // 2
+
+        x, w = max(1, rect.x()), rect.width() - 2  # max(1, rect.x()), 1 because indicator border is 2 and half of 2 is
+        # 1 and subtract 2 from width because border width is 2
+
+        editor.setGeometry(x, y, w, rect.height())
 
 class RoundedListItemDelegateDisplayTime(RoundedListItemDelegate):
     def __init__(self, parent: QListView):

@@ -32,6 +32,26 @@ class WorkspaceListModel(QAbstractListModel):
             return self.workspaces[index.row()]["workspace_name"]
         if role == Qt.ItemDataRole.DisplayRole:
             return self.workspaces[index.row()]["id"]
+    
+    def setData(self, index, value, role=Qt.EditRole):
+        """Update workspace name"""
+        if role == Qt.EditRole:
+            workspace_name = value.strip()
+            if workspace_name:
+                with get_session() as session:
+                    workspace = session.get(Workspace, self.workspaces[index.row()]["id"])
+                    workspace.workspace_name = workspace_name
+                    session.commit()
+                    
+                self.workspaces[index.row()]["workspace_name"] = workspace_name
+                self.dataChanged.emit(index, index, [Qt.DisplayRole])
+                return True
+        return False
+
+    def flags(self, index):
+        if not index.isValid():
+            return Qt.ItemIsEnabled
+        return super().flags(index) | Qt.ItemIsEditable
 
     def rowCount(self, index=QModelIndex()):
         return len(self.workspaces)
