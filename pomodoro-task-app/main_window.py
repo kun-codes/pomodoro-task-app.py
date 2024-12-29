@@ -152,11 +152,15 @@ class MainWindow(PomodoroFluentWindow):
         logger.debug("Updating system tray icon")
         # context menu of Windows system tray icon is always in light mode for qt apps. Tested on Windows 10, didn't
         # test on Windows 11 yet
-        if platform.system() == "Windows":
-            return
-
         if darkdetect.isDark():
             self.tray.setIcon(self.tray_white_icon)
+        else:
+            self.tray.setIcon(self.tray_black_icon)
+
+        if platform.system() == "Windows":
+            return
+        
+        if darkdetect.isDark():
             self.tray_menu_timer_status_action.setIcon(FluentIcon.STOP_WATCH.icon(Theme.DARK))
             self.tray_menu_start_action.setIcon(FluentIcon.PLAY.icon(Theme.DARK))
             self.tray_menu_pause_resume_action.setIcon(CustomFluentIcon.PLAY_PAUSE.icon(Theme.DARK))
@@ -164,7 +168,6 @@ class MainWindow(PomodoroFluentWindow):
             self.tray_menu_skip_action.setIcon(FluentIcon.CHEVRON_RIGHT.icon(Theme.DARK))
             self.tray_menu_quit_action.setIcon(CustomFluentIcon.EXIT.icon(Theme.DARK))
         else:
-            self.tray.setIcon(self.tray_black_icon)
             self.tray_menu_timer_status_action.setIcon(FluentIcon.STOP_WATCH.icon(Theme.LIGHT))
             self.tray_menu_start_action.setIcon(FluentIcon.PLAY.icon(Theme.LIGHT))
             self.tray_menu_pause_resume_action.setIcon(CustomFluentIcon.PLAY_PAUSE.icon(Theme.LIGHT))
