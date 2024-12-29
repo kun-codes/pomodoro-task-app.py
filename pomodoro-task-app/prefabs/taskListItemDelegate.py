@@ -1,6 +1,7 @@
-from PySide6.QtCore import Qt, QRect
+from PySide6.QtCore import Qt, QRect, QModelIndex
 from PySide6.QtGui import QPainter, QColor, QFontMetrics
-from PySide6.QtWidgets import QListView, QStyledItemDelegate
+from PySide6.QtWidgets import QListView, QStyledItemDelegate, QWidget, QStyleOptionViewItem
+from loguru import logger
 from qfluentwidgets import ListItemDelegate, isDarkTheme
 
 from models.task_list_model import TaskListModel
@@ -86,8 +87,15 @@ class TaskListItemDelegate(ListItemDelegate):
 
         painter.restore()
 
-        # reduce option.rect from the right by the width of the hello world text
+        # reduce option.rect from the right by the width of the time text
         option.rect.adjust(0, 0, -time_text_width-10, 0)
         QStyledItemDelegate.paint(self, painter, option, index)  # manually calling parent class paint method to avoid
         # multiple calls to _drawBackground and _drawIndicator
+
+    def updateEditorGeometry(self, editor: QWidget, option: QStyleOptionViewItem, index: QModelIndex):
+        rect = option.rect
+        y = rect.y() + (rect.height() - editor.height()) // 2
+        x, w = max(5, rect.x()), rect.width() - 5 # breadth of indicator drawn is 3, arbitrarily set to 5
+
+        editor.setGeometry(x, y, w, rect.height())
 

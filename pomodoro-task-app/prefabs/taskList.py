@@ -27,7 +27,7 @@ class TaskList(ListView):
 
         self.setItemDelegate(TaskListItemDelegate(self))
 
-        self.editor_width_reduction = 11  # so that editor doesn't go out of the view of TaskList
+        self.editor_width_reduction = 5  # the same number in TaskListItemDelegate's updateEditorGeometry method
 
     def edit(self, index, trigger, event):
         """
@@ -39,7 +39,7 @@ class TaskList(ListView):
             editor = LineEdit(self)
             editor.setProperty("transparent", False)
             editor.setText(task_name)
-            editor.setFixedWidth(self.viewport().width() - self.editor_width_reduction)
+            # editor.setFixedWidth(self.viewport().width() - self.editor_width_reduction)
             editor.editingFinished.connect(lambda: self.commitData(editor))
             editor.setCursorPosition(0)
             editor.setObjectName("editor")
@@ -51,6 +51,11 @@ class TaskList(ListView):
         return super().edit(index, trigger, event)
 
     def resizeEvent(self, event):
+        """
+        Instead of just resizing editor using itemDelegate's updateEditorGeometry method, I am resizing the editor here
+        because this seems faster, although I am not able to disable the resizing behaviour of updateEditorGeometry
+        method
+        """
         super().resizeEvent(event)
         if self.current_editor:
             self.current_editor.setFixedWidth(self.viewport().width() - self.editor_width_reduction)
