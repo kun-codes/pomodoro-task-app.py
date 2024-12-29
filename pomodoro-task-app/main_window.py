@@ -586,8 +586,8 @@ class MainWindow(PomodoroFluentWindow):
                     app_version=get_app_version(),
                     schema_version='1'
                 )
-            session.add(version)
-            session.commit()
+                session.add(version)
+                session.commit()
 
             workspace = session.query(Workspace).first()
             # create a default workspace if none exists
