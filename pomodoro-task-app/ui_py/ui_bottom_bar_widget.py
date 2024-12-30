@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QSizePolicy, QSpacerItem,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QSizePolicy,
+    QSpacerItem, QWidget)
 
+from prefabs.elidedLabel import ElidedStrongBodyLabel
 from qfluentwidgets import (PillToolButton, StrongBodyLabel, ToggleToolButton, ToolButton)
 
 class Ui_BottomBarWidget(object):
@@ -33,19 +34,29 @@ class Ui_BottomBarWidget(object):
 
         self.horizontalLayout.addItem(self.spacer)
 
-        self.taskLabel = StrongBodyLabel(BottomBarWidget)
+        self.taskLabel = ElidedStrongBodyLabel(BottomBarWidget)
         self.taskLabel.setObjectName(u"taskLabel")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(1)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.taskLabel.sizePolicy().hasHeightForWidth())
+        self.taskLabel.setSizePolicy(sizePolicy)
+        self.taskLabel.setMinimumSize(QSize(200, 0))
+        self.taskLabel.setSizeIncrement(QSize(0, 0))
+        self.taskLabel.setBaseSize(QSize(0, 0))
+        self.taskLabel.setFrameShape(QFrame.Shape.StyledPanel)
+        self.taskLabel.setFrameShadow(QFrame.Shadow.Raised)
 
         self.horizontalLayout.addWidget(self.taskLabel)
 
         self.stopButton = PillToolButton(BottomBarWidget)
         self.stopButton.setObjectName(u"stopButton")
         self.stopButton.setEnabled(True)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.stopButton.sizePolicy().hasHeightForWidth())
-        self.stopButton.setSizePolicy(sizePolicy)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.stopButton.sizePolicy().hasHeightForWidth())
+        self.stopButton.setSizePolicy(sizePolicy1)
         self.stopButton.setMinimumSize(QSize(40, 40))
         self.stopButton.setMaximumSize(QSize(40, 40))
         self.stopButton.setIconSize(QSize(16, 16))
@@ -56,8 +67,8 @@ class Ui_BottomBarWidget(object):
         self.pauseResumeButton = PillToolButton(BottomBarWidget)
         self.pauseResumeButton.setObjectName(u"pauseResumeButton")
         self.pauseResumeButton.setEnabled(True)
-        sizePolicy.setHeightForWidth(self.pauseResumeButton.sizePolicy().hasHeightForWidth())
-        self.pauseResumeButton.setSizePolicy(sizePolicy)
+        sizePolicy1.setHeightForWidth(self.pauseResumeButton.sizePolicy().hasHeightForWidth())
+        self.pauseResumeButton.setSizePolicy(sizePolicy1)
         self.pauseResumeButton.setMinimumSize(QSize(40, 40))
         self.pauseResumeButton.setMaximumSize(QSize(40, 40))
         self.pauseResumeButton.setIconSize(QSize(16, 16))
@@ -76,7 +87,11 @@ class Ui_BottomBarWidget(object):
 
         self.timerLabel = StrongBodyLabel(BottomBarWidget)
         self.timerLabel.setObjectName(u"timerLabel")
+        sizePolicy.setHeightForWidth(self.timerLabel.sizePolicy().hasHeightForWidth())
+        self.timerLabel.setSizePolicy(sizePolicy)
+        self.timerLabel.setMinimumSize(QSize(200, 0))
         self.timerLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.timerLabel.setWordWrap(False)
 
         self.horizontalLayout.addWidget(self.timerLabel)
 
@@ -88,7 +103,6 @@ class Ui_BottomBarWidget(object):
 
     def retranslateUi(self, BottomBarWidget):
         BottomBarWidget.setWindowTitle(QCoreApplication.translate("BottomBarWidget", u"Form", None))
-        self.taskLabel.setText(QCoreApplication.translate("BottomBarWidget", u"Strong body label", None))
         self.timerLabel.setText(QCoreApplication.translate("BottomBarWidget", u"Strong body label", None))
     # retranslateUi
 
