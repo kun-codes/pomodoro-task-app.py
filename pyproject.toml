@@ -16,9 +16,10 @@ sqlalchemy = "^2.0.36"
 mitmproxy = "^11.0.2"
 psutil = "^6.1.1"
 uniproxy = "^0.1.4"
-
-[tool.poetry.group.dev.dependencies]
 loguru = "^0.7.2"
+
+[tool.poetry.group.build.dependencies]
+nuitka = "^2.5.9"
 
 [build-system]
 requires = ["poetry-core"]
