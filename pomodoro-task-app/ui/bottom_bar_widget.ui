@@ -46,9 +46,36 @@
     </spacer>
    </item>
    <item>
-    <widget class="StrongBodyLabel" name="taskLabel">
-     <property name="text">
-      <string>Strong body label</string>
+    <widget class="ElidedStrongBodyLabel" name="taskLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <horstretch>1</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>200</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="sizeIncrement">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Raised</enum>
      </property>
     </widget>
    </item>
@@ -147,11 +174,26 @@
    </item>
    <item>
     <widget class="StrongBodyLabel" name="timerLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <horstretch>1</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>200</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="text">
       <string>Strong body label</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -177,6 +219,11 @@
    <class>PillToolButton</class>
    <extends>ToggleToolButton</extends>
    <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>ElidedStrongBodyLabel</class>
+   <extends>QLabel</extends>
+   <header>prefabs.elidedLabel</header>
   </customwidget>
  </customwidgets>
  <resources/>
