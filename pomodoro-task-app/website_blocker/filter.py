@@ -10,13 +10,11 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from mitmproxy import http, ctx
-from loguru import logger
 from constants import BLOCK_HTML_MESSAGE
 
 
 
 def load(l):
-    logger.debug("Registering arguments.")
     l.add_option("addresses_str", str, '', 'Concatenated addresses.')
     l.add_option("block_type", str, '', 'Whitelist or blacklist.')
 
