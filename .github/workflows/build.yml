@@ -6,16 +6,20 @@ on:
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest, macos-latest]
+                python-version: [3.12]
 
         steps:
             -   name: Checkout
                 uses: actions/checkout@v4
 
-            -   name: Set up Python 3.12
+            -   name: Set up Python ${{ matrix.python-version }}
                 uses: actions/setup-python@v5
                 with:
-                    python-version: '3.12'
+                    python-version: ${{ matrix.python-version }}
 
             -   name: Install dependencies
                 env:
@@ -30,19 +34,19 @@ jobs:
                     pip list
                     poetry show
 
-            -  name: Download latest version of mitmproxy
-               run: |
-                    pwd
-                    ls
+            -   name: Download latest version of mitmproxy
+                run: |
                     cd ..
-                    pwd
-                    ls
-                    wget https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-linux-x86_64.tar.gz
-                    tar -xvf mitmproxy-11.0.2-linux-x86_64.tar.gz
-                    cp mitmdump pomodoro-task-app.py/mitmdump
+                    if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+                        wget https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-linux-x86_64.tar.gz
+                        tar -xvf mitmproxy-11.0.2-linux-x86_64.tar.gz
+                        cp mitmdump pomodoro-task-app.py/mitmdump
+                    elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+                        curl -LO https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-macos-arm64.tar.gz
+                        tar -xvf mitmproxy-11.0.2-macos-arm64.tar.gz
+                        cp mitmproxy.app/Contents/MacOS/mitmdump pomodoro-task-app.py/mitmdump
+                    fi
                     cd pomodoro-task-app.py
-                    pwd
-                    ls
 
             -   name: Build Executable
                 uses: Nuitka/Nuitka-Action@main
@@ -50,16 +54,24 @@ jobs:
                     nuitka-version: 'main'
                     script-name: |
                         pomodoro-task-app/__main__.py
-                    mode: 'standalone'
+                    mode: ${{ matrix.os == 'macos-latest' && 'app' || 'standalone' }}
                     enable-plugins: 'pyside6'
                     include-data-files: |
                         ./pomodoro-task-app/website_blocker/filter.py=./website_blocker/filter.py
                         ./pomodoro-task-app/constants.py=./constants.py
                         ./mitmdump=./mitmdump
 
+            -   name: Install tree
+                if: matrix.os == 'macos-latest'
+                run: brew install tree
+
+            - name: tree command
+              run: |
+                  tree build/
+
             -   name: Upload artifacts
                 uses: actions/upload-artifact@v4
                 with:
-                    name: 'linux-build'
-                    path: 'build/__main__.dist'
+                    name: '${{ matrix.os }}-build'
+                    path: 'build/'
                     include-hidden-files: 'true'
