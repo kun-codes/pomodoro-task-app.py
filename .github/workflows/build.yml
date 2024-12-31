@@ -1,0 +1,65 @@
+name: Build App
+
+on:
+    push:
+    pull_request:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+
+            -   name: Set up Python 3.12
+                uses: actions/setup-python@v5
+                with:
+                    python-version: '3.12'
+
+            -   name: Install dependencies
+                env:
+                    POETRY_VIRTUALENVS_CREATE: false
+                run: |
+                    python -m pip install --upgrade pip
+                    python -m pip install poetry
+                    poetry install --no-cache --no-interaction
+
+            -   name: Debug Packages
+                run: |
+                    pip list
+                    poetry show
+
+            -  name: Download latest version of mitmproxy
+               run: |
+                    pwd
+                    ls
+                    cd ..
+                    pwd
+                    ls
+                    wget https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-linux-x86_64.tar.gz
+                    tar -xvf mitmproxy-11.0.2-linux-x86_64.tar.gz
+                    cp mitmdump pomodoro-task-app.py/mitmdump
+                    cd pomodoro-task-app.py
+                    pwd
+                    ls
+
+            -   name: Build Executable
+                uses: Nuitka/Nuitka-Action@main
+                with:
+                    nuitka-version: 'main'
+                    script-name: |
+                        pomodoro-task-app/__main__.py
+                    mode: 'standalone'
+                    enable-plugins: 'pyside6'
+                    include-data-files: |
+                        ./pomodoro-task-app/website_blocker/filter.py=./website_blocker/filter.py
+                        ./pomodoro-task-app/constants.py=./constants.py
+                        ./mitmdump=./mitmdump
+
+            -   name: Upload artifacts
+                uses: actions/upload-artifact@v4
+                with:
+                    name: 'linux-build'
+                    path: 'build/__main__.dist'
+                    include-hidden-files: 'true'
