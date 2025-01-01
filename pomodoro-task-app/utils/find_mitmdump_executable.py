@@ -1,11 +1,7 @@
-import os
+from utils.is_nuitka import is_nuitka
 from pathlib import Path
 import shutil
 import platform
-
-def is_nuitka():
-    # Check if the code is being run by Nuitka
-    return globals().get("__compiled__", False)
 
 def get_mitmdump_path():
     print(f"globals: {globals()}")
