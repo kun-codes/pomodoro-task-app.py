@@ -79,9 +79,18 @@ jobs:
               run: |
                   tree build/
 
-            -   name: Upload artifacts
+            -   name: Upload artifacts Linux
+                if: matrix.os == 'ubuntu-latest'
                 uses: actions/upload-artifact@v4
                 with:
                     name: '${{ matrix.os }}_${{ env.ARCHITECTURE }}-build'
-                    path: 'build/'
+                    path: 'build/__main__.dist/'
+                    include-hidden-files: 'true'
+
+            -   name: Upload artifacts MacOS
+                if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
+                uses: actions/upload-artifact@v4
+                with:
+                    name: '${{ matrix.os }}_${{ env.ARCHITECTURE }}-build'
+                    path: 'build/__main__.app/Contents/MacOS/'
                     include-hidden-files: 'true'
