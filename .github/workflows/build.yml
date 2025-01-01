@@ -59,6 +59,7 @@ jobs:
                     include-data-files: |
                         ./pomodoro-task-app/website_blocker/filter.py=./website_blocker/filter.py
                         ./pomodoro-task-app/constants.py=./constants.py
+                        ./pyproject.toml=./pyproject.toml
                         ./mitmdump=./mitmdump
 
             -   name: Install tree
