@@ -9,7 +9,7 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                os: [ubuntu-latest, macos-latest]
+                os: [ubuntu-latest, macos-latest, macos-13]
                 python-version: [3.12]
 
         steps:
@@ -20,6 +20,11 @@ jobs:
                 uses: actions/setup-python@v5
                 with:
                     python-version: ${{ matrix.python-version }}
+
+            -   name: Store Architecture
+                run: |
+                    ARCHITECTURE=$(uname -m)
+                    echo "ARCHITECTURE=$ARCHITECTURE" >> $GITHUB_ENV
 
             -   name: Install dependencies
                 env:
@@ -45,6 +50,10 @@ jobs:
                         curl -LO https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-macos-arm64.tar.gz
                         tar -xvf mitmproxy-11.0.2-macos-arm64.tar.gz
                         cp mitmproxy.app/Contents/MacOS/mitmdump pomodoro-task-app.py/mitmdump
+                    elif [[ "${{ matrix.os }}" == "macos-13" ]]; then
+                        curl -LO https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-macos-x86_64.tar.gz
+                        tar -xvf mitmproxy-11.0.2-macos-x86_64.tar.gz
+                        cp mitmproxy.app/Contents/MacOS/mitmdump pomodoro-task-app.py/mitmdump
                     fi
                     cd pomodoro-task-app.py
 
@@ -54,7 +63,7 @@ jobs:
                     nuitka-version: 'main'
                     script-name: |
                         pomodoro-task-app/__main__.py
-                    mode: ${{ matrix.os == 'macos-latest' && 'app' || 'standalone' }}
+                    mode: ${{ (matrix.os == 'macos-latest' || matrix.os == 'macos-13') && 'app' || 'standalone' }}
                     enable-plugins: 'pyside6'
                     include-data-files: |
                         ./pomodoro-task-app/website_blocker/filter.py=./website_blocker/filter.py
@@ -63,7 +72,7 @@ jobs:
                         ./mitmdump=./mitmdump
 
             -   name: Install tree
-                if: matrix.os == 'macos-latest'
+                if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
                 run: brew install tree
 
             - name: tree command
@@ -73,6 +82,6 @@ jobs:
             -   name: Upload artifacts
                 uses: actions/upload-artifact@v4
                 with:
-                    name: '${{ matrix.os }}-build'
+                    name: '${{ matrix.os }}_${{ env.ARCHITECTURE }}-build'
                     path: 'build/'
                     include-hidden-files: 'true'
