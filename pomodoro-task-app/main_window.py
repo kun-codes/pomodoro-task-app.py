@@ -92,6 +92,7 @@ class MainWindow(PomodoroFluentWindow):
 
     def initWindow(self):
         self.resize(1000, 800)
+        self.setMinimumWidth(715)
         self.setWindowTitle('Pomodoro Task List App')
         self.setWindowIcon(QIcon(":/logosPrefix/logos/logo.svg"))
 
