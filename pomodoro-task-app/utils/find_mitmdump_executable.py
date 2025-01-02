@@ -1,12 +1,11 @@
 from utils.is_nuitka import is_nuitka
 from pathlib import Path
+from loguru import logger
 import shutil
 import platform
 
 def get_mitmdump_path():
-    print(f"globals: {globals()}")
     if is_nuitka():
-        print("Running in Nuitka")
         # Use the __nuitka_binary_dir from globals to find mitmdump
         mitmdump_dir = Path(globals().get("__nuitka_binary_dir", "")).resolve()
         mitmdump_path = mitmdump_dir.joinpath("mitmdump").resolve()
@@ -15,7 +14,7 @@ def get_mitmdump_path():
             mitmdump_path = mitmdump_path.with_suffix(".exe")
 
         if mitmdump_path.exists():
-            print(mitmdump_path)
+            logger.debug(f"mitmdump path: {mitmdump_path}")
             return str(mitmdump_path)
 
     # get the path to the project root
@@ -26,4 +25,5 @@ def get_mitmdump_path():
     if platform.system() == "Windows" and mitmdump_path is None:
         mitmdump_path = shutil.which("mitmdump.exe", path=path)
 
+    logger.debug(f"mitmdump path: {mitmdump_path}")
     return mitmdump_path
