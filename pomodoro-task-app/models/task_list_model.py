@@ -330,6 +330,5 @@ class TaskListModel(QAbstractListModel):
     def currentTaskIndex(self):
         for task in self.tasks:
             if task["id"] == self.current_task_id:
-                return self.index(task["task_position"] - 1, 0)  # subtracting 1 because task position is indexed
-            # from 1 and Qt indexes row position from 0
+                return self.index(task["task_position"], 0)
 
