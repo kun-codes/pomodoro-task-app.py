@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["kun-codes <77796630+throwaway69420-69420@users.noreply.github.com>"]
 readme = "README.md"
-packages = [{include = "pomodoro_task_app"}]
+packages = [{ include = "pomodoro_task_app" }]
 package-mode = false
 
 [tool.poetry.dependencies]
@@ -20,7 +20,20 @@ loguru = "^0.7.2"
 
 [tool.poetry.group.build.dependencies]
 nuitka = "^2.5.9"
+ruff = "^0.8.5"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+extend-exclude = [
+    "pomodoro-task-app/ui",
+    "pomodoro-task-app/ui_py",
+    "pomodoro-task-app/resources",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+fixable = ["ALL"]
