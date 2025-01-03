@@ -1,5 +1,7 @@
 import platform
+from idlelib.macosx import setupApp
 
+from flask import Config
 from qfluentwidgets import FluentIcon, NavigationItemPosition, InfoBar, InfoBarPosition, SystemThemeListener, Theme
 from loguru import logger
 from PySide6.QtCore import Qt
@@ -14,6 +16,7 @@ from constants import WebsiteFilterType, URLListType, FIRST_RUN_DOTFILE_NAME, Ti
 from config_values import ConfigValues
 from models.config import workspace_specific_settings, app_settings
 from models.task_list_model import TaskListModel
+from views.dialogs.setupAppDialog import SetupAppDialog
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
 from views.subinterfaces.pomodoro_view import PomodoroView
 from views.subinterfaces.settings_view import SettingsView
@@ -640,6 +643,25 @@ class MainWindow(PomodoroFluentWindow):
             # create the first run dotfile
             first_run_dotfile_path.touch()
 
+            self.setupMitmproxy()
+
+    def setupMitmproxy(self):
+        temporary_website_blocker_manager = WebsiteBlockerManager()
+        temporary_website_blocker_manager.start_filtering(
+            listening_port=ConfigValues.PROXY_PORT,
+            joined_addresses="example.com",
+            block_type="blocklist",
+            mitmdump_bin_path=get_mitmdump_path()
+        )
+
+        # setupAppDialog is a modal dialog, so it will block the main window until it is closed
+        setupAppDialog = SetupAppDialog(parent=self.window())
+        setupAppDialog.accepted.connect(lambda: self.giveGuidedTour(temporary_website_blocker_manager))
+        setupAppDialog.show()
+
+    def giveGuidedTour(self, temp_website_blocker_manager):
+        temp_website_blocker_manager.stop_filtering(delete_proxy=True)
+        # todo: give a guided tour of the app to the user
 
     def closeEvent(self, event):
         self.website_blocker_manager.stop_filtering(delete_proxy=True)
