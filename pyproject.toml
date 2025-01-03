@@ -37,3 +37,6 @@ extend-exclude = [
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
 fixable = ["ALL"]
+
+[tool.ruff.lint.pyflakes]
+allowed-unused-imports = ["resources.logos_rc", "resources.resources_rc"]
