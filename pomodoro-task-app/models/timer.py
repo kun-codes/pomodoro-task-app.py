@@ -1,11 +1,10 @@
 import sys
 
-from PySide6.QtCore import QTimer, Signal, QObject
-from PySide6.QtWidgets import QApplication
-from loguru import logger
-
 from config_values import ConfigValues
 from constants import TimerState
+from loguru import logger
+from PySide6.QtCore import QObject, QTimer, Signal
+from PySide6.QtWidgets import QApplication
 
 
 class PomodoroTimer(QObject):  # Inherit from QObject to support signals
@@ -69,7 +68,9 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             self.timer_state = TimerState.WORK
 
         if self.session_progress > ConfigValues.WORK_INTERVALS:
-            self.session_progress = self.session_progress % ConfigValues.WORK_INTERVALS  # for example in case work intervals is
+            self.session_progress = (
+                self.session_progress % ConfigValues.WORK_INTERVALS
+            )  # for example in case work intervals is
             # 2 and during long break it was 2 and then after it, it becomes 2.5 which is not a valid state, so we get the
             # remainder which is 0.5
 
@@ -174,7 +175,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
         """
         For decreasing the remaining time by timer_resolution
         """
-        if __name__ == '__main__':
+        if __name__ == "__main__":
             logger.debug(f"Remaining time (in seconds): {self.getRemainingTime() / 1000}")
 
         self.remaining_time -= self.timer_resolution
@@ -221,14 +222,14 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
     #     self.durationEnded()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+
     class TestPomodoro:
         def __init__(self):
             self.pomodoro_timer = PomodoroTimer()
             self.pomodoro_timer.updateSessionProgress()
             self.pomodoro_timer.setDuration()
             self.pomodoro_timer.startDuration()
-
 
     app = QApplication(sys.argv)
     pomodoro_test = TestPomodoro()

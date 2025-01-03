@@ -1,11 +1,12 @@
 from PySide6.QtCore import Qt
-from qfluentwidgets import MessageBoxBase, SubtitleLabel, LineEdit
+from qfluentwidgets import LineEdit, MessageBoxBase, SubtitleLabel
 
 
 class AddTaskDialog(MessageBoxBase):
     """
     For the add task dialog in tasks view
     """
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.titleLabel = SubtitleLabel("Add Task", self)

@@ -1,12 +1,10 @@
-from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex, QByteArray, QMimeData, QDataStream, QIODevice, Signal
-from PySide6.QtGui import QColor
-
-from models.config import AppSettings
-from sqlalchemy import update
 from loguru import logger
-
-from models.workspace_lookup import WorkspaceLookup
+from models.config import AppSettings
 from models.db_tables import Task, TaskType
+from models.workspace_lookup import WorkspaceLookup
+from PySide6.QtCore import QAbstractListModel, QByteArray, QDataStream, QIODevice, QMimeData, QModelIndex, Qt, Signal
+from PySide6.QtGui import QColor
+from sqlalchemy import update
 from utils.db_utils import get_session
 
 
@@ -44,11 +42,14 @@ class TaskListModel(QAbstractListModel):
                     "task_name": task.task_name,
                     "task_position": task.task_position,
                     "elapsed_time": task.elapsed_time,  # in ms
-                    "target_time": task.target_time,    # in ms
-                    "icon": None
+                    "target_time": task.target_time,  # in ms
+                    "icon": None,
                 }
-                for task in
-                session.query(Task).filter(Task.task_type == self.task_type).filter(Task.workspace_id == current_workspace_id).order_by(Task.task_position).all()
+                for task in session.query(Task)
+                .filter(Task.task_type == self.task_type)
+                .filter(Task.workspace_id == current_workspace_id)
+                .order_by(Task.task_position)
+                .all()
             ]
         self.layoutChanged.emit()
 
@@ -146,7 +147,7 @@ class TaskListModel(QAbstractListModel):
                 removed_rows_count += 1
             else:
                 task["task_position"] = i - removed_rows_count  # subtracting removed rows count from current index
-                                                                # so that numbers skipped for removed rows are accounted for
+                # so that numbers skipped for removed rows are accounted for
         self.update_db()
 
         logger.debug(self.task_type)
@@ -176,7 +177,7 @@ class TaskListModel(QAbstractListModel):
                     "task_position": row,
                     "elapsed_time": elapsed_time,
                     "target_time": target_time,
-                    "icon": None
+                    "icon": None,
                 }
             )
 
@@ -186,7 +187,6 @@ class TaskListModel(QAbstractListModel):
             row += 1
             self.taskMovedSignal.emit(task["id"], self.task_type)
         self.endInsertRows()
-
 
         # Update task positions
         for i, task in enumerate(self.tasks):
@@ -217,20 +217,23 @@ class TaskListModel(QAbstractListModel):
                         "task_type": self.task_type,
                         "task_position": task["task_position"],
                         "elapsed_time": task["elapsed_time"],
-                        "target_time": task["target_time"]
+                        "target_time": task["target_time"],
                     }
                     for task in self.tasks
-                ]
+                ],
             )
-
 
     def flags(self, index):
         if not index.isValid():
             return Qt.ItemIsEnabled | Qt.ItemIsDropEnabled
 
-        return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsDragEnabled | \
-            Qt.ItemFlag.ItemIsDropEnabled | Qt.ItemFlag.ItemIsEditable
-
+        return (
+            Qt.ItemFlag.ItemIsEnabled
+            | Qt.ItemFlag.ItemIsSelectable
+            | Qt.ItemFlag.ItemIsDragEnabled
+            | Qt.ItemFlag.ItemIsDropEnabled
+            | Qt.ItemFlag.ItemIsEditable
+        )
 
     def mimeTypes(self):
         return ["application/x-qabstractitemmodeldatalist"]
@@ -245,7 +248,7 @@ class TaskListModel(QAbstractListModel):
     #     task_name = stream.readQString()
     #     return True
 
-    def insertRow(self, row, parent = QModelIndex(), task_name = None, task_type=TaskType.TODO):
+    def insertRow(self, row, parent=QModelIndex(), task_name=None, task_type=TaskType.TODO):
         """
         Used to insert a new task in the list
         """
@@ -256,7 +259,7 @@ class TaskListModel(QAbstractListModel):
                 workspace_id=WorkspaceLookup.get_current_workspace_id(),
                 task_name=task_name,
                 task_type=task_type,
-                task_position=row
+                task_position=row,
             )
             session.add(task)
             session.commit()
@@ -267,7 +270,7 @@ class TaskListModel(QAbstractListModel):
             "task_name": task_name,
             "task_position": row,
             "elapsed_time": 0,
-            "target_time": 0
+            "target_time": 0,
         }
 
         logger.debug(f"Task list new member: {task_list_new_member}")
@@ -276,7 +279,6 @@ class TaskListModel(QAbstractListModel):
         self.endInsertRows()
         self.layoutChanged.emit()
         return True
-
 
     def removeRows(self, row, count, parent=...):
         """
@@ -307,8 +309,6 @@ class TaskListModel(QAbstractListModel):
         logger.debug(f"tasks: {self.tasks}")
         self.removeRows(row, 1, parent)
 
-
-
         for i, task in enumerate(self.tasks):
             task["task_position"] = i
 
@@ -331,4 +331,3 @@ class TaskListModel(QAbstractListModel):
         for task in self.tasks:
             if task["id"] == self.current_task_id:
                 return self.index(task["task_position"], 0)
-

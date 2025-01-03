@@ -1,12 +1,10 @@
-from PySide6.QtCore import QModelIndex
-from PySide6.QtWidgets import QWidget, QApplication, QSizePolicy, QVBoxLayout
-from loguru import logger
-from qfluentwidgets import FluentIcon, TitleLabel, SimpleCardWidget
-
 from models.db_tables import TaskType
 from models.task_list_model import TaskListModel
 from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.taskList import TaskList
+from PySide6.QtCore import QModelIndex
+from PySide6.QtWidgets import QApplication, QSizePolicy, QVBoxLayout, QWidget
+from qfluentwidgets import FluentIcon, SimpleCardWidget, TitleLabel
 from ui_py.ui_tasks_list_view import Ui_TaskView
 from views.dialogs.addTaskDialog import AddTaskDialog
 from views.dialogs.editTaskTimeDialog import EditTaskTimeDialog
@@ -139,7 +137,9 @@ class TaskListView(Ui_TaskView, QWidget):
             return
         # else set current task according to below rules
         if self.todoTasksList.selectionModel().hasSelection():
-            self.todoTasksList.model().setCurrentTaskID(self.todoTasksList.selectionModel().currentIndex().data(TaskListModel.IDRole))
+            self.todoTasksList.model().setCurrentTaskID(
+                self.todoTasksList.selectionModel().currentIndex().data(TaskListModel.IDRole)
+            )
         elif self.todoTasksList.model().rowCount(QModelIndex()) > 0:
             self.todoTasksList.model().setCurrentTaskID(self.todoTasksList.model().index(0).data(TaskListModel.IDRole))
         else:
@@ -149,7 +149,9 @@ class TaskListView(Ui_TaskView, QWidget):
 
     def setCurrentTaskID(self):
         # self.todoTasksList.model().setCurrentTaskIndex(self.todoTasksList.selectionModel().currentIndex())
-        self.todoTasksList.model().setCurrentTaskID(self.todoTasksList.selectionModel().currentIndex().data(TaskListModel.IDRole))
+        self.todoTasksList.model().setCurrentTaskID(
+            self.todoTasksList.selectionModel().currentIndex().data(TaskListModel.IDRole)
+        )
 
         self.todoTasksList.viewport().update()
 

@@ -1,12 +1,17 @@
-from qfluentwidgets import RangeValidator, BoolValidator, Theme, qconfig, QConfig, RangeConfigItem
-from prefabs.config.qconfig_sql import qconfig_custom
-
-from constants import WORK_DURATION, BREAK_DURATION, LONG_BREAK_DURATION, WORK_INTERVALS, AUTOSTART_WORK, \
-    AUTOSTART_BREAK, ENABLE_WEBSITE_FILTER
 from config_paths import settings_file_path
-from prefabs.config.config_item_sql import RangeConfigItemSQL, ConfigItemSQL
+from constants import (
+    AUTOSTART_BREAK,
+    AUTOSTART_WORK,
+    BREAK_DURATION,
+    ENABLE_WEBSITE_FILTER,
+    LONG_BREAK_DURATION,
+    WORK_DURATION,
+    WORK_INTERVALS,
+)
 from models.db_tables import Workspace
-from prefabs.config.qconfig_sql import QConfigSQL
+from prefabs.config.config_item_sql import ConfigItemSQL, RangeConfigItemSQL
+from prefabs.config.qconfig_sql import QConfigSQL, qconfig_custom
+from qfluentwidgets import BoolValidator, QConfig, RangeConfigItem, RangeValidator, Theme, qconfig
 
 
 class WorkspaceSettings(QConfigSQL):
@@ -17,12 +22,15 @@ class WorkspaceSettings(QConfigSQL):
 
     work_duration = RangeConfigItemSQL(Workspace, Workspace.work_duration, WORK_DURATION, RangeValidator(1, 240))
     break_duration = RangeConfigItemSQL(Workspace, Workspace.break_duration, BREAK_DURATION, RangeValidator(1, 60))
-    long_break_duration = RangeConfigItemSQL(Workspace, Workspace.long_break_duration, LONG_BREAK_DURATION,
-                                             RangeValidator(1, 60))
+    long_break_duration = RangeConfigItemSQL(
+        Workspace, Workspace.long_break_duration, LONG_BREAK_DURATION, RangeValidator(1, 60)
+    )
     work_intervals = RangeConfigItemSQL(Workspace, Workspace.work_intervals, WORK_INTERVALS, RangeValidator(1, 10))
     autostart_work = ConfigItemSQL(Workspace, Workspace.autostart_work, AUTOSTART_WORK, BoolValidator())
     autostart_break = ConfigItemSQL(Workspace, Workspace.autostart_break, AUTOSTART_BREAK, BoolValidator())
-    enable_website_filter = ConfigItemSQL(Workspace, Workspace.enable_website_filter, ENABLE_WEBSITE_FILTER, BoolValidator())
+    enable_website_filter = ConfigItemSQL(
+        Workspace, Workspace.enable_website_filter, ENABLE_WEBSITE_FILTER, BoolValidator()
+    )
 
 
 class AppSettings(QConfig):
@@ -30,19 +38,24 @@ class AppSettings(QConfig):
     Used for storing settings that are not workspace specific and global to the app.
     Documentation for QConfig is here: https://qfluentwidgets.com/pages/components/config/#usage
     """
-    proxy_port = RangeConfigItem("AppSettings", "ProxyPort", 8080, RangeValidator(
-        1024, 65535))
+
+    proxy_port = RangeConfigItem("AppSettings", "ProxyPort", 8080, RangeValidator(1024, 65535))
 
 
 workspace_specific_settings = WorkspaceSettings()
 app_settings = AppSettings()
 
 app_settings.themeMode.value = Theme.AUTO
+
+
 def load_workspace_settings():
     qconfig_custom.load("", workspace_specific_settings)  # passing empty string as the path as function asks for path
     # to json file which stores settings and we are using db to store settings
+
+
 def load_app_settings():
-    qconfig.load(settings_file_path,app_settings)
+    qconfig.load(settings_file_path, app_settings)
+
 
 load_app_settings()
 load_workspace_settings()

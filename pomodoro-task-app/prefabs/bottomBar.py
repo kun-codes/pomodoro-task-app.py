@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget
 from qfluentwidgets import FluentIcon
-
 from ui_py.ui_bottom_bar_widget import Ui_BottomBarWidget
+
 
 class BottomBar(Ui_BottomBarWidget, QWidget):
     def __init__(self, parent=None):

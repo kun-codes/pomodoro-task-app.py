@@ -1,6 +1,6 @@
-from PySide6.QtCore import Qt, QTime
-from qfluentwidgets import MessageBoxBase, SubtitleLabel, LineEdit, TimePicker
 from models.task_lookup import TaskLookup
+from PySide6.QtCore import QTime
+from qfluentwidgets import MessageBoxBase, SubtitleLabel, TimePicker
 
 
 class EditTaskTimeDialog(MessageBoxBase):
@@ -35,21 +35,20 @@ class EditTaskTimeDialog(MessageBoxBase):
         return QTime(hour, minute, second)
 
     def getElapsedTime(self):
-        time =  self.elapsedTimePicker.getTime()
+        time = self.elapsedTimePicker.getTime()
         return (time.hour() * 60 * 60 + time.minute() * 60 + time.second()) * 1000
 
     def getTargetTime(self):
-        time =  self.estimateTimePicker.getTime()
+        time = self.estimateTimePicker.getTime()
         return (time.hour() * 60 * 60 + time.minute() * 60 + time.second()) * 1000
-
 
 
 if __name__ == "__main__":
     import sys
+
     from PySide6.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
     dialog = AddTaskDialog()
     dialog.exec()
     sys.exit(app.exec())
-

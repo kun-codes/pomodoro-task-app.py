@@ -1,8 +1,7 @@
-from PySide6.QtCore import Qt, QAbstractListModel, QItemSelectionModel, Signal, QModelIndex
-from utils.db_utils import get_session
 from loguru import logger
-
-from models.db_tables import Workspace, engine, CurrentWorkspace
+from models.db_tables import CurrentWorkspace, Workspace
+from PySide6.QtCore import QAbstractListModel, QItemSelectionModel, QModelIndex, Qt, Signal
+from utils.db_utils import get_session
 
 
 class WorkspaceListModel(QAbstractListModel):
@@ -32,7 +31,7 @@ class WorkspaceListModel(QAbstractListModel):
             return self.workspaces[index.row()]["workspace_name"]
         if role == Qt.ItemDataRole.DisplayRole:
             return self.workspaces[index.row()]["id"]
-    
+
     def setData(self, index, value, role=Qt.EditRole):
         """Update workspace name"""
         if role == Qt.EditRole:
@@ -42,7 +41,7 @@ class WorkspaceListModel(QAbstractListModel):
                     workspace = session.get(Workspace, self.workspaces[index.row()]["id"])
                     workspace.workspace_name = workspace_name
                     session.commit()
-                    
+
                 self.workspaces[index.row()]["workspace_name"] = workspace_name
                 self.dataChanged.emit(index, index, [Qt.DisplayRole])
                 return True
@@ -86,8 +85,9 @@ class WorkspaceListModel(QAbstractListModel):
 
                 with get_session() as session:
                     previous_selected_workspace = session.query(CurrentWorkspace).first()
-                    previous_selected_workspace_id = previous_selected_workspace.current_workspace_id \
-                        if previous_selected_workspace else None
+                    previous_selected_workspace_id = (
+                        previous_selected_workspace.current_workspace_id if previous_selected_workspace else None
+                    )
                     # make sure that only one record exists in current_workspace table
                     session.query(CurrentWorkspace).delete()
                     current_workspace = CurrentWorkspace(current_workspace_id=selected_workspace["id"])

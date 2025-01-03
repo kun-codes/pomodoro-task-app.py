@@ -1,35 +1,32 @@
 import platform
-from qfluentwidgets import FluentIcon, NavigationItemPosition, InfoBar, InfoBarPosition, SystemThemeListener, Theme
-from loguru import logger
-from PySide6.QtWidgets import QSystemTrayIcon, QMenu
-from PySide6.QtGui import QIcon
 from pathlib import Path
 
+import darkdetect
+from config_paths import settings_dir
+from config_values import ConfigValues
+from constants import FIRST_RUN_DOTFILE_NAME, TimerState, URLListType, WebsiteFilterType
+from loguru import logger
+from models.config import load_workspace_settings, workspace_specific_settings
+from models.db_tables import CurrentWorkspace, Task, TaskType, Version, Workspace
+from models.task_list_model import TaskListModel
+from models.workspace_list_model import WorkspaceListModel
+from prefabs.customFluentIcon import CustomFluentIcon
+from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QMenu, QSystemTrayIcon
+from qfluentwidgets import FluentIcon, InfoBar, InfoBarPosition, NavigationItemPosition, SystemThemeListener, Theme
+from resources import logos_rc
+from utils.db_utils import get_session
+from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.get_app_version import get_app_version
 from utils.time_conversion import convert_ms_to_hh_mm_ss
-from config_paths import settings_dir
-from constants import WebsiteFilterType, URLListType, FIRST_RUN_DOTFILE_NAME, TimerState
-from config_values import ConfigValues
-from models.config import workspace_specific_settings, app_settings
-from models.task_list_model import TaskListModel
 from views.dialogs.setupAppDialog import SetupAppDialog
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
 from views.subinterfaces.pomodoro_view import PomodoroView
 from views.subinterfaces.settings_view import SettingsView
 from views.subinterfaces.tasks_view import TaskListView
 from views.subinterfaces.website_blocker_view import WebsiteBlockerView
-from models.db_tables import Workspace, CurrentWorkspace, TaskType, Task, Version
-from utils.db_utils import get_session
-from models.workspace_list_model import WorkspaceListModel
-from models.config import load_workspace_settings
 from website_blocker.website_blocker_manager import WebsiteBlockerManager
-from utils.find_mitmdump_executable import get_mitmdump_path
-from prefabs.customFluentIcon import CustomFluentIcon
-from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
-from resources import logos_rc
-
-
-import darkdetect
 
 
 class MainWindow(PomodoroFluentWindow):
@@ -42,16 +39,16 @@ class MainWindow(PomodoroFluentWindow):
         self.workplace_list_model = WorkspaceListModel()
 
         self.task_interface = TaskListView()
-        self.task_interface.setObjectName('task_interface')
+        self.task_interface.setObjectName("task_interface")
 
         self.pomodoro_interface = PomodoroView()
-        self.pomodoro_interface.setObjectName('pomodoro_interface')
+        self.pomodoro_interface.setObjectName("pomodoro_interface")
 
         self.settings_interface = SettingsView()
-        self.settings_interface.setObjectName('settings_interface')
+        self.settings_interface.setObjectName("settings_interface")
 
         self.website_filter_interface = WebsiteBlockerView(self.workplace_list_model)
-        self.website_filter_interface.setObjectName('website_filter_interface')
+        self.website_filter_interface.setObjectName("website_filter_interface")
 
         self.manage_workspace_dialog = None
 
@@ -72,9 +69,9 @@ class MainWindow(PomodoroFluentWindow):
 
     def initNavigation(self):
         # Add sub interface
-        self.addSubInterface(self.task_interface, CustomFluentIcon.TASKS_VIEW, 'Tasks')
-        self.addSubInterface(self.pomodoro_interface, FluentIcon.STOP_WATCH, 'Pomodoro')
-        self.addSubInterface(self.website_filter_interface, CustomFluentIcon.WEBSITE_FILTER_VIEW, 'Website Filter')
+        self.addSubInterface(self.task_interface, CustomFluentIcon.TASKS_VIEW, "Tasks")
+        self.addSubInterface(self.pomodoro_interface, FluentIcon.STOP_WATCH, "Pomodoro")
+        self.addSubInterface(self.website_filter_interface, CustomFluentIcon.WEBSITE_FILTER_VIEW, "Website Filter")
 
         # Add sub interface at bottom
         self.navigationInterface.addItem(
@@ -84,15 +81,14 @@ class MainWindow(PomodoroFluentWindow):
             onClick=lambda: self.onWorkspaceManagerClicked(),
             selectable=False,
             tooltip="Select the workspace to work in",
-            position=NavigationItemPosition.BOTTOM
+            position=NavigationItemPosition.BOTTOM,
         )
-        self.addSubInterface(
-            self.settings_interface, FluentIcon.SETTING, 'Settings', NavigationItemPosition.BOTTOM)
+        self.addSubInterface(self.settings_interface, FluentIcon.SETTING, "Settings", NavigationItemPosition.BOTTOM)
 
     def initWindow(self):
         self.resize(1000, 800)
         self.setMinimumWidth(715)
-        self.setWindowTitle('Pomodoro Task List App')
+        self.setWindowTitle("Pomodoro Task List App")
         self.setWindowIcon(QIcon(":/logosPrefix/logos/logo.svg"))
 
     def initSystemTray(self):
@@ -104,7 +100,9 @@ class MainWindow(PomodoroFluentWindow):
         is_os_dark_mode = darkdetect.isDark()
 
         self.tray_menu_timer_status_action = self.tray_menu.addAction("Timer not running")
-        self.tray_menu_timer_status_action.setIcon(FluentIcon.STOP_WATCH.icon(Theme.DARK if is_os_dark_mode else Theme.LIGHT))
+        self.tray_menu_timer_status_action.setIcon(
+            FluentIcon.STOP_WATCH.icon(Theme.DARK if is_os_dark_mode else Theme.LIGHT)
+        )
         self.tray_menu_timer_status_action.setEnabled(False)  # Make it non-clickable
 
         self.tray_menu.addSeparator()
@@ -113,26 +111,42 @@ class MainWindow(PomodoroFluentWindow):
         # context menu of Windows system tray icon is always in light mode for qt apps. Tested on Windows 10, didn't
         # test on Windows 11 yet
         self.tray_menu_start_action = self.tray_menu.addAction("Start")
-        self.tray_menu_start_action.setIcon(FluentIcon.PLAY.icon(Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT))
+        self.tray_menu_start_action.setIcon(
+            FluentIcon.PLAY.icon(Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT)
+        )
         self.tray_menu_start_action.triggered.connect(lambda: self.pomodoro_interface.pauseResumeButton.click())
 
         self.tray_menu_pause_resume_action = self.tray_menu.addAction("Pause/Resume")
-        self.tray_menu_pause_resume_action.setIcon(CustomFluentIcon.PLAY_PAUSE.icon(Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT))
+        self.tray_menu_pause_resume_action.setIcon(
+            CustomFluentIcon.PLAY_PAUSE.icon(
+                Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT
+            )
+        )
         self.tray_menu_pause_resume_action.triggered.connect(lambda: self.pomodoro_interface.pauseResumeButton.click())
         self.tray_menu_pause_resume_action.setEnabled(False)
 
         self.tray_menu_stop_action = self.tray_menu.addAction("Stop")
-        self.tray_menu_stop_action.setIcon(FluentIcon.CLOSE.icon(Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT))
+        self.tray_menu_stop_action.setIcon(
+            FluentIcon.CLOSE.icon(Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT)
+        )
         self.tray_menu_stop_action.triggered.connect(lambda: self.pomodoro_interface.stopButton.click())
 
         self.tray_menu_skip_action = self.tray_menu.addAction("Skip")
-        self.tray_menu_skip_action.setIcon(FluentIcon.CHEVRON_RIGHT.icon(Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT))
+        self.tray_menu_skip_action.setIcon(
+            FluentIcon.CHEVRON_RIGHT.icon(
+                Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT
+            )
+        )
         self.tray_menu_skip_action.triggered.connect(lambda: self.pomodoro_interface.skipButton.click())
 
         self.tray_menu.addSeparator()
 
         self.tray_menu_quit_action = self.tray_menu.addAction("Quit")
-        self.tray_menu_quit_action.setIcon(CustomFluentIcon.EXIT.icon(Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT))
+        self.tray_menu_quit_action.setIcon(
+            CustomFluentIcon.EXIT.icon(
+                Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT
+            )
+        )
         self.tray_menu_quit_action.triggered.connect(self.close)
 
         self.tray.setContextMenu(self.tray_menu)
@@ -159,7 +173,7 @@ class MainWindow(PomodoroFluentWindow):
 
         if platform.system() == "Windows":
             return
-        
+
         if darkdetect.isDark():
             self.tray_menu_timer_status_action.setIcon(FluentIcon.STOP_WATCH.icon(Theme.DARK))
             self.tray_menu_start_action.setIcon(FluentIcon.PLAY.icon(Theme.DARK))
@@ -200,7 +214,7 @@ class MainWindow(PomodoroFluentWindow):
         # Sync state with pomodoro view button
         self.pomodoro_interface.pauseResumeButton.setChecked(self.bottomBar.pauseResumeButton.isChecked())
         self.pomodoro_interface.pauseResumeButtonClicked()
-        
+
         # Update bottom bar button icon
         if self.bottomBar.pauseResumeButton.isChecked():
             self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
@@ -234,7 +248,7 @@ class MainWindow(PomodoroFluentWindow):
 
         if timerState == TimerState.WORK:
             if ConfigValues.AUTOSTART_WORK or (not ConfigValues.AUTOSTART_WORK and isSkipped):
-            # if ConfigValues.AUTOSTART_WORK:
+                # if ConfigValues.AUTOSTART_WORK:
                 title = "Work Session Started"
                 message = f"{work_duration}m work session has started"
             elif not ConfigValues.AUTOSTART_WORK and not self.pomodoro_interface.isInitialWorkSession():
@@ -274,14 +288,18 @@ class MainWindow(PomodoroFluentWindow):
 
     def onWorkspaceManagerClicked(self):
         if self.manage_workspace_dialog is None:
-            self.manage_workspace_dialog = ManageWorkspaceDialog(parent=self.window(), workspaceListModel=self.workplace_list_model)
+            self.manage_workspace_dialog = ManageWorkspaceDialog(
+                parent=self.window(), workspaceListModel=self.workplace_list_model
+            )
 
         self.manage_workspace_dialog.show()
 
     def toggleUIElementsBasedOnTimerState(self, timerState):
         logger.warning(f"timerState: {timerState}")
         logger.warning("timerStateChangedSignal emited")
-        logger.warning(f"Time left in current duration: {self.pomodoro_interface.pomodoro_timer_obj.getRemainingTime()}")
+        logger.warning(
+            f"Time left in current duration: {self.pomodoro_interface.pomodoro_timer_obj.getRemainingTime()}"
+        )
         # TODO: show a tip to stop the timer before changing settings when timer is running
         workspace_selector_button = self.navigationInterface.panel.widget("WorkspaceSelector")
         if timerState in [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
@@ -325,7 +343,9 @@ class MainWindow(PomodoroFluentWindow):
             # todo: check if the timer is running before starting the website filtering, because in case autostart work
             #   is off, the website filter would start even when the timer is not running
             logger.debug("Starting website filtering")
-            self.website_blocker_manager.start_filtering(ConfigValues.PROXY_PORT, joined_urls, block_type, mitmdump_path)
+            self.website_blocker_manager.start_filtering(
+                ConfigValues.PROXY_PORT, joined_urls, block_type, mitmdump_path
+            )
         else:
             logger.debug("Stopping website filtering")
             self.website_blocker_manager.stop_filtering(delete_proxy=True)
@@ -334,8 +354,10 @@ class MainWindow(PomodoroFluentWindow):
         current_state = self.pomodoro_interface.pomodoro_timer_obj.getTimerState()
         previous_state = self.pomodoro_interface.pomodoro_timer_obj.previous_timer_state
 
-        return previous_state in [TimerState.NOTHING, TimerState.BREAK, TimerState.LONG_BREAK] and \
-            current_state == TimerState.WORK
+        return (
+            previous_state in [TimerState.NOTHING, TimerState.BREAK, TimerState.LONG_BREAK]
+            and current_state == TimerState.WORK
+        )
 
     def get_current_task_id(self):
         """
@@ -365,7 +387,7 @@ class MainWindow(PomodoroFluentWindow):
                 isClosable=True,
                 duration=5000,
                 position=InfoBarPosition.TOP_RIGHT,
-                parent=self
+                parent=self,
             )
 
     def store_already_elapsed_time(self):
@@ -376,24 +398,27 @@ class MainWindow(PomodoroFluentWindow):
     def check_current_task_deleted(self, task_id):
         if self.get_current_task_id() is not None and self.get_current_task_id() == task_id:
             self.task_interface.todoTasksList.model().setCurrentTaskID(None)
-            if self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in \
-                [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
+            if self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in [
+                TimerState.WORK,
+                TimerState.BREAK,
+                TimerState.LONG_BREAK,
+            ]:
                 # make sure that the current task is deleted and the timer is running, without timer being running
                 # there is no need to stop the timer and show infobar
                 self.pomodoro_interface.pomodoro_timer_obj.stopSession()
                 InfoBar.warning(
                     title="Pomodoro Timer Stopped",
-                    content="The task you were working on has been deleted. Please select another task to continue." \
-                            if self.task_interface.todoTasksList.model().rowCount() > 0 else
-                                "The task you were working on has been deleted. Please add a new task to continue.",
+                    content="The task you were working on has been deleted. Please select another task to continue."
+                    if self.task_interface.todoTasksList.model().rowCount() > 0
+                    else "The task you were working on has been deleted. Please add a new task to continue.",
                     isClosable=True,
                     position=InfoBarPosition.TOP_RIGHT,
                     duration=5000,
-                    parent = self
+                    parent=self,
                 )
                 logger.debug("Current Task has been deleted")
 
-    def check_current_task_moved(self, task_id, task_type:TaskType):
+    def check_current_task_moved(self, task_id, task_type: TaskType):
         if self.get_current_task_id() is not None:
             current_task_id = self.get_current_task_id()
         else:
@@ -402,32 +427,42 @@ class MainWindow(PomodoroFluentWindow):
         if task_id == current_task_id and task_type == TaskType.COMPLETED:
             self.task_interface.todoTasksList.model().setCurrentTaskID(None)
 
-            if self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in [TimerState.WORK, TimerState.BREAK, TimerState.LONG_BREAK]:
+            if self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in [
+                TimerState.WORK,
+                TimerState.BREAK,
+                TimerState.LONG_BREAK,
+            ]:
                 # make sure that the current task is moved into completed task list and the timer is running,
                 # without timer being running there is no need to stop the timer and show infobar
                 self.pomodoro_interface.pomodoro_timer_obj.stopSession()
                 InfoBar.warning(
                     title="Pomodoro Timer Stopped",
-                    content="The task you were working on has been completed. Please select another task to continue." \
-                        if self.task_interface.todoTasksList.model().rowCount() > 0 else
-                    "The task you were working on has been completed. Please add a new task to continue.",
+                    content="The task you were working on has been completed. Please select another task to continue."
+                    if self.task_interface.todoTasksList.model().rowCount() > 0
+                    else "The task you were working on has been completed. Please add a new task to continue.",
                     isClosable=True,
                     position=InfoBarPosition.TOP_RIGHT,
                     duration=5000,
-                    parent = self
+                    parent=self,
                 )
 
             logger.debug("Current Task has been moved")
-
 
     def updateTaskTime(self):
         if self.get_current_task_id() is not None:
             if self.pomodoro_interface.pomodoro_timer_obj.getTimerState() in [TimerState.BREAK, TimerState.LONG_BREAK]:
                 return
 
-            final_elapsed_time = self.task_interface.todoTasksList.model().data(self.get_current_task_index(), TaskListModel.ElapsedTimeRole) + self.pomodoro_interface.pomodoro_timer_obj.timer_resolution
+            final_elapsed_time = (
+                self.task_interface.todoTasksList.model().data(
+                    self.get_current_task_index(), TaskListModel.ElapsedTimeRole
+                )
+                + self.pomodoro_interface.pomodoro_timer_obj.timer_resolution
+            )
             if final_elapsed_time % 1000 == 0:  # only update db when the elapsed time is a multiple of 1000
-                self.task_interface.todoTasksList.model().setData(self.get_current_task_index(), final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=False)
+                self.task_interface.todoTasksList.model().setData(
+                    self.get_current_task_index(), final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=False
+                )
             if final_elapsed_time % 5000 == 0:
                 self.updateTaskTimeDB()
 
@@ -439,44 +474,31 @@ class MainWindow(PomodoroFluentWindow):
         if current_task_index is None:
             return
 
-        final_elapsed_time = self.task_interface.todoTasksList.model().data(self.get_current_task_index(), TaskListModel.ElapsedTimeRole)
-        self.task_interface.todoTasksList.model().setData(self.get_current_task_index(), final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=True)
+        final_elapsed_time = self.task_interface.todoTasksList.model().data(
+            self.get_current_task_index(), TaskListModel.ElapsedTimeRole
+        )
+        self.task_interface.todoTasksList.model().setData(
+            self.get_current_task_index(), final_elapsed_time, TaskListModel.ElapsedTimeRole, update_db=True
+        )
         logger.debug(f"Updated DB with elapsed time: {final_elapsed_time}")
 
     def connectSignalsToSlots(self):
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.toggleUIElementsBasedOnTimerState)
-        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.toggle_website_filtering
+            self.toggleUIElementsBasedOnTimerState
         )
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(self.toggle_website_filtering)
         # Auto set current task whenever a work session begins. current task won't be overwritten if it is already set
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             lambda timerState: self.task_interface.autoSetCurrentTaskID() if timerState == TimerState.WORK else None
         )
-        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.store_already_elapsed_time
-        )
-        self.pomodoro_interface.pauseResumeButton.clicked.connect(
-            self.spawnTaskStartedInfoBar
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(
-            self.updateTaskTime
-        )
-        self.task_interface.completedTasksList.model().taskMovedSignal.connect(
-            self.check_current_task_moved
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.sessionStoppedSignal.connect(
-            self.updateTaskTimeDB
-        )
-        self.task_interface.todoTasksList.model().taskDeletedSignal.connect(
-            self.check_current_task_deleted
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.durationSkippedSignal.connect(
-            self.updateTaskTimeDB
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.sessionPausedSignal.connect(
-            self.updateTaskTimeDB
-        )
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(self.store_already_elapsed_time)
+        self.pomodoro_interface.pauseResumeButton.clicked.connect(self.spawnTaskStartedInfoBar)
+        self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(self.updateTaskTime)
+        self.task_interface.completedTasksList.model().taskMovedSignal.connect(self.check_current_task_moved)
+        self.pomodoro_interface.pomodoro_timer_obj.sessionStoppedSignal.connect(self.updateTaskTimeDB)
+        self.task_interface.todoTasksList.model().taskDeletedSignal.connect(self.check_current_task_deleted)
+        self.pomodoro_interface.pomodoro_timer_obj.durationSkippedSignal.connect(self.updateTaskTimeDB)
+        self.pomodoro_interface.pomodoro_timer_obj.sessionPausedSignal.connect(self.updateTaskTimeDB)
         self.website_filter_interface.blockTypeComboBox.currentIndexChanged.connect(
             lambda: self.toggle_website_filtering(self.pomodoro_interface.pomodoro_timer_obj.getTimerState())
         )
@@ -490,12 +512,8 @@ class MainWindow(PomodoroFluentWindow):
         self.workplace_list_model.current_workspace_changed.connect(
             self.task_interface.onCurrentWorkspaceChanged  # update task list when workspace is changed
         )
-        self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(
-            self.update_bottom_bar_timer_label
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.update_bottom_bar_timer_label
-        )
+        self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(self.update_bottom_bar_timer_label)
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(self.update_bottom_bar_timer_label)
         workspace_specific_settings.enable_website_filter.valueChanged.connect(
             self.on_website_filter_enabled_setting_changed
         )
@@ -503,13 +521,9 @@ class MainWindow(PomodoroFluentWindow):
             lambda: self.toggle_website_filtering(self.pomodoro_interface.pomodoro_timer_obj.getTimerState())
         )
         self.stackedWidget.mousePressEvent = self.onStackedWidgetClicked
-        self.settings_interface.proxy_port_card.valueChanged.connect(
-            self.update_proxy_port
-        )
+        self.settings_interface.proxy_port_card.valueChanged.connect(self.update_proxy_port)
         # Sync pomodoro view button state with bottom bar button
-        self.pomodoro_interface.pauseResumeButton.clicked.connect(
-            lambda: self.syncBottomBarPauseResumeButton()
-        )
+        self.pomodoro_interface.pauseResumeButton.clicked.connect(lambda: self.syncBottomBarPauseResumeButton())
         self.pomodoro_interface.pomodoro_timer_obj.sessionStoppedSignal.connect(
             lambda: self.changeBottomBarPauseResumeButtonCheckedState(True)
         )
@@ -520,19 +534,15 @@ class MainWindow(PomodoroFluentWindow):
             lambda: self.changeBottomBarPauseResumeButtonCheckedState(False)
         )
         self.task_interface.todoTasksList.model().currentTaskChangedSignal.connect(
-            lambda task_id: self.bottomBar.taskLabel.setText(f"Current Task: {self.task_interface.todoTasksList.model().getTaskNameById(task_id)}")
+            lambda task_id: self.bottomBar.taskLabel.setText(
+                f"Current Task: {self.task_interface.todoTasksList.model().getTaskNameById(task_id)}"
+            )
         )
-        self.themeListener.systemThemeChanged.connect(
-            self.updateSystemTrayIcon
-        )
+        self.themeListener.systemThemeChanged.connect(self.updateSystemTrayIcon)
         # for system tray
-        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.updateSystemTrayActions
-        )
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(self.updateSystemTrayActions)
         # for notifications
-        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
-            self.showNotifications
-        )
+        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(self.showNotifications)
 
     def on_website_filter_enabled_setting_changed(self):
         enable_website_filter_setting_value = ConfigValues.ENABLE_WEBSITE_FILTER
@@ -548,7 +558,7 @@ class MainWindow(PomodoroFluentWindow):
                 isClosable=True,
                 position=InfoBarPosition.TOP_RIGHT,
                 duration=5000,
-                parent=self
+                parent=self,
             )
 
     def update_proxy_port(self):
@@ -594,10 +604,7 @@ class MainWindow(PomodoroFluentWindow):
             # Initialize version info if not exists
             # todo: make a upgrade db function too for future app versions
             if not session.query(Version).first():
-                version = Version(
-                    app_version=get_app_version(),
-                    schema_version='1'
-                )
+                version = Version(app_version=get_app_version(), schema_version="1")
                 session.add(version)
                 session.commit()
 
@@ -610,16 +617,36 @@ class MainWindow(PomodoroFluentWindow):
 
                 # add some tasks too
                 sample_tasks = [
-                    Task(workspace_id=workspace.id, task_name="Sample Task 1", task_type=TaskType.TODO, task_position=0),
-                    Task(workspace_id=workspace.id, task_name="Sample Task 2", task_type=TaskType.TODO, task_position=1),
-                    Task(workspace_id=workspace.id, task_name="Sample Task 3", task_type=TaskType.TODO, task_position=2),
-                    Task(workspace_id=workspace.id, task_name="Sample Task 4", task_type=TaskType.COMPLETED, task_position=3),
-                    Task(workspace_id=workspace.id, task_name="Sample Task 5", task_type=TaskType.COMPLETED, task_position=4),
-                    Task(workspace_id=workspace.id, task_name="Sample Task 6", task_type=TaskType.COMPLETED, task_position=5),
+                    Task(
+                        workspace_id=workspace.id, task_name="Sample Task 1", task_type=TaskType.TODO, task_position=0
+                    ),
+                    Task(
+                        workspace_id=workspace.id, task_name="Sample Task 2", task_type=TaskType.TODO, task_position=1
+                    ),
+                    Task(
+                        workspace_id=workspace.id, task_name="Sample Task 3", task_type=TaskType.TODO, task_position=2
+                    ),
+                    Task(
+                        workspace_id=workspace.id,
+                        task_name="Sample Task 4",
+                        task_type=TaskType.COMPLETED,
+                        task_position=3,
+                    ),
+                    Task(
+                        workspace_id=workspace.id,
+                        task_name="Sample Task 5",
+                        task_type=TaskType.COMPLETED,
+                        task_position=4,
+                    ),
+                    Task(
+                        workspace_id=workspace.id,
+                        task_name="Sample Task 6",
+                        task_type=TaskType.COMPLETED,
+                        task_position=5,
+                    ),
                 ]
                 session.add_all(sample_tasks)
                 session.commit()
-
 
             # if application was closed while no workspace was selected, select the first workspace in the database
             # if database had no workspace to begin with then set default workspace as current database
@@ -647,7 +674,7 @@ class MainWindow(PomodoroFluentWindow):
             listening_port=ConfigValues.PROXY_PORT,
             joined_addresses="example.com",
             block_type="blocklist",
-            mitmdump_bin_path=get_mitmdump_path()
+            mitmdump_bin_path=get_mitmdump_path(),
         )
 
         # setupAppDialog is a modal dialog, so it will block the main window until it is closed

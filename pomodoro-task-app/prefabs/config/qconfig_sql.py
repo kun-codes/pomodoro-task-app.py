@@ -3,15 +3,17 @@ from pathlib import Path
 from typing import Union
 from venv import logger
 
-import darkdetect
-
-from models.db_tables import Workspace
-from prefabs.config.config_item_sql import ConfigItemSQL
-from utils.db_utils import get_session
-from qfluentwidgets import QConfig, ConfigItem, exceptionHandler, Theme, OptionsValidator, EnumSerializer
-from models.workspace_lookup import WorkspaceLookup
 from config_paths import settings_file_path
-from qfluentwidgets import OptionsConfigItem, ColorConfigItem
+from models.db_tables import Workspace
+from models.workspace_lookup import WorkspaceLookup
+from prefabs.config.config_item_sql import ConfigItemSQL
+from qfluentwidgets import (
+    ConfigItem,
+    QConfig,
+    exceptionHandler,
+)
+from utils.db_utils import get_session
+
 
 class QConfigSQL(QConfig):
     def __init__(self):
@@ -19,9 +21,8 @@ class QConfigSQL(QConfig):
         self.file = Path(settings_file_path)
         self._cfg.file = Path(settings_file_path)
 
-
     def set(self, item: Union[ConfigItemSQL, ConfigItem], value, save=True, copy=True):
-        """ set the value of config item
+        """set the value of config item
 
         Parameters
         ----------
@@ -65,7 +66,7 @@ class QConfigSQL(QConfig):
 
     @exceptionHandler()
     def load(self, file=None, config=None):
-        """ load config
+        """load config
 
         Parameters
         ----------

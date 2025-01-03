@@ -1,16 +1,17 @@
-import sys
 import signal
+import sys
 
-from PySide6.QtWidgets import QApplication
 from main_window import MainWindow
+from PySide6.QtWidgets import QApplication
+
 
 def handle_signal(signal, frame):
     if mainWindow:
         mainWindow.website_blocker_manager.stop_filtering(delete_proxy=True)
     sys.exit(0)
 
-if __name__ == '__main__':
 
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()

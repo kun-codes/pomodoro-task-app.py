@@ -1,14 +1,16 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget
-from qfluentwidgets import FluentIcon, Flyout, InfoBarIcon, FlyoutAnimationType, InfoBar, InfoBadgePosition, \
-    InfoBarPosition
-
-from constants import WebsiteFilterType, URLListType
+from constants import URLListType, WebsiteFilterType
+from loguru import logger
 from models.website_list_manager_model import WebsiteListManager
 from models.workspace_list_model import WorkspaceListModel
-from ui_py.ui_website_blocker_view import Ui_WebsiteBlockView
 from models.workspace_lookup import WorkspaceLookup
-from loguru import logger
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QWidget
+from qfluentwidgets import (
+    InfoBar,
+    InfoBarPosition,
+)
+from ui_py.ui_website_blocker_view import Ui_WebsiteBlockView
+
 
 class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
     """
@@ -138,7 +140,7 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,
             duration=4000,
-            parent=self
+            parent=self,
         )
 
     def spawnInvalidURLInfoBar(self, line_numbers: list[int]):
@@ -151,7 +153,7 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,
             duration=4000,
-            parent=self
+            parent=self,
         )
 
     def onCancelButtonClicked(self):

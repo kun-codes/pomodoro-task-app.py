@@ -1,10 +1,9 @@
 from typing import Union
 
+from prefabs.setting_cards.SpinBoxSettingCardSQL import SpinBoxSettingCardSQL
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QAbstractSpinBox
 from qfluentwidgets import FluentIconBase, qconfig
 
-from prefabs.setting_cards.SpinBoxSettingCardSQL import SpinBoxSettingCardSQL
 
 class SpinBoxSettingCard(SpinBoxSettingCardSQL):
     def __init__(self, configItem, icon: Union[str, QIcon, FluentIconBase], title, content=None, parent=None):

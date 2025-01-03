@@ -1,11 +1,11 @@
 from enum import Enum
 
-from qfluentwidgets import getIconColor, Theme, FluentIconBase
+from qfluentwidgets import FluentIconBase, Theme, getIconColor
 from resources import resources_rc
 
 
 class CustomFluentIcon(FluentIconBase, Enum):
-    """ Custom icons """
+    """Custom icons"""
 
     AUTOSTART_BREAK = "autostart_break"
     AUTOSTART_WORK = "autostart_work"

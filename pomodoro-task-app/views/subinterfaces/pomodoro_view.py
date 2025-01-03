@@ -1,11 +1,10 @@
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QWidget, QSpacerItem, QSizePolicy
-from loguru import logger
-from qfluentwidgets import FluentIcon
-
 from config_values import ConfigValues
-from models.timer import PomodoroTimer
 from constants import TimerState
+from loguru import logger
+from models.timer import PomodoroTimer
+from PySide6.QtGui import QFont
+from PySide6.QtWidgets import QSizePolicy, QSpacerItem, QWidget
+from qfluentwidgets import FluentIcon
 from ui_py.ui_pomodoro_view import Ui_PomodoroView
 
 
@@ -18,6 +17,7 @@ class PomodoroView(QWidget, Ui_PomodoroView):
     """
     For pomodoro view of the app
     """
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -122,11 +122,11 @@ class PomodoroView(QWidget, Ui_PomodoroView):
     def resetPauseResumeButton(self):
         self.pauseResumeButton.setChecked(True)
         self.pauseResumeButton.setIcon(FluentIcon.PLAY)
-    
+
     def isInitialWorkSession(self):
         return (
-            self.pomodoro_timer_obj.previous_timer_state == TimerState.NOTHING and
-            self.pomodoro_timer_obj.getTimerState() == TimerState.WORK  # and
+            self.pomodoro_timer_obj.previous_timer_state == TimerState.NOTHING
+            and self.pomodoro_timer_obj.getTimerState() == TimerState.WORK  # and
             # self.pomodoro_timer_obj.getSessionProgress() == 0  # not adding this condition as it is redundant
         )
 
@@ -137,8 +137,9 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         return int(hours), int(minutes), int(seconds)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
+
     from PySide6.QtWidgets import QApplication
 
     app = QApplication(sys.argv)

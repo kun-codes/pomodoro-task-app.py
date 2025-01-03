@@ -1,7 +1,7 @@
+from prefabs.bottomBar import BottomBar
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 from qfluentwidgets import FluentWindow, setCustomStyleSheet
 from qfluentwidgets.window.fluent_window import FluentWindowBase
-from prefabs.bottomBar import BottomBar
 
 
 class VBoxLayoutInitializer(QWidget):
@@ -9,6 +9,7 @@ class VBoxLayoutInitializer(QWidget):
     A hack to declare self.vBoxLayout in PomodoroFluentWindowBase before FluentWindowBase's parent classes's __init__
     is called
     """
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.vBoxLayout = QVBoxLayout(self)  # this line causes the error "QLayout: Attempting to add QLayout "" to
@@ -20,14 +21,14 @@ class VBoxLayoutInitializer(QWidget):
 
 
 class PomodoroFluentWindowBase(FluentWindowBase, VBoxLayoutInitializer):
-    """ Fluent window base class """
+    """Fluent window base class"""
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 
 
 class PomodoroFluentWindow(PomodoroFluentWindowBase, FluentWindow):
-    """ Fluent window """
+    """Fluent window"""
 
     def __init__(self, parent=None):
         super().__init__(parent)

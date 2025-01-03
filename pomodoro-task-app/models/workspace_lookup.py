@@ -1,5 +1,6 @@
-from utils.db_utils import get_session
 from models.db_tables import CurrentWorkspace, Workspace
+from utils.db_utils import get_session
+
 
 class WorkspaceLookup:
     @staticmethod
@@ -22,6 +23,7 @@ class WorkspaceLookup:
             workspace = session.get(Workspace, current_workspace_id)
         return workspace
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     print(WorkspaceLookup.get_current_workspace_id())
     print(WorkspaceLookup.get_current_workspace_name())

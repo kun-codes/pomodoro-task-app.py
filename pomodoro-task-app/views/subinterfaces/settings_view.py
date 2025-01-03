@@ -1,17 +1,21 @@
-from PySide6.QtWidgets import QWidget, QApplication, QAbstractSpinBox
-from loguru import logger
-from qfluentwidgets import SettingCardGroup, RangeSettingCard, FluentIcon, SwitchSettingCard, OptionsSettingCard, \
-    CustomColorSettingCard, ColorSettingCard, setCustomStyleSheet, ComboBoxSettingCard
-
 from config_values import ConfigValues
-from models.config import workspace_specific_settings, app_settings
+from loguru import logger
+from models.config import app_settings, workspace_specific_settings
+from prefabs.customFluentIcon import CustomFluentIcon
+from prefabs.setting_cards.RangeSettingCardSQL import RangeSettingCardSQL
 from prefabs.setting_cards.SpinBoxSettingCard import SpinBoxSettingCard
 from prefabs.setting_cards.SpinBoxSettingCardSQL import SpinBoxSettingCardSQL
-from prefabs.setting_cards.RangeSettingCardSQL import RangeSettingCardSQL
 from prefabs.setting_cards.SwitchSettingCardSQL import SwitchSettingCardSQL
-from qfluentwidgets import setTheme, setThemeColor
+from PySide6.QtWidgets import QApplication, QWidget
+from qfluentwidgets import (
+    CustomColorSettingCard,
+    FluentIcon,
+    OptionsSettingCard,
+    SettingCardGroup,
+    setTheme,
+    setThemeColor,
+)
 from ui_py.ui_settings_view import Ui_SettingsView
-from prefabs.customFluentIcon import CustomFluentIcon
 
 
 class SettingsView(QWidget, Ui_SettingsView):
@@ -30,92 +34,83 @@ class SettingsView(QWidget, Ui_SettingsView):
 
     def initSettings(self):
         # Pomodoro Settings
-        self.pomodoro_settings_group = SettingCardGroup(
-            "Pomodoro", self.scrollArea
-        )
+        self.pomodoro_settings_group = SettingCardGroup("Pomodoro", self.scrollArea)
         self.work_duration_card = RangeSettingCardSQL(
             workspace_specific_settings.work_duration,
             CustomFluentIcon.WORK,
             "Work Duration",
             "Set the work duration in minutes",
-            self.pomodoro_settings_group
+            self.pomodoro_settings_group,
         )
         self.break_duration_card = RangeSettingCardSQL(
             workspace_specific_settings.break_duration,
             CustomFluentIcon.BREAK,
             "Break Duration",
             "Set the break duration in minutes",
-            self.pomodoro_settings_group
+            self.pomodoro_settings_group,
         )
         self.long_break_duration_card = RangeSettingCardSQL(
             workspace_specific_settings.long_break_duration,
             CustomFluentIcon.LONG_BREAK,
             "Long Break Duration",
             "Set the long break duration in minutes",
-            self.pomodoro_settings_group
+            self.pomodoro_settings_group,
         )
         self.work_interval_card = SpinBoxSettingCardSQL(
             workspace_specific_settings.work_intervals,
             CustomFluentIcon.WORK_INTERVAL,
             "Work Intervals",
             "Set the number of work intervals before a long break",
-            self.pomodoro_settings_group
+            self.pomodoro_settings_group,
         )
         self.autostart_work_card = SwitchSettingCardSQL(
             CustomFluentIcon.AUTOSTART_WORK,
             "Autostart Work",
             "Start work session automatically after break ends",
             workspace_specific_settings.autostart_work,
-            self.pomodoro_settings_group
+            self.pomodoro_settings_group,
         )
         self.autostart_break_card = SwitchSettingCardSQL(
             CustomFluentIcon.AUTOSTART_BREAK,
             "Autostart Break",
             "Start break session automatically after work ends",
             workspace_specific_settings.autostart_break,
-            self.pomodoro_settings_group
+            self.pomodoro_settings_group,
         )
 
         # Website Filter Settings
-        self.website_filter_settings_group = SettingCardGroup(
-            "Website Filter", self.scrollArea
-        )
+        self.website_filter_settings_group = SettingCardGroup("Website Filter", self.scrollArea)
         self.enable_website_filter_card = SwitchSettingCardSQL(
             CustomFluentIcon.WEBSITE_FILTER_VIEW,
             "Enable Website Filter",
             "Enable website filtering",
             workspace_specific_settings.enable_website_filter,
-            self.website_filter_settings_group
+            self.website_filter_settings_group,
         )
         self.proxy_port_card = SpinBoxSettingCard(
             app_settings.proxy_port,
             CustomFluentIcon.PORT,
             "Proxy Port",
             "Select the port where the website filter runs",
-            self.website_filter_settings_group
+            self.website_filter_settings_group,
         )
 
-
         # Personalization Settings
-        self.personalization_settings_group = SettingCardGroup(
-            self.tr('Personalization'), self.scrollArea)
+        self.personalization_settings_group = SettingCardGroup(self.tr("Personalization"), self.scrollArea)
         self.theme_card = OptionsSettingCard(
             app_settings.themeMode,
             FluentIcon.BRUSH,
-            self.tr('Application theme'),
+            self.tr("Application theme"),
             self.tr("Change the appearance of your application"),
-            texts=[
-                self.tr('Light'), self.tr('Dark'),
-                self.tr('Use system setting')
-            ],
-            parent=self.personalization_settings_group
+            texts=[self.tr("Light"), self.tr("Dark"), self.tr("Use system setting")],
+            parent=self.personalization_settings_group,
         )
         self.theme_color_card = CustomColorSettingCard(
             app_settings.themeColor,
             FluentIcon.PALETTE,
-            self.tr('Theme color'),
-            self.tr('Change the theme color of you application'),
-            self.personalization_settings_group
+            self.tr("Theme color"),
+            self.tr("Change the theme color of you application"),
+            self.personalization_settings_group,
         )
 
         self.__connectSignalToSlot()
@@ -169,7 +164,6 @@ class SettingsView(QWidget, Ui_SettingsView):
     #     self.TitleLabel.setDisabled(True)
     #
 
-
     def onValueChanged(self):
         workspace_specific_settings.work_duration.valueChanged.connect(self.updateWorkDuration)
         workspace_specific_settings.break_duration.valueChanged.connect(self.updateBreakDuration)
@@ -190,9 +184,11 @@ class SettingsView(QWidget, Ui_SettingsView):
 
     def updateLongBreakDuration(self):
         ConfigValues.LONG_BREAK_DURATION = workspace_specific_settings.get(
-            workspace_specific_settings.long_break_duration)
+            workspace_specific_settings.long_break_duration
+        )
         logger.debug(
-            f"Long Break Duration: {workspace_specific_settings.get(workspace_specific_settings.long_break_duration)}")
+            f"Long Break Duration: {workspace_specific_settings.get(workspace_specific_settings.long_break_duration)}"
+        )
 
     def updateWorkIntervals(self):
         ConfigValues.WORK_INTERVALS = workspace_specific_settings.get(workspace_specific_settings.work_intervals)
@@ -208,9 +204,11 @@ class SettingsView(QWidget, Ui_SettingsView):
 
     def updateEnableWebsiteFilter(self):
         ConfigValues.ENABLE_WEBSITE_FILTER = workspace_specific_settings.get(
-            workspace_specific_settings.enable_website_filter)
+            workspace_specific_settings.enable_website_filter
+        )
         logger.debug(
-            f"Enable Website Filter: {workspace_specific_settings.get(workspace_specific_settings.enable_website_filter)}")
+            f"Enable Website Filter: {workspace_specific_settings.get(workspace_specific_settings.enable_website_filter)}"
+        )
 
     def updateProxyPort(self):
         ConfigValues.PROXY_PORT = app_settings.get(app_settings.proxy_port)

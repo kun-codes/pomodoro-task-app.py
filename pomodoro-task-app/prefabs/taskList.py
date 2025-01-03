@@ -1,8 +1,7 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QAbstractItemView, QListView
-from qfluentwidgets import ListView, LineEdit, ListItemDelegate
-
 from prefabs.taskListItemDelegate import TaskListItemDelegate
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QAbstractItemView, QListView, QWidget
+from qfluentwidgets import LineEdit, ListItemDelegate, ListView
 from ui_py.ui_tasks_list_view import Ui_TaskView
 
 

@@ -1,8 +1,7 @@
 from contextlib import contextmanager
 
-from sqlalchemy.orm import sessionmaker
-
 from models.db_tables import engine
+from sqlalchemy.orm import sessionmaker
 
 
 @contextmanager

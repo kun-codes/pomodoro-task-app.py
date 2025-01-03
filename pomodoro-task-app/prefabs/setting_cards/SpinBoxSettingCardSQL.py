@@ -1,14 +1,13 @@
 from typing import Union
 
-from PySide6.QtCore import Qt
-from PySide6.QtCore import Signal
-from PySide6.QtGui import QIcon
-from qfluentwidgets import SettingCard, SpinBox, FluentIconBase
 from prefabs.config.qconfig_sql import qconfig_custom
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QIcon
+from qfluentwidgets import FluentIconBase, SettingCard, SpinBox
 
 
 class SpinBoxSettingCardSQL(SettingCard):
-    """ Setting card with a SpinBox """
+    """Setting card with a SpinBox"""
 
     valueChanged = Signal(int)
 
@@ -48,7 +47,7 @@ class SpinBoxSettingCardSQL(SettingCard):
         self.spinBox.valueChanged.connect(self.__onValueChanged)
 
     def __onValueChanged(self, value: int):
-        """ spin box value changed slot """
+        """spin box value changed slot"""
         self.setValue(value)
         self.valueChanged.emit(value)
 

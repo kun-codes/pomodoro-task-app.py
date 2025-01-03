@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPainter, QFontMetrics
+from PySide6.QtGui import QFontMetrics, QPainter
 from qfluentwidgets import StrongBodyLabel
 
 
@@ -19,15 +19,7 @@ class ElidedStrongBodyLabel(StrongBodyLabel):
         available_width = self.width() - 2 * margin
 
         # Create elided text
-        elided_text = metrics.elidedText(
-            self.text(),
-            Qt.TextElideMode.ElideRight,
-            available_width
-        )
+        elided_text = metrics.elidedText(self.text(), Qt.TextElideMode.ElideRight, available_width)
 
         # Draw the text
-        painter.drawText(
-            self.rect().adjusted(margin, 0, -margin, 0),
-            int(self.alignment()),
-            elided_text
-        )
+        painter.drawText(self.rect().adjusted(margin, 0, -margin, 0), int(self.alignment()), elided_text)

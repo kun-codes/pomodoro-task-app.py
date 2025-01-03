@@ -1,12 +1,11 @@
-from PySide6.QtCore import QSize, QRect, Qt, Slot
-from PySide6.QtGui import QPainter, QColor, QTextFormat, QFont, QTextCharFormat, QTextCursor
-from PySide6.QtWidgets import QWidget, QTextEdit
-from qfluentwidgets import PlainTextEdit, TextEdit, isDarkTheme, setCustomStyleSheet, qconfig
-
 from models.config import AppSettings
-
+from PySide6.QtCore import QRect, QSize, Qt, Slot
+from PySide6.QtGui import QColor, QFont, QPainter, QTextCharFormat, QTextCursor, QTextFormat
+from PySide6.QtWidgets import QTextEdit, QWidget
+from qfluentwidgets import PlainTextEdit, isDarkTheme, qconfig, setCustomStyleSheet
 
 # from: https://doc.qt.io/qtforpython-6.2/examples/example_widgets__codeeditor.html
+
 
 class LineNumberArea(QWidget):
     def __init__(self, editor):
@@ -41,8 +40,7 @@ class CodeEditor(PlainTextEdit):
 
         self.update_line_number_area_width(0)
 
-        qss = \
-            """
+        qss = """
                 PlainTextEdit {
                     padding: 0px 0px 2px 8px;
                 }
@@ -57,7 +55,7 @@ class CodeEditor(PlainTextEdit):
             digits += 1
 
         base_space = 20
-        space = base_space + self.fontMetrics().horizontalAdvance('9') * digits
+        space = base_space + self.fontMetrics().horizontalAdvance("9") * digits
         return space
 
     def resizeEvent(self, e):
@@ -69,8 +67,10 @@ class CodeEditor(PlainTextEdit):
 
     def lineNumberAreaPaintEvent(self, event):
         painter = QPainter(self.line_number_area)
-        painter.fillRect(event.rect(), self._lineNumberAreaDarkBackgroundColor if isDarkTheme() \
-            else self._lineNumberAreaLightBackgroundColor)
+        painter.fillRect(
+            event.rect(),
+            self._lineNumberAreaDarkBackgroundColor if isDarkTheme() else self._lineNumberAreaLightBackgroundColor,
+        )
         block = self.firstVisibleBlock()
         block_number = block.blockNumber()
         offset = self.contentOffset()
@@ -78,7 +78,7 @@ class CodeEditor(PlainTextEdit):
         bottom = top + self.blockBoundingRect(block).height()
 
         font = painter.font()
-        font.setFamily('Monospace')
+        font.setFamily("Monospace")
         painter.setFont(font)
 
         current_block_number = self.textCursor().blockNumber()
@@ -94,12 +94,13 @@ class CodeEditor(PlainTextEdit):
 
                 # render the current line number in bold and the line numbers corresponding to the selection and
                 # CodeEditor is in focus
-                if (block_number == current_block_number or \
-                    (selection_start <= block_end and selection_end >= block_start)) and \
-                    self.hasFocus():
-                        painter.setPen(AppSettings.get(AppSettings, AppSettings.themeColor))
-                        font.setWeight(QFont.Weight.Bold)  # Bold font for current line
-                        painter.setFont(font)
+                if (
+                    block_number == current_block_number
+                    or (selection_start <= block_end and selection_end >= block_start)
+                ) and self.hasFocus():
+                    painter.setPen(AppSettings.get(AppSettings, AppSettings.themeColor))
+                    font.setWeight(QFont.Weight.Bold)  # Bold font for current line
+                    painter.setFont(font)
                 else:
                     painter.setPen(Qt.GlobalColor.white if isDarkTheme() else Qt.GlobalColor.black)
                 width = self.line_number_area.width()
@@ -107,11 +108,17 @@ class CodeEditor(PlainTextEdit):
 
                 horizontal_offset = 7
 
-                painter.drawText(0, top, width - horizontal_offset, height,
-                                 Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight,
-                                 number)
+                painter.drawText(
+                    0,
+                    top,
+                    width - horizontal_offset,
+                    height,
+                    Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight,
+                    number,
+                )
                 if block_number == current_block_number or (
-                        selection_start <= block_end and selection_end >= block_start):
+                    selection_start <= block_end and selection_end >= block_start
+                ):
                     # reset font to normal for other lines
                     font.setWeight(QFont.Weight.Normal)
                     painter.setFont(font)
@@ -177,6 +184,7 @@ class CodeEditor(PlainTextEdit):
             self._underline_selections.append(selection)
 
         self.highlight_current_line()
+
 
 if __name__ == "__main__":
     from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget

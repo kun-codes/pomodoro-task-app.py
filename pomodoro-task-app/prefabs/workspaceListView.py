@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QAbstractItemView
-from qfluentwidgets import ListView, LineEdit
+from qfluentwidgets import LineEdit, ListView
 
 
 class WorkspaceListView(ListView):

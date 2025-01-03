@@ -1,10 +1,16 @@
+from constants import APPLICATION_NAME
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QFrame, QVBoxLayout
-from qfluentwidgets import MaskDialogBase, FluentStyleSheet, setCustomStyleSheet, SubtitleLabel, BodyLabel, \
-    PrimaryPushButton, PushButton
-
-from constants import APPLICATION_NAME
+from qfluentwidgets import (
+    BodyLabel,
+    FluentStyleSheet,
+    MaskDialogBase,
+    PrimaryPushButton,
+    PushButton,
+    SubtitleLabel,
+    setCustomStyleSheet,
+)
 
 
 class SetupAppDialogConfirmationDialog(MaskDialogBase):
@@ -19,11 +25,13 @@ class SetupAppDialogConfirmationDialog(MaskDialogBase):
         self.buttonLayout = QVBoxLayout(self.buttonGroup)
 
         self.titleLabel = SubtitleLabel("Are you sure you have set up website filtering correctly?", parent=self)
-        self.bodyLabel = BodyLabel(f'You can check if the website filter is working correctly by visiting <a href="https://example.com/">https://example.com/</a>',
-                                   parent=self)
-        self.bodyLabel2 = BodyLabel(f'It should be blocked by {APPLICATION_NAME} if the website filter is working correctly',
-                                   parent=self
-                                   )
+        self.bodyLabel = BodyLabel(
+            'You can check if the website filter is working correctly by visiting <a href="https://example.com/">https://example.com/</a>',
+            parent=self,
+        )
+        self.bodyLabel2 = BodyLabel(
+            f"It should be blocked by {APPLICATION_NAME} if the website filter is working correctly", parent=self
+        )
 
         self.okayButton = PrimaryPushButton(text="Yes", parent=self)
         self.cancelButton = PushButton("No, Take me back", parent=self)
@@ -36,7 +44,6 @@ class SetupAppDialogConfirmationDialog(MaskDialogBase):
 
         self.bodyLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.bodyLabel.setOpenExternalLinks(True)
-
 
         self.setShadowEffect(60, (0, 10), QColor(0, 0, 0, 50))
         self.setMaskColor(QColor(0, 0, 0, 76))
@@ -65,10 +72,8 @@ class SetupAppDialogConfirmationDialog(MaskDialogBase):
         self.buttonLayout.addWidget(self.okayButton)
         self.buttonLayout.addWidget(self.cancelButton)
 
-
-
     def __setQss(self):
-        self.buttonGroup.setObjectName('buttonGroup')
+        self.buttonGroup.setObjectName("buttonGroup")
         dialog_qss = f"""
             {__class__.__name__} #buttonGroup,
             {__class__.__name__} #buttonGroup {{

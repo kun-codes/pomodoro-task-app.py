@@ -1,8 +1,10 @@
-from utils.is_nuitka import is_nuitka
-from pathlib import Path
-from loguru import logger
-import shutil
 import platform
+import shutil
+from pathlib import Path
+
+from loguru import logger
+from utils.is_nuitka import is_nuitka
+
 
 def get_mitmdump_path():
     if is_nuitka():

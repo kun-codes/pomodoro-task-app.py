@@ -1,21 +1,15 @@
+from prefabs.taskCard import TaskCard
 from PySide6.QtCore import QMimeData, Qt, Signal
 from PySide6.QtGui import QDrag
-from PySide6.QtWidgets import (
-    QApplication,
-    QHBoxLayout,
-    QMainWindow,
-    QVBoxLayout,
-    QWidget
-)
-from qfluentwidgets import CardWidget, FluentWindow, FluentIcon
-
-from prefabs.taskCard import TaskCard
+from PySide6.QtWidgets import QApplication, QHBoxLayout, QMainWindow, QVBoxLayout, QWidget
+from qfluentwidgets import CardWidget, FluentIcon, FluentWindow
 
 
 class DragTargetIndicator(TaskCard):
     """
     The placeholder box which is showed as a preview while dragging task cards
     """
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -25,6 +19,7 @@ class DragItem(TaskCard):
     """
     A draggable task card
     """
+
     def __init__(self, parent=None, task_name=""):
         super().__init__(parent=parent, task_name=task_name)
         # self.taskLabel.setText(text)
@@ -121,16 +116,10 @@ class DragWidget(CardWidget):
 
             if self.orientation == Qt.Orientation.Vertical:
                 # Drag drop vertically.
-                drop_here = (
-                        pos.y() >= w.y() - spacing
-                        and pos.y() <= w.y() + w.size().height() + spacing
-                )
+                drop_here = pos.y() >= w.y() - spacing and pos.y() <= w.y() + w.size().height() + spacing
             else:
                 # Drag drop horizontally.
-                drop_here = (
-                        pos.x() >= w.x() - spacing
-                        and pos.x() <= w.x() + w.size().width() + spacing
-                )
+                drop_here = pos.x() >= w.x() - spacing and pos.x() <= w.x() + w.size().width() + spacing
 
             if drop_here:
                 # Drop over this target.
@@ -153,6 +142,7 @@ class DragWidget(CardWidget):
 
 
 if __name__ == "__main__":
+
     class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
@@ -183,7 +173,6 @@ if __name__ == "__main__":
 
             self.setCentralWidget(container)
 
-
     class FluentTestWindow(FluentWindow):
         def __init__(self):
             super().__init__()
@@ -194,8 +183,7 @@ if __name__ == "__main__":
 
         def initNavigation(self):
             # Add sub interface
-            self.addSubInterface(self.testInterface, FluentIcon.ADD, 'Tasks')
-
+            self.addSubInterface(self.testInterface, FluentIcon.ADD, "Tasks")
 
     app = QApplication([])
     w = FluentTestWindow()

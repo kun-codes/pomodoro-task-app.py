@@ -1,17 +1,23 @@
-from PySide6.QtCore import QObject, Signal
-from qfluentwidgets import ConfigValidator, ConfigSerializer
-from sqlalchemy.orm import InstrumentedAttribute  # for type hinting of sqlalchemy columns
-from models.db_tables import Base
 from typing import Type
-from qfluentwidgets import ConfigItem
+
+from models.db_tables import Base
+from PySide6.QtCore import QObject, Signal
+from qfluentwidgets import ConfigSerializer, ConfigValidator
+from sqlalchemy.orm import InstrumentedAttribute  # for type hinting of sqlalchemy columns
 
 
 class ConfigItemSQL(QObject):
-
     valueChanged = Signal(object)
 
-    def __init__(self, db_table: Type[Base], db_column: InstrumentedAttribute, default, validator=None,
-                 serializer=None, restart=False):
+    def __init__(
+        self,
+        db_table: Type[Base],
+        db_column: InstrumentedAttribute,
+        default,
+        validator=None,
+        serializer=None,
+        restart=False,
+    ):
         super().__init__()
         self.db_table = db_table
         self.db_column = db_column
@@ -42,12 +48,12 @@ class ConfigItemSQL(QObject):
 
 
 class RangeConfigItemSQL(ConfigItemSQL):
-    """ Config item of range """
+    """Config item of range"""
 
     @property
     def range(self):
-        """ get the available range of config """
+        """get the available range of config"""
         return self.validator.range
 
     def __str__(self):
-        return f'{self.__class__.__name__}[range={self.range}, value={self.value}]'
+        return f"{self.__class__.__name__}[range={self.range}, value={self.value}]"

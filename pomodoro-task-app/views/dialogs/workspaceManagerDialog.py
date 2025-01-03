@@ -1,19 +1,33 @@
 import sys
 
-from PySide6.QtCore import Qt, QModelIndex, QItemSelectionModel
-from PySide6.QtGui import QColor, QPainter, QPen, QKeyEvent
-from PySide6.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QMainWindow, QWidget, \
-    QListView, QStyleOptionViewItem, QStyle, QAbstractItemView
 from loguru import logger
-from qfluentwidgets import FluentStyleSheet, PrimaryPushButton, SubtitleLabel, ListView, setCustomStyleSheet, \
-    PushButton, LineEdit, InfoBar, InfoBarPosition, TableItemDelegate, themeColor, isDarkTheme
-from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
-
-from models.db_tables import Workspace, engine
+from models.db_tables import Workspace
 from models.workspace_list_model import WorkspaceListModel
 from models.workspace_lookup import WorkspaceLookup
 from prefabs.roundedListItemDelegate import RoundedListItemDelegate
 from prefabs.workspaceListView import WorkspaceListView
+from PySide6.QtCore import QItemSelectionModel, Qt
+from PySide6.QtGui import QColor, QKeyEvent
+from PySide6.QtWidgets import (
+    QApplication,
+    QFrame,
+    QHBoxLayout,
+    QMainWindow,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
+from qfluentwidgets import (
+    FluentStyleSheet,
+    InfoBar,
+    InfoBarPosition,
+    LineEdit,
+    PrimaryPushButton,
+    PushButton,
+    SubtitleLabel,
+    setCustomStyleSheet,
+)
+from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
 
 
 class ManageWorkspaceDialog(MaskDialogBase):
@@ -29,15 +43,15 @@ class ManageWorkspaceDialog(MaskDialogBase):
 
         # initializing buttons
         self.deleteWorkspaceButton = PushButton()
-        self.deleteWorkspaceButton.setText('Delete Workspace')
+        self.deleteWorkspaceButton.setText("Delete Workspace")
         self.addWorkspaceButton = PushButton()
-        self.addWorkspaceButton.setText('Add Workspace')
-        self.addWorkspaceButton.setObjectName('addWorkspaceButton')
+        self.addWorkspaceButton.setText("Add Workspace")
+        self.addWorkspaceButton.setObjectName("addWorkspaceButton")
         self.addWorkspaceButton.setDisabled(True)
         self.closeDialogButton = PrimaryPushButton()
-        self.closeDialogButton.setText('Close Dialog')
+        self.closeDialogButton.setText("Close Dialog")
 
-        self.titleLabel = SubtitleLabel('Manage Workspaces', parent=None)
+        self.titleLabel = SubtitleLabel("Manage Workspaces", parent=None)
         self.newWorkspaceLineEdit = LineEdit()
         self.workspaceList = WorkspaceListView()
         self.model = workspaceListModel
@@ -86,7 +100,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         # self.buttonLayout.addWidget(self.cancelButton, 1, Qt.AlignVCenter)
 
     def __setQss(self):
-        self.buttonGroup.setObjectName('buttonGroup')
+        self.buttonGroup.setObjectName("buttonGroup")
         dialog_qss = f"""
             {__class__.__name__} #buttonGroup,
             {__class__.__name__} #buttonGroup {{
@@ -118,7 +132,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.model.current_workspace_changed.connect(self.spawnInfoBar)
         self.model.current_workspace_deleted.connect(self.onCurrentWorkspaceDeleted)
 
-    def keyPressEvent(self, event:QKeyEvent):
+    def keyPressEvent(self, event: QKeyEvent):
         """
         Override keyPressEvent to ignore escape key so that the dialog doesn't get closed when escape key is pressed
         """
@@ -136,11 +150,12 @@ class ManageWorkspaceDialog(MaskDialogBase):
             workspace_id = workspace["id"]
             workspace_name = workspace["workspace_name"]
             if workspace_id == current_workspace_id:
-                index = self.model.index(self.model.workspaces.index({"id": workspace_id, "workspace_name": workspace_name}))
+                index = self.model.index(
+                    self.model.workspaces.index({"id": workspace_id, "workspace_name": workspace_name})
+                )
                 logger.debug(f"Preselecting workspace in manage workspace dialog: {workspace_name}")
                 # self.workspaceList.selectionModel().select(index, QItemSelectionModel.SelectionFlag.Select)
                 self.workspaceList.selectionModel().setCurrentIndex(index, QItemSelectionModel.SelectionFlag.Select)
-
 
     def onWorkspaceTextChanged(self):
         self.addWorkspaceButton.setDisabled(self.newWorkspaceLineEdit.text().strip() == "")
@@ -166,7 +181,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
                 isClosable=True,
                 position=InfoBarPosition.TOP_RIGHT,
                 duration=4000,
-                parent=self.parent()
+                parent=self.parent(),
             )
 
     def onWorkspaceSelectionChanged(self, selected, deselected):
@@ -195,7 +210,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,
             duration=4000,
-            parent=self.parent()
+            parent=self.parent(),
         )
 
     def onCurrentWorkspaceChanged(self):
@@ -204,7 +219,8 @@ class ManageWorkspaceDialog(MaskDialogBase):
     def onCurrentWorkspaceDeleted(self):
         logger.debug("Current workspace deleted")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # create a mainwindow
 
     app = QApplication(sys.argv)

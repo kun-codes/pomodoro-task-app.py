@@ -1,13 +1,14 @@
-from PySide6.QtGui import QColor, QPalette
-from PySide6.QtWidgets import QHBoxLayout, QApplication, QSizePolicy
-from qfluentwidgets import BodyLabel, FluentIcon, SimpleCardWidget
 from models.db_tables import Task, TaskType
+from PySide6.QtGui import QColor, QPalette
+from PySide6.QtWidgets import QApplication, QHBoxLayout, QSizePolicy
+from qfluentwidgets import BodyLabel, FluentIcon, SimpleCardWidget
 
 
 class TaskCard(SimpleCardWidget):
     """
     TaskCard is a simple card widget that displays a task along with an icon of its own
     """
+
     def __init__(self, parent=None, task_name=""):
         super().__init__(parent=parent)
         self.setAcceptDrops(True)

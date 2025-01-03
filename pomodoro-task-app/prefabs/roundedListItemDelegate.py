@@ -1,14 +1,12 @@
-from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtGui import QPainter, QColor, QPen
-from PySide6.QtWidgets import QListView, QStyleOptionViewItem, QStyle, QWidget
-from loguru import logger
-from qfluentwidgets import isDarkTheme, themeColor, ListItemDelegate
-
 from models.task_list_model import TaskListModel
+from PySide6.QtCore import QModelIndex, Qt
+from PySide6.QtGui import QColor, QPainter, QPen
+from PySide6.QtWidgets import QListView, QStyle, QStyleOptionViewItem, QWidget
+from qfluentwidgets import ListItemDelegate, isDarkTheme, themeColor
 
 
 class RoundedListItemDelegate(ListItemDelegate):
-    """ Round List item delegate """
+    """Round List item delegate"""
 
     def __init__(self, parent: QListView):
         super().__init__(parent)
@@ -42,6 +40,7 @@ class RoundedListItemDelegate(ListItemDelegate):
 
         editor.setGeometry(x, y, w, rect.height())
 
+
 class RoundedListItemDelegateDisplayTime(RoundedListItemDelegate):
     def __init__(self, parent: QListView):
         super().__init__(parent)
@@ -70,7 +69,7 @@ class RoundedListItemDelegateDisplayTime(RoundedListItemDelegate):
 
         # Draw the time string on the right side
         if isDarkTheme():
-            painter.setPen(QColor(255, 255,255))
+            painter.setPen(QColor(255, 255, 255))
         else:
             painter.setPen(QColor(0, 0, 0))
         painter.drawText(rect.adjusted(-100, 0, -10, 0), Qt.AlignRight | Qt.AlignVCenter, time_str)
@@ -85,7 +84,7 @@ class RoundedListItemDelegateDisplayTime(RoundedListItemDelegate):
         rect = option.rect
         y = rect.y() + (rect.height() - editor.height()) // 2
         x, w = rect.x(), rect.width()
-        w = w-2  # subtract 2 to fit within the indicator
+        w = w - 2  # subtract 2 to fit within the indicator
         x = x + 1  # add 1 to fit within the indicator
 
         editor.setGeometry(x, y, w, rect.height())

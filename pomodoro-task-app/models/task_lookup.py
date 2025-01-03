@@ -1,5 +1,6 @@
-from utils.db_utils import get_session
 from models.db_tables import Task
+from utils.db_utils import get_session
+
 
 class TaskLookup:
     @staticmethod
