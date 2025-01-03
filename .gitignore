@@ -241,3 +241,6 @@ fabric.properties
 # Exclude mitmdump binaries
 /mitmdump
 /mitmdump.exe
+
+# Exlclude ruff.xml
+.idea/ruff.xml
