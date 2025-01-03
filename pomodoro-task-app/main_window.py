@@ -1,10 +1,6 @@
 import platform
-from idlelib.macosx import setupApp
-
-from flask import Config
 from qfluentwidgets import FluentIcon, NavigationItemPosition, InfoBar, InfoBarPosition, SystemThemeListener, Theme
 from loguru import logger
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu
 from PySide6.QtGui import QIcon
 from pathlib import Path
