@@ -8,6 +8,8 @@ from PySide6.QtWidgets import QWidget
 from qfluentwidgets import (
     InfoBar,
     InfoBarPosition,
+    ToolTipFilter,
+    ToolTipPosition,
 )
 from ui_py.ui_website_blocker_view import Ui_WebsiteBlockView
 
@@ -42,6 +44,19 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
 
         self.initTextEdits()
         self.initWebsiteFilterComboBox()
+
+        self.saveButton.setToolTip("Save")
+        self.saveButton.installEventFilter(
+            ToolTipFilter(self.saveButton, showDelay=300, position=ToolTipPosition.BOTTOM)
+        )
+        self.cancelButton.setToolTip("Cancel Changes")
+        self.cancelButton.installEventFilter(
+            ToolTipFilter(self.cancelButton, showDelay=300, position=ToolTipPosition.BOTTOM)
+        )
+        self.blockTypeComboBox.setToolTip("Select Filter Type")
+        self.blockTypeComboBox.installEventFilter(
+            ToolTipFilter(self.blockTypeComboBox, showDelay=300, position=ToolTipPosition.BOTTOM)
+        )
 
     def connectSignalsToSlots(self):
         self.blockTypeComboBox.currentIndexChanged.connect(self.onFilterTypeChanged)

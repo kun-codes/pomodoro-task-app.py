@@ -4,7 +4,7 @@ from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.taskList import TaskList
 from PySide6.QtCore import QModelIndex
 from PySide6.QtWidgets import QApplication, QSizePolicy, QVBoxLayout, QWidget
-from qfluentwidgets import FluentIcon, SimpleCardWidget, TitleLabel
+from qfluentwidgets import FluentIcon, SimpleCardWidget, TitleLabel, ToolTipFilter, ToolTipPosition
 from ui_py.ui_tasks_list_view import Ui_TaskView
 from views.dialogs.addTaskDialog import AddTaskDialog
 from views.dialogs.editTaskTimeDialog import EditTaskTimeDialog
@@ -60,6 +60,23 @@ class TaskListView(Ui_TaskView, QWidget):
         self.deleteTaskButton.setIcon(FluentIcon.DELETE)
         self.editTaskTimeButton.setIcon(FluentIcon.EDIT)
         self.changeCurrentTaskButton.setIcon(CustomFluentIcon.CHANGE_CURRENT_TASK)
+
+        self.addTaskButton.setToolTip("Add Task")
+        self.addTaskButton.installEventFilter(
+            ToolTipFilter(self.addTaskButton, showDelay=300, position=ToolTipPosition.BOTTOM)
+        )
+        self.deleteTaskButton.setToolTip("Delete Task")
+        self.deleteTaskButton.installEventFilter(
+            ToolTipFilter(self.deleteTaskButton, showDelay=300, position=ToolTipPosition.BOTTOM)
+        )
+        self.editTaskTimeButton.setToolTip("Edit Task Time")
+        self.editTaskTimeButton.installEventFilter(
+            ToolTipFilter(self.editTaskTimeButton, showDelay=300, position=ToolTipPosition.BOTTOM)
+        )
+        self.changeCurrentTaskButton.setToolTip("Change Current Task")
+        self.changeCurrentTaskButton.installEventFilter(
+            ToolTipFilter(self.changeCurrentTaskButton, showDelay=300, position=ToolTipPosition.BOTTOM)
+        )
 
     def connectSignalsToSlots(self):
         self.addTaskButton.clicked.connect(self.addTask)

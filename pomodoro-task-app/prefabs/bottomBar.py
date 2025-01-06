@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QWidget
-from qfluentwidgets import FluentIcon
+from qfluentwidgets import FluentIcon, ToolTipFilter, ToolTipPosition
 from ui_py.ui_bottom_bar_widget import Ui_BottomBarWidget
 
 
@@ -19,3 +19,12 @@ class BottomBar(Ui_BottomBarWidget, QWidget):
         self.pauseResumeButton.setCheckable(True)
         self.pauseResumeButton.setChecked(True)
         self.skipButton.setCheckable(False)
+
+        self.stopButton.setToolTip("Stop")
+        self.stopButton.installEventFilter(ToolTipFilter(self.stopButton, showDelay=300, position=ToolTipPosition.TOP))
+        self.pauseResumeButton.setToolTip("Pause/Resume")
+        self.pauseResumeButton.installEventFilter(
+            ToolTipFilter(self.pauseResumeButton, showDelay=300, position=ToolTipPosition.TOP)
+        )
+        self.skipButton.setToolTip("Skip")
+        self.skipButton.installEventFilter(ToolTipFilter(self.skipButton, showDelay=300, position=ToolTipPosition.TOP))
