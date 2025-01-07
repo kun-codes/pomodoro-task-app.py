@@ -27,7 +27,7 @@ class WebsiteListManager(QObject):
         with get_session(is_read_only=True) as session:
             current_workspace_id = WorkspaceLookup.get_current_workspace_id()
 
-            if target_list == None:
+            if target_list is None:
                 self.blocklist_urls = {
                     url.url
                     for url in session.query(BlocklistURL)
