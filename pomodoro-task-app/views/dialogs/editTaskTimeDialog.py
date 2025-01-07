@@ -65,6 +65,6 @@ if __name__ == "__main__":
     from PySide6.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
-    dialog = AddTaskDialog()
+    dialog = EditTaskTimeDialog()
     dialog.exec()
     sys.exit(app.exec())
