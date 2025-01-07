@@ -118,9 +118,11 @@ class TaskListView(Ui_TaskView, QWidget):
 
             if dialog.exec():
                 elapsed_time = dialog.getElapsedTime()
-                task_list_model.setData(row, elapsed_time, TaskListModel.ElapsedTimeRole)
+                if elapsed_time is not None:
+                    task_list_model.setData(row, elapsed_time, TaskListModel.ElapsedTimeRole, update_db=True)
                 estimated_time = dialog.getTargetTime()
-                task_list_model.setData(row, estimated_time, TaskListModel.TargetTimeRole)
+                if estimated_time is not None:
+                    task_list_model.setData(row, estimated_time, TaskListModel.TargetTimeRole, update_db=True)
 
     def setupSelectionBehavior(self):
         """

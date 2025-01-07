@@ -28,6 +28,18 @@ class EditTaskTimeDialog(MessageBoxBase):
         self.viewLayout.addWidget(self.estimateTimeLabel)
         self.viewLayout.addWidget(self.estimateTimePicker)
 
+        self.elapsed_time_changed = False
+        self.target_time_changed = False
+
+        self.elapsedTimePicker.timeChanged.connect(lambda: self.setElapsedTimeChanged(True))
+        self.estimateTimePicker.timeChanged.connect(lambda: self.setTargetTimeChanged(True))
+
+    def setElapsedTimeChanged(self, value):
+        self.elapsed_time_changed = value
+
+    def setTargetTimeChanged(self, value):
+        self.target_time_changed = value
+
     def convertMsToQTime(self, ms):
         seconds = ms // 1000
         minute, second = divmod(seconds, 60)
@@ -35,12 +47,16 @@ class EditTaskTimeDialog(MessageBoxBase):
         return QTime(hour, minute, second)
 
     def getElapsedTime(self):
-        time = self.elapsedTimePicker.getTime()
-        return (time.hour() * 60 * 60 + time.minute() * 60 + time.second()) * 1000
+        if self.elapsed_time_changed:
+            time = self.elapsedTimePicker.getTime()
+            return (time.hour() * 60 * 60 + time.minute() * 60 + time.second()) * 1000
+        return None
 
     def getTargetTime(self):
-        time = self.estimateTimePicker.getTime()
-        return (time.hour() * 60 * 60 + time.minute() * 60 + time.second()) * 1000
+        if self.target_time_changed:
+            time = self.estimateTimePicker.getTime()
+            return (time.hour() * 60 * 60 + time.minute() * 60 + time.second()) * 1000
+        return None
 
 
 if __name__ == "__main__":
