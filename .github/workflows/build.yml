@@ -73,11 +73,6 @@ jobs:
                     Copy-Item -Path "mitmdump.exe" -Destination "pomodoro-task-app.py\mitmdump.exe"
                     cd "pomodoro-task-app.py"
 
-            -   name: Install imageio (MacOS)
-                if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
-                run: |
-                    python -m pip install imageio
-
             -   name: Build Executable (Linux and MacOS)
                 if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'macos-13'
                 uses: Nuitka/Nuitka-Action@main
@@ -87,7 +82,7 @@ jobs:
                         pomodoro-task-app/__main__.py
                     mode: ${{ (matrix.os == 'macos-latest' || matrix.os == 'macos-13') && 'app' || 'standalone' }}
                     enable-plugins: 'pyside6'
-                    macos-app-icon: 'assets/logo.ico'
+                    macos-app-icon: 'assets/logo.icns'
                     linux-icon: 'assets/logo.ico'
                     include-data-files: |
                         ./pomodoro-task-app/website_blocker/filter.py=./website_blocker/filter.py
