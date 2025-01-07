@@ -408,10 +408,10 @@ class MainWindow(PomodoroFluentWindow):
                 InfoBar.warning(
                     title="Pomodoro Timer Stopped",
                     content="The task you were working on has been deleted.\n"
-                            "Select another task as soon as possible to save your progress."
+                    "Select another task as soon as possible to save your progress."
                     if self.task_interface.todoTasksList.model().rowCount() > 0
                     else "The task you were working on has been deleted.\n"
-                         "Select another task as soon as possible to save your progress.",
+                    "Select another task as soon as possible to save your progress.",
                     isClosable=True,
                     position=InfoBarPosition.TOP_RIGHT,
                     duration=5000,
@@ -438,10 +438,10 @@ class MainWindow(PomodoroFluentWindow):
                 InfoBar.warning(
                     title="Pomodoro Timer Stopped",
                     content="The task you were working on has been completed.\n"
-                            "Select another task as soon as possible to save your progress."
+                    "Select another task as soon as possible to save your progress."
                     if self.task_interface.todoTasksList.model().rowCount() > 0
                     else "The task you were working on has been completed.\n"
-                         "Add another task as soon as possible to save your progress.",
+                    "Add another task as soon as possible to save your progress.",
                     isClosable=True,
                     position=InfoBarPosition.TOP_RIGHT,
                     duration=5000,
