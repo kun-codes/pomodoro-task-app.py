@@ -390,11 +390,6 @@ class MainWindow(PomodoroFluentWindow):
                 parent=self,
             )
 
-    def store_already_elapsed_time(self):
-        logger.debug("Storing already elapsed time")
-        if self.get_current_task_id() is not None and self.is_task_beginning():
-            elapsed_time = self.get_current_task_index().data(TaskListModel.ElapsedTimeRole)
-
     def check_current_task_deleted(self, task_id):
         if self.get_current_task_id() is not None and self.get_current_task_id() == task_id:
             self.task_interface.todoTasksList.model().setCurrentTaskID(None)
@@ -493,7 +488,6 @@ class MainWindow(PomodoroFluentWindow):
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             lambda timerState: self.task_interface.autoSetCurrentTaskID() if timerState == TimerState.WORK else None
         )
-        self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(self.store_already_elapsed_time)
         self.pomodoro_interface.pauseResumeButton.clicked.connect(self.spawnTaskStartedInfoBar)
         self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(self.updateTaskTime)
         self.task_interface.completedTasksList.model().taskMovedSignal.connect(self.check_current_task_moved)
