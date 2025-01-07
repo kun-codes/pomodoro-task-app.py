@@ -301,7 +301,6 @@ class TaskListModel(QAbstractListModel):
         logger.debug(f"Deleting task at row: {row}")
         task_id = self.tasks[row]["id"]
         # get index of row
-        index = self.index(row, 0, parent)
         with get_session() as session:
             task = session.query(Task).get(task_id)
             session.delete(task)
