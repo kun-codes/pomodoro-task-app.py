@@ -404,13 +404,14 @@ class MainWindow(PomodoroFluentWindow):
                 TimerState.LONG_BREAK,
             ]:
                 # make sure that the current task is deleted and the timer is running, without timer being running
-                # there is no need to stop the timer and show infobar
-                self.pomodoro_interface.pomodoro_timer_obj.stopSession()
+                # there is no need to show infobar
                 InfoBar.warning(
                     title="Pomodoro Timer Stopped",
-                    content="The task you were working on has been deleted. Please select another task to continue."
+                    content="The task you were working on has been deleted.\n"
+                            "Select another task as soon as possible to save your progress."
                     if self.task_interface.todoTasksList.model().rowCount() > 0
-                    else "The task you were working on has been deleted. Please add a new task to continue.",
+                    else "The task you were working on has been deleted.\n"
+                         "Select another task as soon as possible to save your progress.",
                     isClosable=True,
                     position=InfoBarPosition.TOP_RIGHT,
                     duration=5000,
@@ -433,13 +434,14 @@ class MainWindow(PomodoroFluentWindow):
                 TimerState.LONG_BREAK,
             ]:
                 # make sure that the current task is moved into completed task list and the timer is running,
-                # without timer being running there is no need to stop the timer and show infobar
-                self.pomodoro_interface.pomodoro_timer_obj.stopSession()
+                # without timer being running there is no need to show infobar
                 InfoBar.warning(
                     title="Pomodoro Timer Stopped",
-                    content="The task you were working on has been completed. Please select another task to continue."
+                    content="The task you were working on has been completed.\n"
+                            "Select another task as soon as possible to save your progress."
                     if self.task_interface.todoTasksList.model().rowCount() > 0
-                    else "The task you were working on has been completed. Please add a new task to continue.",
+                    else "The task you were working on has been completed.\n"
+                         "Add another task as soon as possible to save your progress.",
                     isClosable=True,
                     position=InfoBarPosition.TOP_RIGHT,
                     duration=5000,
