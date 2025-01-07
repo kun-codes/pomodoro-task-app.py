@@ -13,9 +13,9 @@ from constants import BLOCK_HTML_MESSAGE
 from mitmproxy import ctx, http
 
 
-def load(l):
-    l.add_option("addresses_str", str, "", "Concatenated addresses.")
-    l.add_option("block_type", str, "", "Whitelist or blacklist.")
+def load(loader):
+    loader.add_option("addresses_str", str, "", "Concatenated addresses.")
+    loader.add_option("block_type", str, "", "Whitelist or blacklist.")
 
 
 def request(flow):
