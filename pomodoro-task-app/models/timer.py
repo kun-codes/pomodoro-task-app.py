@@ -71,8 +71,8 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
             self.session_progress = (
                 self.session_progress % ConfigValues.WORK_INTERVALS
             )  # for example in case work intervals is
-            # 2 and during long break it was 2 and then after it, it becomes 2.5 which is not a valid state, so we get the
-            # remainder which is 0.5
+            # 2 and during long break it was 2 and then after it, it becomes 2.5 which is not a valid state, so we get
+            # the remainder which is 0.5
 
         if self.previous_timer_state != self.timer_state:
             self.timerStateChangedSignal.emit(self.timer_state, is_skipped)
