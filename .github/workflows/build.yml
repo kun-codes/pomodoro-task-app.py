@@ -82,6 +82,8 @@ jobs:
                         pomodoro-task-app/__main__.py
                     mode: ${{ (matrix.os == 'macos-latest' || matrix.os == 'macos-13') && 'app' || 'standalone' }}
                     enable-plugins: 'pyside6'
+                    macos-app-icon: 'assets/logo.ico'
+                    linux-icon: 'assets/logo.ico'
                     include-data-files: |
                         ./pomodoro-task-app/website_blocker/filter.py=./website_blocker/filter.py
                         ./pomodoro-task-app/constants.py=./constants.py
@@ -96,6 +98,7 @@ jobs:
                     script-name: |
                         pomodoro-task-app\__main__.py
                     mode: standalone
+                    windows-icon-from-ico: 'assets/logo.ico'
                     mingw64: true
                     enable-plugins: 'pyside6'
                     include-data-files: |
