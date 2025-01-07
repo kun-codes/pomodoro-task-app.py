@@ -207,7 +207,9 @@ class SettingsView(QWidget, Ui_SettingsView):
             workspace_specific_settings.enable_website_filter
         )
         logger.debug(
-            f"Enable Website Filter: {workspace_specific_settings.get(workspace_specific_settings.enable_website_filter)}"
+            f"Enable Website Filter: {workspace_specific_settings.get(
+                workspace_specific_settings.enable_website_filter
+            )}"
         )
 
     def updateProxyPort(self):
