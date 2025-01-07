@@ -73,6 +73,11 @@ jobs:
                     Copy-Item -Path "mitmdump.exe" -Destination "pomodoro-task-app.py\mitmdump.exe"
                     cd "pomodoro-task-app.py"
 
+            -   name: Install imageio (MacOS)
+                if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
+                run: |
+                    python -m pip install imageio
+
             -   name: Build Executable (Linux and MacOS)
                 if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'macos-13'
                 uses: Nuitka/Nuitka-Action@main
