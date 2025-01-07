@@ -174,7 +174,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
             self.model.delete_workspace(selected_index.row())
             self.workspaceList.clearSelection()
         elif selected_index.isValid() and no_of_workspaces <= 1:
-            infobar = InfoBar.warning(
+            InfoBar.warning(
                 title="Can't delete the only workspace",
                 content="Add another workspace before deleting this one.",
                 orient=Qt.Orientation.Horizontal,
@@ -203,7 +203,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         logger.debug(f"Current workspace id: {workspace_id}")
         workspace_name = self.model.get_workspace_name_by_id(workspace_id)
 
-        infobar = InfoBar.success(
+        InfoBar.success(
             title=f"{workspace_name} is selected",
             content="",
             orient=Qt.Orientation.Horizontal,
