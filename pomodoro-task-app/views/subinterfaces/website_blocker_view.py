@@ -206,7 +206,7 @@ class WebsiteBlockerView(Ui_WebsiteBlockView, QWidget):
         self.onFilterTypeChanged()  # calling manually since signals aren't connected to slots yet
 
     def initTextEdits(self, filter_type: WebsiteFilterType = None):
-        if filter_type == None:
+        if filter_type is None:
             self.blockListTextEdit.setPlainText("\n".join(sorted(self.model.blocklist_urls)))
             self.allowListTextEdit.setPlainText("\n".join(sorted(self.model.allowlist_urls)))
 
