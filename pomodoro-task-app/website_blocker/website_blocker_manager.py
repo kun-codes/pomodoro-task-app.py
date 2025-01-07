@@ -42,7 +42,7 @@ class WebsiteBlockerManager(QObject):
             args = shlex.split(
                 MITMDUMP_COMMAND_LINUX.format(mitmdump_bin_path, listening_port, joined_addresses, block_type)
             )
-        mitmdump = subprocess.Popen(args)
+        subprocess.Popen(args)
 
     def stop_filtering(self, delete_proxy: bool = True):
         logger.debug("Inside WebsiteBlockerManager.stop_filtering().")
