@@ -165,7 +165,7 @@ class TaskListModel(QAbstractListModel):
         new_tasks = []
 
         while not stream.atEnd():
-            original_row = stream.readInt32()
+            original_row = stream.readInt32()  # noqa: F841
             task_id = stream.readInt32()
             task_name = stream.readQString()
             elapsed_time = stream.readInt64()
