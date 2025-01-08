@@ -36,7 +36,7 @@ class MainWindow(PomodoroFluentWindow):
     def __init__(self):
         super().__init__()
 
-        is_first_run = self.check_first_run()
+        self.is_first_run = self.check_first_run()
         # self.checkForUpdates()
         self.check_valid_db()
 
@@ -71,7 +71,7 @@ class MainWindow(PomodoroFluentWindow):
 
         self.navigationInterface.panel.setFixedHeight(48)
 
-        if is_first_run:
+        if self.is_first_run:
             self.setupMitmproxy()  # self.checkForUpdates() is eventually called later due to this method call
         else:
             self.checkForUpdates()
@@ -679,8 +679,8 @@ class MainWindow(PomodoroFluentWindow):
 
     def setupMitmproxy(self):
         logger.debug("Setting up mitmproxy")
-        temporary_website_blocker_manager = WebsiteBlockerManager()
-        temporary_website_blocker_manager.start_filtering(
+        self.temporary_website_blocker_manager = WebsiteBlockerManager()
+        self.temporary_website_blocker_manager.start_filtering(
             listening_port=ConfigValues.PROXY_PORT,
             joined_addresses="example.com",
             block_type="blocklist",
@@ -688,15 +688,16 @@ class MainWindow(PomodoroFluentWindow):
         )
 
         # setupAppDialog is a modal dialog, so it will block the main window until it is closed
-        setupAppDialog = SetupAppDialog(parent=self.window())
-        setupAppDialog.accepted.connect(lambda: self.giveGuidedTour(temporary_website_blocker_manager))
-        setupAppDialog.show()
+        self.setupAppDialog = SetupAppDialog(parent=self.window())
+        self.setupAppDialog.accepted.connect(lambda: self.giveGuidedTour())
 
-    def giveGuidedTour(self, temp_website_blocker_manager):
-        temp_website_blocker_manager.stop_filtering(delete_proxy=True)
+    def giveGuidedTour(self):
+        self.temporary_website_blocker_manager.stop_filtering(delete_proxy=True)  # stopping website filtering here
+        # because this function will only be triggered after self.setupAppDialog is closed
+
+        # todo: give a guided tour of the app to the user
 
         self.checkForUpdates()  # added self.checkForUpdates here so that it is called after the setup dialog is closed
-        # todo: give a guided tour of the app to the user
 
     def checkForUpdates(self):
         current_app_version = get_app_version()
@@ -717,6 +718,12 @@ class MainWindow(PomodoroFluentWindow):
                 logger.debug("App is up to date")
         else:
             print("Failed to check for updates")
+
+    def showEvent(self, event):
+        logger.debug("MainWindow showEvent")
+        super().showEvent(event)
+        if self.is_first_run:
+            self.setupAppDialog.show()
 
     def closeEvent(self, event):
         self.website_blocker_manager.stop_filtering(delete_proxy=True)
