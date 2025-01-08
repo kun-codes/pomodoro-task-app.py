@@ -2,6 +2,9 @@ import platform
 from pathlib import Path
 
 import darkdetect
+import requests
+import tomllib
+from packaging.version import parse
 from config_paths import settings_dir
 from config_values import ConfigValues
 from constants import FIRST_RUN_DOTFILE_NAME, TimerState, URLListType, WebsiteFilterType
@@ -33,7 +36,8 @@ class MainWindow(PomodoroFluentWindow):
     def __init__(self):
         super().__init__()
 
-        self.check_first_run()
+        is_first_run = self.check_first_run()
+        # self.checkForUpdates()
         self.check_valid_db()
 
         self.workplace_list_model = WorkspaceListModel()
@@ -66,6 +70,11 @@ class MainWindow(PomodoroFluentWindow):
         self.website_filter_interface.setEnabled(ConfigValues.ENABLE_WEBSITE_FILTER)
 
         self.navigationInterface.panel.setFixedHeight(48)
+
+        if is_first_run:
+            self.setupMitmproxy()  # self.checkForUpdates() is eventually called later due to this method call
+        else:
+            self.checkForUpdates()
 
     def initNavigation(self):
         # Add sub interface
@@ -662,9 +671,14 @@ class MainWindow(PomodoroFluentWindow):
             # create the first run dotfile
             first_run_dotfile_path.touch()
 
-            self.setupMitmproxy()
+            return True
+
+            # self.setupMitmproxy()
+
+        return False
 
     def setupMitmproxy(self):
+        logger.debug("Setting up mitmproxy")
         temporary_website_blocker_manager = WebsiteBlockerManager()
         temporary_website_blocker_manager.start_filtering(
             listening_port=ConfigValues.PROXY_PORT,
@@ -680,7 +694,29 @@ class MainWindow(PomodoroFluentWindow):
 
     def giveGuidedTour(self, temp_website_blocker_manager):
         temp_website_blocker_manager.stop_filtering(delete_proxy=True)
+
+        self.checkForUpdates()  # added self.checkForUpdates here so that it is called after the setup dialog is closed
         # todo: give a guided tour of the app to the user
+
+    def checkForUpdates(self):
+        current_app_version = get_app_version()
+        logger.debug(f"App version: {current_app_version}")
+
+        url = "https://raw.githubusercontent.com/kun-codes/pomodoro-task-app.py/refs/heads/main/pyproject.toml"
+
+        # use requests library to check for updates
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            remote_pyproject = tomllib.loads(response.text)
+            remote_app_version = remote_pyproject["tool"]["poetry"]["version"]
+
+            if remote_app_version > current_app_version:
+                logger.warning(f"New version available: {remote_app_version}")
+            else:
+                logger.debug("App is up to date")
+        else:
+            print("Failed to check for updates")
 
     def closeEvent(self, event):
         self.website_blocker_manager.stop_filtering(delete_proxy=True)
