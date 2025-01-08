@@ -70,6 +70,8 @@ class ManageWorkspaceDialog(MaskDialogBase):
         self.setShadowEffect(60, (0, 10), QColor(0, 0, 0, 50))
         self.setMaskColor(QColor(0, 0, 0, 76))
 
+        self.newWorkspaceLineEdit.setPlaceholderText("Enter name of new workspace")
+
         # self.buttonGroup.setFixedHeight(81)
         self.viewLayout.addWidget(self.titleLabel, 0, Qt.AlignLeft)
         self.viewLayout.addWidget(self.workspaceList, 1)
