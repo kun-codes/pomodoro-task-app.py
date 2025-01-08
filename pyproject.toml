@@ -18,6 +18,7 @@ psutil = "^6.1.1"
 uniproxy = "^0.1.4"
 loguru = "^0.7.2"
 requests = "^2.32.3"
+packaging = "^24.2"
 
 [tool.poetry.group.build.dependencies]
 nuitka = "^2.5.9"
