@@ -1,13 +1,10 @@
 import platform
 from pathlib import Path
-from http.client import HTTPSConnection
-from urllib.parse import urlparse
 
 import darkdetect
-import tomllib
 from config_paths import settings_dir
 from config_values import ConfigValues
-from constants import FIRST_RUN_DOTFILE_NAME, TimerState, URLListType, WebsiteFilterType
+from constants import FIRST_RUN_DOTFILE_NAME, TimerState, UpdateCheckResult, URLListType, WebsiteFilterType
 from loguru import logger
 from models.config import load_workspace_settings, workspace_specific_settings
 from models.db_tables import CurrentWorkspace, Task, TaskType, Version, Workspace
@@ -28,6 +25,7 @@ from qfluentwidgets import (
     Theme,
 )
 from resources import logos_rc
+from utils.check_for_updates import checkForUpdates
 from utils.db_utils import get_session
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.get_app_version import get_app_version
@@ -86,7 +84,7 @@ class MainWindow(PomodoroFluentWindow):
             self.setupMitmproxy()  # self.checkForUpdates() is eventually called later due to this method call
         else:
             if ConfigValues.CHECK_FOR_UPDATES_ON_START:
-                self.checkForUpdates()
+                self.handleUpdates()
 
     def initNavigation(self):
         # Add sub interface
@@ -710,64 +708,39 @@ class MainWindow(PomodoroFluentWindow):
         # todo: give a guided tour of the app to the user
 
         if ConfigValues.CHECK_FOR_UPDATES_ON_START:
-            self.checkForUpdates()  # added self.checkForUpdates here so that it is called after the setup dialog
+            self.handleUpdates()  # added self.checkForUpdates here so that it is called after the setup dialog
             # is closed
 
-    def checkForUpdates(self):
-        current_app_version = get_app_version()
-        logger.debug(f"App version: {current_app_version}")
+    def handleUpdates(self):
+        update_check_result = checkForUpdates()
+        if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
+            # making the updateDialog
+            self.updateDialog = MessageBox(
+                "A New Update is available",
+                "A new update is available. Do you want to download it?",
+                parent=self.window(),
+            )
+            self.updateDialog.yesButton.setText("Yes, download it")
+            self.updateDialog.cancelButton.setText("No, maybe later")
 
-        url = "https://raw.githubusercontent.com/kun-codes/pomodoro-task-app.py/refs/heads/main/pyproject.toml"
-        parsed_url = urlparse(url)
+            # for first run, the control flow is like this
+            # self.setupMitmproxy() ---MainWindow is show---> self.setupAppDialog.show() ---
+            # ---setupAppDialog is closed---> self.giveGuidedTour()  ---> self.checkForUpdates()
 
-        try:
-            conn = HTTPSConnection(parsed_url.netloc)
-            try:
-                conn.request("GET", parsed_url.path)
-            except OSError as e:
-                if e.errno == 101:  # Network unreachable error
-                    raise ConnectionError("Network is unreachable")
-                raise e  # Re-raise other OSErrors
-                
-            response = conn.getresponse()
+            # for runs which aren't first run, self.setupMitmproxy() is not run, so self.updateDialog is shown
+            # when MainWindow is shown, in self.showEvent()
+            if self.is_first_run:
+                self.updateDialog.show()
 
-            if response.status != 200:
-                raise Exception(f"HTTP error occurred: {response.status} {response.reason}")
+            url = QUrl("https://github.com/kun-codes/pomodoro-task-app.py/releases/latest")
 
-            remote_pyproject = tomllib.loads(response.read().decode('utf-8'))
-            remote_app_version = remote_pyproject["tool"]["poetry"]["version"]
+            self.updateDialog.accepted.connect(lambda: QDesktopServices.openUrl(url))
+            self.updateDialog.rejected.connect(lambda: logger.debug("User wants to download the update later"))
 
-            if remote_app_version > current_app_version:
-                logger.warning(f"New version available: {remote_app_version}")
-                self.updateDialog = MessageBox(
-                    "A New Update is available",
-                    "A new update is available. Do you want to download it?",
-                    parent=self.window(),
-                )
-                logger.debug("Setting up update dialog")
-                self.updateDialog.yesButton.setText("Yes, download it")
-                self.updateDialog.cancelButton.setText("No, maybe later")
+        elif update_check_result == UpdateCheckResult.UP_TO_DATE:
+            pass
 
-                self.updateDialog.titleLabel.font().setBold(True)
-
-                # for first run, the control flow is like this
-                # self.setupMitmproxy() ---MainWindow is show---> self.setupAppDialog.show() ---
-                # ---setupAppDialog is closed---> self.giveGuidedTour()  ---> self.checkForUpdates()
-
-                # for runs which aren't first run, self.setupMitmproxy() is not run, so self.updateDialog is shown
-                # when MainWindow is shown, in self.showEvent()
-                if self.is_first_run:
-                    self.updateDialog.show()
-
-                url = QUrl("https://github.com/kun-codes/pomodoro-task-app.py/releases/latest")
-
-                self.updateDialog.accepted.connect(lambda: QDesktopServices.openUrl(url))
-                self.updateDialog.rejected.connect(lambda: logger.debug("User wants to download the update later"))
-            else:
-                logger.debug("App is up to date")
-
-        except ConnectionError:
-            logger.error("Failed to check for updates: Network is unreachable")
+        elif update_check_result == UpdateCheckResult.NETWORK_UNREACHABLE:
             InfoBar.error(
                 title="Update Check Failed",
                 content="Failed to check for updates: Network is unreachable",
@@ -776,11 +749,6 @@ class MainWindow(PomodoroFluentWindow):
                 position=InfoBarPosition.TOP_RIGHT,
                 parent=self,
             )
-        except Exception as err:
-            logger.error(f"An error occurred: {err}")
-        finally:
-            if 'conn' in locals():
-                conn.close()
 
     def showEvent(self, event):
         logger.debug("MainWindow showEvent")
