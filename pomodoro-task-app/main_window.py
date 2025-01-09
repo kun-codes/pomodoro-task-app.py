@@ -4,7 +4,6 @@ from pathlib import Path
 import darkdetect
 import requests
 import tomllib
-from packaging.version import parse
 from config_paths import settings_dir
 from config_values import ConfigValues
 from constants import FIRST_RUN_DOTFILE_NAME, TimerState, URLListType, WebsiteFilterType
@@ -15,9 +14,18 @@ from models.task_list_model import TaskListModel
 from models.workspace_list_model import WorkspaceListModel
 from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import QUrl
+from PySide6.QtGui import QDesktopServices, QIcon
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
-from qfluentwidgets import FluentIcon, InfoBar, InfoBarPosition, NavigationItemPosition, SystemThemeListener, Theme
+from qfluentwidgets import (
+    FluentIcon,
+    InfoBar,
+    InfoBarPosition,
+    MessageBox,
+    NavigationItemPosition,
+    SystemThemeListener,
+    Theme,
+)
 from resources import logos_rc
 from utils.db_utils import get_session
 from utils.find_mitmdump_executable import get_mitmdump_path
@@ -70,6 +78,8 @@ class MainWindow(PomodoroFluentWindow):
         self.website_filter_interface.setEnabled(ConfigValues.ENABLE_WEBSITE_FILTER)
 
         self.navigationInterface.panel.setFixedHeight(48)
+
+        self.updateDialog = None
 
         if self.is_first_run:
             self.setupMitmproxy()  # self.checkForUpdates() is eventually called later due to this method call
@@ -705,25 +715,64 @@ class MainWindow(PomodoroFluentWindow):
 
         url = "https://raw.githubusercontent.com/kun-codes/pomodoro-task-app.py/refs/heads/main/pyproject.toml"
 
-        # use requests library to check for updates
-        response = requests.get(url)
+        try:
+            # use requests library to check for updates
+            response = requests.get(url)
+            response.raise_for_status()  # Raise an HTTPError for bad responses
 
-        if response.status_code == 200:
             remote_pyproject = tomllib.loads(response.text)
             remote_app_version = remote_pyproject["tool"]["poetry"]["version"]
 
             if remote_app_version > current_app_version:
                 logger.warning(f"New version available: {remote_app_version}")
+                self.updateDialog = MessageBox(
+                    "A New Update is available",
+                    "A new update is available. Do you want to download it?",
+                    parent=self.window(),
+                )
+                logger.debug("Setting up update dialog")
+                self.updateDialog.yesButton.setText("Yes, download it")
+                self.updateDialog.cancelButton.setText("No, maybe later")
+
+                self.updateDialog.titleLabel.font().setBold(True)
+
+                if self.is_first_run:
+                    self.updateDialog.show()  # for first run, the control flow is like this
+                    # self.setupMitmproxy() ---MainWindow is show---> self.setupAppDialog.show() ---
+                    # ---setupAppDialog is closed---> self.giveGuidedTour()  ---> self.checkForUpdates()
+
+                # for runs which aren't first run, self.setupMitmproxy() is not run, so self.updateDialog is shown
+                # when MainWindow is shown, in self.showEvent()
+
+                url = QUrl("https://github.com/kun-codes/pomodoro-task-app.py/releases/latest")
+
+                self.updateDialog.accepted.connect(lambda: QDesktopServices.openUrl(url))
+                self.updateDialog.rejected.connect(lambda: logger.debug("User wants to download the update later"))
             else:
                 logger.debug("App is up to date")
-        else:
-            print("Failed to check for updates")
+        except requests.exceptions.ConnectionError:
+            logger.error("Failed to check for updates: Network is unreachable")
+            InfoBar.error(
+                title="Update Check Failed",
+                content="Failed to check for updates: Network is unreachable",
+                isClosable=True,
+                duration=5000,
+                position=InfoBarPosition.TOP_RIGHT,
+                parent=self,
+            )
+        except requests.exceptions.HTTPError as http_err:
+            logger.error(f"HTTP error occurred: {http_err}")
+        except Exception as err:
+            logger.error(f"An error occurred: {err}")
 
     def showEvent(self, event):
         logger.debug("MainWindow showEvent")
         super().showEvent(event)
-        if self.is_first_run:
+        if self.is_first_run and self.setupAppDialog is not None:
             self.setupAppDialog.show()
+        else:
+            if self.updateDialog is not None:
+                self.updateDialog.show()
 
     def closeEvent(self, event):
         self.website_blocker_manager.stop_filtering(delete_proxy=True)
