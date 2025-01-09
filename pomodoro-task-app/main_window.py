@@ -84,7 +84,8 @@ class MainWindow(PomodoroFluentWindow):
         if self.is_first_run:
             self.setupMitmproxy()  # self.checkForUpdates() is eventually called later due to this method call
         else:
-            self.checkForUpdates()
+            if ConfigValues.CHECK_FOR_UPDATES_ON_START:
+                self.checkForUpdates()
 
     def initNavigation(self):
         # Add sub interface
@@ -707,7 +708,9 @@ class MainWindow(PomodoroFluentWindow):
 
         # todo: give a guided tour of the app to the user
 
-        self.checkForUpdates()  # added self.checkForUpdates here so that it is called after the setup dialog is closed
+        if ConfigValues.CHECK_FOR_UPDATES_ON_START:
+            self.checkForUpdates()  # added self.checkForUpdates here so that it is called after the setup dialog
+            # is closed
 
     def checkForUpdates(self):
         current_app_version = get_app_version()

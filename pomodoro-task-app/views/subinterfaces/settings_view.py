@@ -12,6 +12,7 @@ from qfluentwidgets import (
     FluentIcon,
     OptionsSettingCard,
     SettingCardGroup,
+    SwitchSettingCard,
     setTheme,
     setThemeColor,
 )
@@ -113,6 +114,16 @@ class SettingsView(QWidget, Ui_SettingsView):
             self.personalization_settings_group,
         )
 
+        # Update Settings
+        self.update_settings_group = SettingCardGroup("Updates", self.scrollArea)
+        self.check_for_updates_on_start_card = SwitchSettingCard(
+            FluentIcon.UPDATE,
+            "Check For Updates On Start",
+            "The new version will be more stable and have more features",
+            app_settings.check_for_updates_on_start,
+            self.update_settings_group,
+        )
+
         self.__connectSignalToSlot()
 
     def initLayout(self):
@@ -139,6 +150,10 @@ class SettingsView(QWidget, Ui_SettingsView):
         self.personalization_settings_group.addSettingCard(self.theme_color_card)
 
         self.scrollAreaWidgetContents.layout().addWidget(self.personalization_settings_group)
+
+        self.update_settings_group.addSettingCard(self.check_for_updates_on_start_card)
+
+        self.scrollAreaWidgetContents.layout().addWidget(self.update_settings_group)
 
     # todo: change colour of Labels when in disabled state
     # https://github.com/zhiyiYo/PyQt-Fluent-Widgets/issues/314#issuecomment-1614427404
@@ -172,7 +187,9 @@ class SettingsView(QWidget, Ui_SettingsView):
         workspace_specific_settings.autostart_work.valueChanged.connect(self.updateAutostartWork)
         workspace_specific_settings.autostart_break.valueChanged.connect(self.updateAutostartBreak)
         workspace_specific_settings.enable_website_filter.valueChanged.connect(self.updateEnableWebsiteFilter)
+
         app_settings.proxy_port.valueChanged.connect(self.updateProxyPort)
+        app_settings.check_for_updates_on_start.valueChanged.connect(self.updateCheckForUpdatesOnStart)
 
     def updateBreakDuration(self):
         ConfigValues.BREAK_DURATION = workspace_specific_settings.get(workspace_specific_settings.break_duration)
@@ -215,6 +232,10 @@ class SettingsView(QWidget, Ui_SettingsView):
     def updateProxyPort(self):
         ConfigValues.PROXY_PORT = app_settings.get(app_settings.proxy_port)
         logger.debug(f"Proxy Port: {app_settings.get(app_settings.proxy_port)}")
+
+    def updateCheckForUpdatesOnStart(self):
+        ConfigValues.CHECK_FOR_UPDATES_ON_START = app_settings.get(app_settings.check_for_updates_on_start)
+        logger.debug(f"Check For Updates On Start: {app_settings.get(app_settings.check_for_updates_on_start)}")
 
     def __connectSignalToSlot(self):
         self.theme_card.optionChanged.connect(lambda ci: setTheme(workspace_specific_settings.get(ci)))

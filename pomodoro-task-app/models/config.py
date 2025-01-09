@@ -11,7 +11,7 @@ from constants import (
 from models.db_tables import Workspace
 from prefabs.config.config_item_sql import ConfigItemSQL, RangeConfigItemSQL
 from prefabs.config.qconfig_sql import QConfigSQL, qconfig_custom
-from qfluentwidgets import BoolValidator, QConfig, RangeConfigItem, RangeValidator, Theme, qconfig
+from qfluentwidgets import BoolValidator, ConfigItem, QConfig, RangeConfigItem, RangeValidator, Theme, qconfig
 
 
 class WorkspaceSettings(QConfigSQL):
@@ -40,6 +40,7 @@ class AppSettings(QConfig):
     """
 
     proxy_port = RangeConfigItem("AppSettings", "ProxyPort", 8080, RangeValidator(1024, 65535))
+    check_for_updates_on_start = ConfigItem("AppSettings", "CheckForUpdatesOnStart", True, BoolValidator())
 
 
 workspace_specific_settings = WorkspaceSettings()
