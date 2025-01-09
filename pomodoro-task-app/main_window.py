@@ -1,8 +1,9 @@
 import platform
 from pathlib import Path
+from http.client import HTTPSConnection
+from urllib.parse import urlparse
 
 import darkdetect
-import requests
 import tomllib
 from config_paths import settings_dir
 from config_values import ConfigValues
@@ -717,13 +718,23 @@ class MainWindow(PomodoroFluentWindow):
         logger.debug(f"App version: {current_app_version}")
 
         url = "https://raw.githubusercontent.com/kun-codes/pomodoro-task-app.py/refs/heads/main/pyproject.toml"
+        parsed_url = urlparse(url)
 
         try:
-            # use requests library to check for updates
-            response = requests.get(url)
-            response.raise_for_status()  # Raise an HTTPError for bad responses
+            conn = HTTPSConnection(parsed_url.netloc)
+            try:
+                conn.request("GET", parsed_url.path)
+            except OSError as e:
+                if e.errno == 101:  # Network unreachable error
+                    raise ConnectionError("Network is unreachable")
+                raise e  # Re-raise other OSErrors
+                
+            response = conn.getresponse()
 
-            remote_pyproject = tomllib.loads(response.text)
+            if response.status != 200:
+                raise Exception(f"HTTP error occurred: {response.status} {response.reason}")
+
+            remote_pyproject = tomllib.loads(response.read().decode('utf-8'))
             remote_app_version = remote_pyproject["tool"]["poetry"]["version"]
 
             if remote_app_version > current_app_version:
@@ -739,13 +750,14 @@ class MainWindow(PomodoroFluentWindow):
 
                 self.updateDialog.titleLabel.font().setBold(True)
 
-                if self.is_first_run:
-                    self.updateDialog.show()  # for first run, the control flow is like this
-                    # self.setupMitmproxy() ---MainWindow is show---> self.setupAppDialog.show() ---
-                    # ---setupAppDialog is closed---> self.giveGuidedTour()  ---> self.checkForUpdates()
+                # for first run, the control flow is like this
+                # self.setupMitmproxy() ---MainWindow is show---> self.setupAppDialog.show() ---
+                # ---setupAppDialog is closed---> self.giveGuidedTour()  ---> self.checkForUpdates()
 
                 # for runs which aren't first run, self.setupMitmproxy() is not run, so self.updateDialog is shown
                 # when MainWindow is shown, in self.showEvent()
+                if self.is_first_run:
+                    self.updateDialog.show()
 
                 url = QUrl("https://github.com/kun-codes/pomodoro-task-app.py/releases/latest")
 
@@ -753,7 +765,8 @@ class MainWindow(PomodoroFluentWindow):
                 self.updateDialog.rejected.connect(lambda: logger.debug("User wants to download the update later"))
             else:
                 logger.debug("App is up to date")
-        except requests.exceptions.ConnectionError:
+
+        except ConnectionError:
             logger.error("Failed to check for updates: Network is unreachable")
             InfoBar.error(
                 title="Update Check Failed",
@@ -763,10 +776,11 @@ class MainWindow(PomodoroFluentWindow):
                 position=InfoBarPosition.TOP_RIGHT,
                 parent=self,
             )
-        except requests.exceptions.HTTPError as http_err:
-            logger.error(f"HTTP error occurred: {http_err}")
         except Exception as err:
             logger.error(f"An error occurred: {err}")
+        finally:
+            if 'conn' in locals():
+                conn.close()
 
     def showEvent(self, event):
         logger.debug("MainWindow showEvent")
