@@ -747,7 +747,7 @@ class MainWindow(PomodoroFluentWindow):
                 isClosable=True,
                 duration=5000,
                 position=InfoBarPosition.TOP_RIGHT,
-                parent=self,
+                parent=self.window(),
             )
 
     def showEvent(self, event):

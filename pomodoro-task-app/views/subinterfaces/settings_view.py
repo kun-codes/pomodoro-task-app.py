@@ -1,4 +1,5 @@
 from config_values import ConfigValues
+from constants import NEW_RELEASE_URL, UpdateCheckResult
 from loguru import logger
 from models.config import app_settings, workspace_specific_settings
 from prefabs.customFluentIcon import CustomFluentIcon
@@ -6,17 +7,25 @@ from prefabs.setting_cards.RangeSettingCardSQL import RangeSettingCardSQL
 from prefabs.setting_cards.SpinBoxSettingCard import SpinBoxSettingCard
 from prefabs.setting_cards.SpinBoxSettingCardSQL import SpinBoxSettingCardSQL
 from prefabs.setting_cards.SwitchSettingCardSQL import SwitchSettingCardSQL
+from PySide6.QtCore import Qt, QUrl
+from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QApplication, QWidget
 from qfluentwidgets import (
     CustomColorSettingCard,
     FluentIcon,
+    InfoBar,
+    InfoBarIcon,
     OptionsSettingCard,
+    PrimaryPushButton,
+    PrimaryPushSettingCard,
     SettingCardGroup,
     SwitchSettingCard,
     setTheme,
     setThemeColor,
 )
 from ui_py.ui_settings_view import Ui_SettingsView
+from utils.check_for_updates import checkForUpdates
+from utils.get_app_version import get_app_version
 
 
 class SettingsView(QWidget, Ui_SettingsView):
@@ -119,9 +128,18 @@ class SettingsView(QWidget, Ui_SettingsView):
         self.check_for_updates_on_start_card = SwitchSettingCard(
             FluentIcon.UPDATE,
             "Check For Updates On Start",
-            "The new version will be more stable and have more features",
+            "New updates would be more stable and have more features",
             app_settings.check_for_updates_on_start,
             self.update_settings_group,
+        )
+
+        self.about_group = SettingCardGroup("About", self.scrollArea)
+        self.check_for_updates_now_card = PrimaryPushSettingCard(
+            "Check Update",
+            FluentIcon.UPDATE,
+            "Check for updates now",
+            f"Current Version: {get_app_version()}",
+            self.about_group,
         )
 
         self.__connectSignalToSlot()
@@ -154,6 +172,10 @@ class SettingsView(QWidget, Ui_SettingsView):
         self.update_settings_group.addSettingCard(self.check_for_updates_on_start_card)
 
         self.scrollAreaWidgetContents.layout().addWidget(self.update_settings_group)
+
+        self.about_group.addSettingCard(self.check_for_updates_now_card)
+
+        self.scrollAreaWidgetContents.layout().addWidget(self.about_group)
 
     # todo: change colour of Labels when in disabled state
     # https://github.com/zhiyiYo/PyQt-Fluent-Widgets/issues/314#issuecomment-1614427404
@@ -237,10 +259,52 @@ class SettingsView(QWidget, Ui_SettingsView):
         ConfigValues.CHECK_FOR_UPDATES_ON_START = app_settings.get(app_settings.check_for_updates_on_start)
         logger.debug(f"Check For Updates On Start: {app_settings.get(app_settings.check_for_updates_on_start)}")
 
+    def checkForUpdatesNow(self):
+        update_result = checkForUpdates()
+
+        if update_result == UpdateCheckResult.UPDATE_AVAILABLE:
+            infoBar = InfoBar.new(
+                icon=InfoBarIcon.SUCCESS,
+                title="An Update is Available",
+                content="Click to download the latest version now",
+                orient=Qt.Vertical,  # Qt.Horizontal doesn't work correctly due to library bug
+                isClosable=True,
+                duration=5000,
+                parent=self,
+            )
+
+            push_button = PrimaryPushButton(infoBar)
+            push_button.setText("Download Now")
+
+            url = QUrl(NEW_RELEASE_URL)
+            push_button.clicked.connect(lambda: QDesktopServices.openUrl(url))
+
+            infoBar.addWidget(push_button)
+        elif update_result == UpdateCheckResult.UP_TO_DATE:
+            InfoBar.info(
+                title="App is up to date",
+                content="You have the latest version of the app",
+                orient=Qt.Vertical,
+                isClosable=True,
+                duration=5000,
+                parent=self,
+            )
+        elif update_result == UpdateCheckResult.NETWORK_UNREACHABLE:
+            InfoBar.error(
+                title="Failed to check for updates",
+                content="Network is unreachable",
+                orient=Qt.Vertical,
+                isClosable=True,
+                duration=5000,
+                parent=self,
+            )
+
     def __connectSignalToSlot(self):
         self.theme_card.optionChanged.connect(lambda ci: setTheme(workspace_specific_settings.get(ci)))
         self.theme_color_card.colorChanged.connect(lambda c: setThemeColor(c))
         # self.proxy_port_card.valueChanged.connect
+
+        self.check_for_updates_now_card.clicked.connect(self.checkForUpdatesNow)
 
 
 if __name__ == "__main__":
