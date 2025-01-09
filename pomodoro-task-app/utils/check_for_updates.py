@@ -1,5 +1,7 @@
 from http.client import HTTPSConnection
 from urllib.parse import urlparse
+import ssl
+import certifi
 
 import tomllib
 from constants import UPDATE_CHECK_URL, UpdateCheckResult
@@ -14,7 +16,9 @@ def checkForUpdates():
     parsed_url = urlparse(UPDATE_CHECK_URL)
 
     try:
-        conn = HTTPSConnection(parsed_url.netloc)
+        # Create SSL context with certifi - works on all platforms
+        context = ssl.create_default_context(cafile=certifi.where())
+        conn = HTTPSConnection(parsed_url.netloc, context=context)
         try:
             conn.request("GET", parsed_url.path)
         except OSError as e:
