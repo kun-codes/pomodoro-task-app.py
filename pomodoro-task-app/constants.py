@@ -43,6 +43,9 @@ MITMDUMP_COMMAND_WINDOWS = (
 
 BLOCK_HTML_MESSAGE = f"<h1>Website blocked by {APPLICATION_NAME}!</h1>"
 
+UPDATE_CHECK_URL = "https://raw.githubusercontent.com/kun-codes/pomodoro-task-app.py/refs/heads/main/pyproject.toml"
+NEW_RELEASE_URL = "https://github.com/kun-codes/pomodoro-task-app.py/releases/latest"
+
 
 class WebsiteFilterType(Enum):
     BLOCKLIST = 0
@@ -65,3 +68,10 @@ class TimerState(Enum):
     WORK = "Focus"
     BREAK = "Break"
     LONG_BREAK = "Long Break"
+
+
+class UpdateCheckResult(Enum):
+    UP_TO_DATE = "App is up to date"
+    UPDATE_AVAILABLE = "Update available"
+    NETWORK_UNREACHABLE = "Network Unreachable"
+    UNKNOWN_ERROR = "An unknown error occurred"

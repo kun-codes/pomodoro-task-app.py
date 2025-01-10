@@ -4,7 +4,7 @@ from pathlib import Path
 import darkdetect
 from config_paths import settings_dir
 from config_values import ConfigValues
-from constants import FIRST_RUN_DOTFILE_NAME, TimerState, URLListType, WebsiteFilterType
+from constants import FIRST_RUN_DOTFILE_NAME, TimerState, UpdateCheckResult, URLListType, WebsiteFilterType
 from loguru import logger
 from models.config import load_workspace_settings, workspace_specific_settings
 from models.db_tables import CurrentWorkspace, Task, TaskType, Version, Workspace
@@ -12,10 +12,20 @@ from models.task_list_model import TaskListModel
 from models.workspace_list_model import WorkspaceListModel
 from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import QUrl
+from PySide6.QtGui import QDesktopServices, QIcon
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
-from qfluentwidgets import FluentIcon, InfoBar, InfoBarPosition, NavigationItemPosition, SystemThemeListener, Theme
+from qfluentwidgets import (
+    FluentIcon,
+    InfoBar,
+    InfoBarPosition,
+    MessageBox,
+    NavigationItemPosition,
+    SystemThemeListener,
+    Theme,
+)
 from resources import logos_rc
+from utils.check_for_updates import checkForUpdates
 from utils.db_utils import get_session
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.get_app_version import get_app_version
@@ -33,7 +43,8 @@ class MainWindow(PomodoroFluentWindow):
     def __init__(self):
         super().__init__()
 
-        self.check_first_run()
+        self.is_first_run = self.check_first_run()
+        # self.checkForUpdates()
         self.check_valid_db()
 
         self.workplace_list_model = WorkspaceListModel()
@@ -66,6 +77,14 @@ class MainWindow(PomodoroFluentWindow):
         self.website_filter_interface.setEnabled(ConfigValues.ENABLE_WEBSITE_FILTER)
 
         self.navigationInterface.panel.setFixedHeight(48)
+
+        self.updateDialog = None
+
+        if self.is_first_run:
+            self.setupMitmproxy()  # self.checkForUpdates() is eventually called later due to this method call
+        else:
+            if ConfigValues.CHECK_FOR_UPDATES_ON_START:
+                self.handleUpdates()
 
     def initNavigation(self):
         # Add sub interface
@@ -662,11 +681,16 @@ class MainWindow(PomodoroFluentWindow):
             # create the first run dotfile
             first_run_dotfile_path.touch()
 
-            self.setupMitmproxy()
+            return True
+
+            # self.setupMitmproxy()
+
+        return False
 
     def setupMitmproxy(self):
-        temporary_website_blocker_manager = WebsiteBlockerManager()
-        temporary_website_blocker_manager.start_filtering(
+        logger.debug("Setting up mitmproxy")
+        self.temporary_website_blocker_manager = WebsiteBlockerManager()
+        self.temporary_website_blocker_manager.start_filtering(
             listening_port=ConfigValues.PROXY_PORT,
             joined_addresses="example.com",
             block_type="blocklist",
@@ -674,13 +698,66 @@ class MainWindow(PomodoroFluentWindow):
         )
 
         # setupAppDialog is a modal dialog, so it will block the main window until it is closed
-        setupAppDialog = SetupAppDialog(parent=self.window())
-        setupAppDialog.accepted.connect(lambda: self.giveGuidedTour(temporary_website_blocker_manager))
-        setupAppDialog.show()
+        self.setupAppDialog = SetupAppDialog(parent=self.window())
+        self.setupAppDialog.accepted.connect(lambda: self.giveGuidedTour())
 
-    def giveGuidedTour(self, temp_website_blocker_manager):
-        temp_website_blocker_manager.stop_filtering(delete_proxy=True)
+    def giveGuidedTour(self):
+        self.temporary_website_blocker_manager.stop_filtering(delete_proxy=True)  # stopping website filtering here
+        # because this function will only be triggered after self.setupAppDialog is closed
+
         # todo: give a guided tour of the app to the user
+
+        if ConfigValues.CHECK_FOR_UPDATES_ON_START:
+            self.handleUpdates()  # added self.checkForUpdates here so that it is called after the setup dialog
+            # is closed
+
+    def handleUpdates(self):
+        update_check_result = checkForUpdates()
+        if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
+            # making the updateDialog
+            self.updateDialog = MessageBox(
+                "A New Update is available",
+                "A new update is available. Do you want to download it?",
+                parent=self.window(),
+            )
+            self.updateDialog.yesButton.setText("Yes, download it")
+            self.updateDialog.cancelButton.setText("No, maybe later")
+
+            # for first run, the control flow is like this
+            # self.setupMitmproxy() ---MainWindow is show---> self.setupAppDialog.show() ---
+            # ---setupAppDialog is closed---> self.giveGuidedTour()  ---> self.checkForUpdates()
+
+            # for runs which aren't first run, self.setupMitmproxy() is not run, so self.updateDialog is shown
+            # when MainWindow is shown, in self.showEvent()
+            if self.is_first_run:
+                self.updateDialog.show()
+
+            url = QUrl("https://github.com/kun-codes/pomodoro-task-app.py/releases/latest")
+
+            self.updateDialog.accepted.connect(lambda: QDesktopServices.openUrl(url))
+            self.updateDialog.rejected.connect(lambda: logger.debug("User wants to download the update later"))
+
+        elif update_check_result == UpdateCheckResult.UP_TO_DATE:
+            pass
+
+        elif update_check_result == UpdateCheckResult.NETWORK_UNREACHABLE:
+            InfoBar.error(
+                title="Update Check Failed",
+                content="Failed to check for updates: Network is unreachable",
+                isClosable=True,
+                duration=5000,
+                position=InfoBarPosition.TOP_RIGHT,
+                parent=self.window(),
+            )
+
+    def showEvent(self, event):
+        logger.debug("MainWindow showEvent")
+        super().showEvent(event)
+        if self.is_first_run and self.setupAppDialog is not None:
+            self.setupAppDialog.show()
+        else:
+            if self.updateDialog is not None:
+                self.updateDialog.show()
 
     def closeEvent(self, event):
         self.website_blocker_manager.stop_filtering(delete_proxy=True)
