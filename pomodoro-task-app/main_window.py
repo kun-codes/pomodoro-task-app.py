@@ -421,7 +421,7 @@ class MainWindow(PomodoroFluentWindow):
                 # make sure that the current task is deleted and the timer is running, without timer being running
                 # there is no need to show infobar
                 InfoBar.warning(
-                    title="Pomodoro Timer Stopped",
+                    title="Current Task Deleted",
                     content="The task you were working on has been deleted.\n"
                     "Select another task as soon as possible to save your progress."
                     if self.task_interface.todoTasksList.model().rowCount() > 0
@@ -452,7 +452,7 @@ class MainWindow(PomodoroFluentWindow):
                 # make sure that the current task is moved into completed task list and the timer is running,
                 # without timer being running there is no need to show infobar
                 InfoBar.warning(
-                    title="Pomodoro Timer Stopped",
+                    title="Current Task Completed",
                     content="The task you were working on has been completed.\n"
                     "Select another task as soon as possible to save your progress."
                     if self.task_interface.todoTasksList.model().rowCount() > 0
