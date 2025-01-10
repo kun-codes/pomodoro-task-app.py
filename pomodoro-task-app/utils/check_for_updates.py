@@ -2,6 +2,7 @@ from http.client import HTTPSConnection
 from urllib.parse import urlparse
 import ssl
 import certifi
+from semver import Version
 
 import tomllib
 from constants import UPDATE_CHECK_URL, UpdateCheckResult
@@ -34,7 +35,11 @@ def checkForUpdates():
         remote_pyproject = tomllib.loads(response.read().decode("utf-8"))
         remote_app_version = remote_pyproject["tool"]["poetry"]["version"]
 
-        if remote_app_version > current_app_version:
+        # Convert versions to semver Version instances for proper comparison
+        current_ver = Version.parse(current_app_version)
+        remote_ver = Version.parse(remote_app_version)
+
+        if remote_ver > current_ver:
             logger.warning(f"New version available: {remote_app_version}")
             return UpdateCheckResult.UPDATE_AVAILABLE
         else:
