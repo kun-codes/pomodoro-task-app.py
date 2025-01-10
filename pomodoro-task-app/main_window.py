@@ -7,12 +7,12 @@ from config_values import ConfigValues
 from constants import FIRST_RUN_DOTFILE_NAME, TimerState, UpdateCheckResult, URLListType, WebsiteFilterType
 from loguru import logger
 from models.config import load_workspace_settings, workspace_specific_settings
-from models.db_tables import CurrentWorkspace, Task, TaskType, Version, Workspace
+from models.db_tables import TaskType
 from models.task_list_model import TaskListModel
 from models.workspace_list_model import WorkspaceListModel
 from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
-from PySide6.QtCore import QUrl, Qt
+from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QDesktopServices, QIcon
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 from qfluentwidgets import (
@@ -26,9 +26,8 @@ from qfluentwidgets import (
 )
 from resources import logos_rc
 from utils.check_for_updates import checkForUpdates
-from utils.db_utils import get_session
+from utils.check_valid_db import checkValidDB
 from utils.find_mitmdump_executable import get_mitmdump_path
-from utils.get_app_version import get_app_version
 from utils.time_conversion import convert_ms_to_hh_mm_ss
 from views.dialogs.setupAppDialog import SetupAppDialog
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
@@ -45,7 +44,7 @@ class MainWindow(PomodoroFluentWindow):
 
         self.is_first_run = self.check_first_run()
         # self.checkForUpdates()
-        self.check_valid_db()
+        checkValidDB()
 
         self.workplace_list_model = WorkspaceListModel()
 
@@ -617,63 +616,6 @@ class MainWindow(PomodoroFluentWindow):
             timer_text = f"Timer is not running\n{hh:02d}:{mm:02d}:{ss:02d} / {t_hh:02d}:{t_mm:02d}:{t_ss:02d}"
             self.bottomBar.timerLabel.setText(timer_text)
             self.tray_menu_timer_status_action.setText(timer_text)
-
-    def check_valid_db(self):
-        with get_session() as session:
-            # Initialize version info if not exists
-            # todo: make a upgrade db function too for future app versions
-            if not session.query(Version).first():
-                version = Version(app_version=get_app_version(), schema_version="1")
-                session.add(version)
-                session.commit()
-
-            workspace = session.query(Workspace).first()
-            # create a default workspace if none exists
-            if not workspace:
-                workspace = Workspace(workspace_name="Default Workspace")
-                session.add(workspace)
-                session.commit()
-
-                # add some tasks too
-                sample_tasks = [
-                    Task(
-                        workspace_id=workspace.id, task_name="Sample Task 1", task_type=TaskType.TODO, task_position=0
-                    ),
-                    Task(
-                        workspace_id=workspace.id, task_name="Sample Task 2", task_type=TaskType.TODO, task_position=1
-                    ),
-                    Task(
-                        workspace_id=workspace.id, task_name="Sample Task 3", task_type=TaskType.TODO, task_position=2
-                    ),
-                    Task(
-                        workspace_id=workspace.id,
-                        task_name="Sample Task 4",
-                        task_type=TaskType.COMPLETED,
-                        task_position=3,
-                    ),
-                    Task(
-                        workspace_id=workspace.id,
-                        task_name="Sample Task 5",
-                        task_type=TaskType.COMPLETED,
-                        task_position=4,
-                    ),
-                    Task(
-                        workspace_id=workspace.id,
-                        task_name="Sample Task 6",
-                        task_type=TaskType.COMPLETED,
-                        task_position=5,
-                    ),
-                ]
-                session.add_all(sample_tasks)
-                session.commit()
-
-            # if application was closed while no workspace was selected, select the first workspace in the database
-            # if database had no workspace to begin with then set default workspace as current database
-            current_workspace = session.query(CurrentWorkspace).first()
-            if not current_workspace:
-                current_workspace = CurrentWorkspace(current_workspace_id=workspace.id)
-                session.add(current_workspace)
-                session.commit()
 
     def check_first_run(self):
         settings_dir_path = Path(settings_dir)
