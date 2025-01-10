@@ -12,7 +12,7 @@ from models.task_list_model import TaskListModel
 from models.workspace_list_model import WorkspaceListModel
 from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
-from PySide6.QtCore import QUrl
+from PySide6.QtCore import QUrl, Qt
 from PySide6.QtGui import QDesktopServices, QIcon
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 from qfluentwidgets import (
@@ -403,6 +403,7 @@ class MainWindow(PomodoroFluentWindow):
             InfoBar.success(
                 title="Task Started",
                 content=f'Task named "{current_task_name}" has started',
+                orient=Qt.Orientation.Vertical,
                 isClosable=True,
                 duration=5000,
                 position=InfoBarPosition.TOP_RIGHT,
@@ -426,6 +427,7 @@ class MainWindow(PomodoroFluentWindow):
                     if self.task_interface.todoTasksList.model().rowCount() > 0
                     else "The task you were working on has been deleted.\n"
                     "Select another task as soon as possible to save your progress.",
+                    orient=Qt.Orientation.Vertical,
                     isClosable=True,
                     position=InfoBarPosition.TOP_RIGHT,
                     duration=5000,
@@ -456,6 +458,7 @@ class MainWindow(PomodoroFluentWindow):
                     if self.task_interface.todoTasksList.model().rowCount() > 0
                     else "The task you were working on has been completed.\n"
                     "Add another task as soon as possible to save your progress.",
+                    orient=Qt.Orientation.Vertical,
                     isClosable=True,
                     position=InfoBarPosition.TOP_RIGHT,
                     duration=5000,
@@ -570,6 +573,7 @@ class MainWindow(PomodoroFluentWindow):
             InfoBar.warning(
                 title="Website Filter is Disabled",
                 content="You can enable the website filter from the settings view",
+                orient=Qt.Orientation.Vertical,
                 isClosable=True,
                 position=InfoBarPosition.TOP_RIGHT,
                 duration=5000,
@@ -744,6 +748,7 @@ class MainWindow(PomodoroFluentWindow):
             InfoBar.error(
                 title="Update Check Failed",
                 content="Failed to check for updates: Network is unreachable",
+                orient=Qt.Orientation.Vertical,
                 isClosable=True,
                 duration=5000,
                 position=InfoBarPosition.TOP_RIGHT,

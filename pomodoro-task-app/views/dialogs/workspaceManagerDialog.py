@@ -179,7 +179,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
             InfoBar.warning(
                 title="Can't delete the only workspace",
                 content="Add another workspace before deleting this one.",
-                orient=Qt.Orientation.Horizontal,
+                orient=Qt.Orientation.Vertical,
                 isClosable=True,
                 position=InfoBarPosition.TOP_RIGHT,
                 duration=4000,
@@ -208,7 +208,7 @@ class ManageWorkspaceDialog(MaskDialogBase):
         InfoBar.success(
             title=f"{workspace_name} is selected",
             content="",
-            orient=Qt.Orientation.Horizontal,
+            orient=Qt.Orientation.Vertical,
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,
             duration=4000,

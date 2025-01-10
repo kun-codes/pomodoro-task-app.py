@@ -1,12 +1,12 @@
+import ssl
 from http.client import HTTPSConnection
 from urllib.parse import urlparse
-import ssl
-import certifi
-from semver import Version
 
+import certifi
 import tomllib
 from constants import UPDATE_CHECK_URL, UpdateCheckResult
 from loguru import logger
+from semver import Version
 from utils.get_app_version import get_app_version
 
 

@@ -284,7 +284,7 @@ class SettingsView(QWidget, Ui_SettingsView):
             InfoBar.info(
                 title="App is up to date",
                 content="You have the latest version of the app",
-                orient=Qt.Vertical,
+                orient=Qt.Orientation.Vertical,
                 isClosable=True,
                 duration=5000,
                 parent=self,
@@ -293,7 +293,7 @@ class SettingsView(QWidget, Ui_SettingsView):
             InfoBar.error(
                 title="Failed to check for updates",
                 content="Network is unreachable",
-                orient=Qt.Vertical,
+                orient=Qt.Orientation.Vertical,
                 isClosable=True,
                 duration=5000,
                 parent=self,
