@@ -23,8 +23,8 @@ def checkForUpdates():
         try:
             conn.request("GET", parsed_url.path)
         except OSError as e:
-            if e.errno == 101:  # Network unreachable error
-                raise ConnectionError("Network is unreachable")
+            if e.errno in [101, -3, 110, 111, 113]:  # Handle specific network-related errors
+                raise ConnectionError(f"Network error occurred: {e.strerror}")
             raise e  # Re-raise other OSErrors
 
         response = conn.getresponse()
@@ -46,8 +46,8 @@ def checkForUpdates():
             logger.debug("App is up to date")
             return UpdateCheckResult.UP_TO_DATE
 
-    except ConnectionError:
-        logger.error("Failed to check for updates: Network is unreachable")
+    except ConnectionError as conn_err:
+        logger.error(f"Failed to check for updates: {conn_err}")
         return UpdateCheckResult.NETWORK_UNREACHABLE
     except Exception as err:
         logger.error(f"An error occurred: {err}")
