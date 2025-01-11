@@ -6,7 +6,7 @@
 import os
 import shlex
 import subprocess
-
+import signal
 import psutil
 
 
@@ -33,7 +33,15 @@ def find_processes_by_name(name):
 def kill_process():
     if os.name == "nt":
         processes = find_processes_by_name("mitmdump.exe") + find_processes_by_name("mitmproxy.exe")
+        for p in processes:
+            try:
+                p.send_signal(signal.CTRL_C_EVENT)
+            except (psutil.AccessDenied, AttributeError):
+                p.kill()
     else:
         processes = find_processes_by_name("mitmdump") + find_processes_by_name("mitmproxy")
-    for p in processes:
-        p.kill()
+        for p in processes:
+            try:
+                p.send_signal(signal.SIGINT)
+            except psutil.AccessDenied:
+                p.kill()
