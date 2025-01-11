@@ -30,6 +30,7 @@ from utils.check_valid_db import checkValidDB
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.time_conversion import convert_ms_to_hh_mm_ss
 from views.dialogs.setupAppDialog import SetupAppDialog
+from views.dialogs.updateDialog import UpdateDialog
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
 from views.subinterfaces.pomodoro_view import PomodoroView
 from views.subinterfaces.settings_view import SettingsView
@@ -661,13 +662,7 @@ class MainWindow(PomodoroFluentWindow):
         update_check_result = checkForUpdates()
         if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
             # making the updateDialog
-            self.updateDialog = MessageBox(
-                "A New Update is available",
-                "A new update is available. Do you want to download it?",
-                parent=self.window(),
-            )
-            self.updateDialog.yesButton.setText("Yes, download it")
-            self.updateDialog.cancelButton.setText("No, maybe later")
+            self.updateDialog = UpdateDialog(parent=self.window())
 
             # for first run, the control flow is like this
             # self.setupMitmproxy() ---MainWindow is show---> self.setupAppDialog.show() ---
@@ -675,13 +670,8 @@ class MainWindow(PomodoroFluentWindow):
 
             # for runs which aren't first run, self.setupMitmproxy() is not run, so self.updateDialog is shown
             # when MainWindow is shown, in self.showEvent()
-            if self.is_first_run:
+            if self.is_first_run and self.updateDialog is not None:
                 self.updateDialog.show()
-
-            url = QUrl("https://github.com/kun-codes/pomodoro-task-app.py/releases/latest")
-
-            self.updateDialog.accepted.connect(lambda: QDesktopServices.openUrl(url))
-            self.updateDialog.rejected.connect(lambda: logger.debug("User wants to download the update later"))
 
         elif update_check_result == UpdateCheckResult.UP_TO_DATE:
             pass
