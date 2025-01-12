@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import tomllib
+
 from utils.is_nuitka import is_nuitka
 
 

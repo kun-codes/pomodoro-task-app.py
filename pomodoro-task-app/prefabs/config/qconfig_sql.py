@@ -3,15 +3,16 @@ from pathlib import Path
 from typing import Union
 from venv import logger
 
-from config_paths import settings_file_path
-from models.db_tables import Workspace
-from models.workspace_lookup import WorkspaceLookup
-from prefabs.config.config_item_sql import ConfigItemSQL
 from qfluentwidgets import (
     ConfigItem,
     QConfig,
     exceptionHandler,
 )
+
+from config_paths import settings_file_path
+from models.db_tables import Workspace
+from models.workspace_lookup import WorkspaceLookup
+from prefabs.config.config_item_sql import ConfigItemSQL
 from utils.db_utils import get_session
 
 

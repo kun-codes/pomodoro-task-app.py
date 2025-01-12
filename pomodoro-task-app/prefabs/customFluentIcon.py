@@ -1,6 +1,7 @@
 from enum import Enum
 
 from qfluentwidgets import FluentIconBase, Theme, getIconColor
+
 from resources import resources_rc
 
 

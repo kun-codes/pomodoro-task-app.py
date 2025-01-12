@@ -1,12 +1,4 @@
-from config_values import ConfigValues
-from constants import NEW_RELEASE_URL, UpdateCheckResult
 from loguru import logger
-from models.config import app_settings, workspace_specific_settings
-from prefabs.customFluentIcon import CustomFluentIcon
-from prefabs.setting_cards.RangeSettingCardSQL import RangeSettingCardSQL
-from prefabs.setting_cards.SpinBoxSettingCard import SpinBoxSettingCard
-from prefabs.setting_cards.SpinBoxSettingCardSQL import SpinBoxSettingCardSQL
-from prefabs.setting_cards.SwitchSettingCardSQL import SwitchSettingCardSQL
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QApplication, QWidget
@@ -23,6 +15,15 @@ from qfluentwidgets import (
     setTheme,
     setThemeColor,
 )
+
+from config_values import ConfigValues
+from constants import NEW_RELEASE_URL, UpdateCheckResult
+from models.config import app_settings, workspace_specific_settings
+from prefabs.customFluentIcon import CustomFluentIcon
+from prefabs.setting_cards.RangeSettingCardSQL import RangeSettingCardSQL
+from prefabs.setting_cards.SpinBoxSettingCard import SpinBoxSettingCard
+from prefabs.setting_cards.SpinBoxSettingCardSQL import SpinBoxSettingCardSQL
+from prefabs.setting_cards.SwitchSettingCardSQL import SwitchSettingCardSQL
 from ui_py.ui_settings_view import Ui_SettingsView
 from utils.check_for_updates import checkForUpdates
 from utils.get_app_version import get_app_version

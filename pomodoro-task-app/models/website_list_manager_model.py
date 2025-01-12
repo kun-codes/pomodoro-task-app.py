@@ -1,11 +1,12 @@
 from urllib.parse import urlparse
 
 import validators
-from constants import URLListType, WebsiteFilterType
 from loguru import logger
+from PySide6.QtCore import QObject
+
+from constants import URLListType, WebsiteFilterType
 from models.db_tables import AllowlistExceptionURL, AllowlistURL, BlocklistExceptionURL, BlocklistURL, Workspace
 from models.workspace_lookup import WorkspaceLookup
-from PySide6.QtCore import QObject
 from utils.db_utils import get_session
 
 

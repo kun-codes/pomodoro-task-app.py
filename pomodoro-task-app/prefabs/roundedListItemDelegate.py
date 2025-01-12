@@ -1,8 +1,9 @@
-from models.task_list_model import TaskListModel
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import QListView, QStyle, QStyleOptionViewItem, QWidget
 from qfluentwidgets import ListItemDelegate, isDarkTheme, themeColor
+
+from models.task_list_model import TaskListModel
 
 
 class RoundedListItemDelegate(ListItemDelegate):

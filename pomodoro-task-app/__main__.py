@@ -1,8 +1,9 @@
 import signal
 import sys
 
-from main_window import MainWindow
 from PySide6.QtWidgets import QApplication
+
+from main_window import MainWindow
 
 
 def handle_signal(signal, frame):

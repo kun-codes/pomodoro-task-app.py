@@ -1,8 +1,9 @@
-from models.config import AppSettings
 from PySide6.QtCore import QRect, QSize, Qt, Slot
 from PySide6.QtGui import QColor, QFont, QPainter, QTextCharFormat, QTextCursor, QTextFormat
 from PySide6.QtWidgets import QTextEdit, QWidget
 from qfluentwidgets import PlainTextEdit, isDarkTheme, qconfig, setCustomStyleSheet
+
+from models.config import AppSettings
 
 # from: https://doc.qt.io/qtforpython-6.2/examples/example_widgets__codeeditor.html
 

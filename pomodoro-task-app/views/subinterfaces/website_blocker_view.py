@@ -1,8 +1,4 @@
-from constants import URLListType, WebsiteFilterType
 from loguru import logger
-from models.website_list_manager_model import WebsiteListManager
-from models.workspace_list_model import WorkspaceListModel
-from models.workspace_lookup import WorkspaceLookup
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget
 from qfluentwidgets import (
@@ -11,6 +7,11 @@ from qfluentwidgets import (
     ToolTipFilter,
     ToolTipPosition,
 )
+
+from constants import URLListType, WebsiteFilterType
+from models.website_list_manager_model import WebsiteListManager
+from models.workspace_list_model import WorkspaceListModel
+from models.workspace_lookup import WorkspaceLookup
 from ui_py.ui_website_blocker_view import Ui_WebsiteBlockView
 
 

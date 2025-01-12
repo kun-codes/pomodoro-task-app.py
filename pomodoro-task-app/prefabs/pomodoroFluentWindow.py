@@ -1,7 +1,8 @@
-from prefabs.bottomBar import BottomBar
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 from qfluentwidgets import FluentWindow, setCustomStyleSheet
 from qfluentwidgets.window.fluent_window import FluentWindowBase
+
+from prefabs.bottomBar import BottomBar
 
 
 class VBoxLayoutInitializer(QWidget):

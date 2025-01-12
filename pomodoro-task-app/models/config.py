@@ -1,3 +1,5 @@
+from qfluentwidgets import BoolValidator, ConfigItem, QConfig, RangeConfigItem, RangeValidator, Theme, qconfig
+
 from config_paths import settings_file_path
 from constants import (
     AUTOSTART_BREAK,
@@ -11,7 +13,6 @@ from constants import (
 from models.db_tables import Workspace
 from prefabs.config.config_item_sql import ConfigItemSQL, RangeConfigItemSQL
 from prefabs.config.qconfig_sql import QConfigSQL, qconfig_custom
-from qfluentwidgets import BoolValidator, ConfigItem, QConfig, RangeConfigItem, RangeValidator, Theme, qconfig
 
 
 class WorkspaceSettings(QConfigSQL):

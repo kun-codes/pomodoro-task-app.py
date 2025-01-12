@@ -2,16 +2,7 @@ import platform
 from pathlib import Path
 
 import darkdetect
-from config_paths import settings_dir
-from config_values import ConfigValues
-from constants import FIRST_RUN_DOTFILE_NAME, TimerState, UpdateCheckResult, URLListType, WebsiteFilterType
 from loguru import logger
-from models.config import load_workspace_settings, workspace_specific_settings
-from models.db_tables import TaskType
-from models.task_list_model import TaskListModel
-from models.workspace_list_model import WorkspaceListModel
-from prefabs.customFluentIcon import CustomFluentIcon
-from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
@@ -23,6 +14,16 @@ from qfluentwidgets import (
     SystemThemeListener,
     Theme,
 )
+
+from config_paths import settings_dir
+from config_values import ConfigValues
+from constants import FIRST_RUN_DOTFILE_NAME, TimerState, UpdateCheckResult, URLListType, WebsiteFilterType
+from models.config import load_workspace_settings, workspace_specific_settings
+from models.db_tables import TaskType
+from models.task_list_model import TaskListModel
+from models.workspace_list_model import WorkspaceListModel
+from prefabs.customFluentIcon import CustomFluentIcon
+from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
 from resources import logos_rc
 from utils.check_for_updates import checkForUpdates
 from utils.check_valid_db import checkValidDB

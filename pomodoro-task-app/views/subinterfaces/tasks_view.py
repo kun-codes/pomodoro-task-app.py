@@ -1,10 +1,11 @@
+from PySide6.QtCore import QModelIndex
+from PySide6.QtWidgets import QApplication, QSizePolicy, QVBoxLayout, QWidget
+from qfluentwidgets import FluentIcon, SimpleCardWidget, TitleLabel, ToolTipFilter, ToolTipPosition
+
 from models.db_tables import TaskType
 from models.task_list_model import TaskListModel
 from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.taskList import TaskList
-from PySide6.QtCore import QModelIndex
-from PySide6.QtWidgets import QApplication, QSizePolicy, QVBoxLayout, QWidget
-from qfluentwidgets import FluentIcon, SimpleCardWidget, TitleLabel, ToolTipFilter, ToolTipPosition
 from ui_py.ui_tasks_list_view import Ui_TaskView
 from views.dialogs.addTaskDialog import AddTaskDialog
 from views.dialogs.editTaskTimeDialog import EditTaskTimeDialog

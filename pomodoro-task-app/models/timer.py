@@ -1,10 +1,11 @@
 import sys
 
-from config_values import ConfigValues
-from constants import TimerState
 from loguru import logger
 from PySide6.QtCore import QObject, QTimer, Signal
 from PySide6.QtWidgets import QApplication
+
+from config_values import ConfigValues
+from constants import TimerState
 
 
 class PomodoroTimer(QObject):  # Inherit from QObject to support signals

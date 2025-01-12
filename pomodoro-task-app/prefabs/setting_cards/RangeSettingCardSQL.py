@@ -1,8 +1,9 @@
 from typing import Union
 
-from prefabs.config.qconfig_sql import qconfig_custom
 from PySide6.QtGui import QIcon
 from qfluentwidgets import FluentIconBase, RangeSettingCard
+
+from prefabs.config.qconfig_sql import qconfig_custom
 
 
 class RangeSettingCardSQL(RangeSettingCard):

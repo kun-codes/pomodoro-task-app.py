@@ -2,6 +2,10 @@ from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 
+from sqlalchemy import URL, Boolean, Column, DateTime, Engine, ForeignKey, Integer, String, create_engine, event
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy.orm import declarative_base, relationship
+
 from config_paths import db_path, settings_dir
 from constants import (
     AUTOSTART_BREAK,
@@ -14,9 +18,6 @@ from constants import (
     URLListType,
     WebsiteFilterType,
 )
-from sqlalchemy import URL, Boolean, Column, DateTime, Engine, ForeignKey, Integer, String, create_engine, event
-from sqlalchemy import Enum as SQLEnum
-from sqlalchemy.orm import declarative_base, relationship
 
 url_object = URL.create(
     "sqlite",

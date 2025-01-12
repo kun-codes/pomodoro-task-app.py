@@ -4,9 +4,10 @@ from urllib.parse import urlparse
 
 import certifi
 import tomllib
-from constants import UPDATE_CHECK_URL, UpdateCheckResult
 from loguru import logger
 from semver import Version
+
+from constants import UPDATE_CHECK_URL, UpdateCheckResult
 from utils.get_app_version import get_app_version
 
 

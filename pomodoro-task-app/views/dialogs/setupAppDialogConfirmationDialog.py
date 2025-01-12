@@ -1,10 +1,11 @@
-from constants import APPLICATION_NAME
 from PySide6.QtCore import Qt
 from qfluentwidgets import (
     BodyLabel,
     MessageBoxBase,
     SubtitleLabel,
 )
+
+from constants import APPLICATION_NAME
 
 
 class SetupAppDialogConfirmationDialog(MessageBoxBase):

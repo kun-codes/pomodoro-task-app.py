@@ -1,11 +1,6 @@
 import sys
 
 from loguru import logger
-from models.db_tables import Workspace
-from models.workspace_list_model import WorkspaceListModel
-from models.workspace_lookup import WorkspaceLookup
-from prefabs.roundedListItemDelegate import RoundedListItemDelegate
-from prefabs.workspaceListView import WorkspaceListView
 from PySide6.QtCore import QItemSelectionModel, Qt
 from PySide6.QtGui import QColor, QKeyEvent
 from PySide6.QtWidgets import (
@@ -28,6 +23,12 @@ from qfluentwidgets import (
     setCustomStyleSheet,
 )
 from qfluentwidgets.components.dialog_box.mask_dialog_base import MaskDialogBase
+
+from models.db_tables import Workspace
+from models.workspace_list_model import WorkspaceListModel
+from models.workspace_lookup import WorkspaceLookup
+from prefabs.roundedListItemDelegate import RoundedListItemDelegate
+from prefabs.workspaceListView import WorkspaceListView
 
 
 class ManageWorkspaceDialog(MaskDialogBase):
