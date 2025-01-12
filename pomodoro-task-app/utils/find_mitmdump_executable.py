@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 
 from loguru import logger
+
 from utils.is_nuitka import is_nuitka
 
 

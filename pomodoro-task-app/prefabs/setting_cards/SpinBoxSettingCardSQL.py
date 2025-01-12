@@ -1,9 +1,10 @@
 from typing import Union
 
-from prefabs.config.qconfig_sql import qconfig_custom
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon
 from qfluentwidgets import FluentIconBase, SettingCard, SpinBox
+
+from prefabs.config.qconfig_sql import qconfig_custom
 
 
 class SpinBoxSettingCardSQL(SettingCard):

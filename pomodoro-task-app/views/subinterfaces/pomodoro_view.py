@@ -1,10 +1,11 @@
-from config_values import ConfigValues
-from constants import TimerState
 from loguru import logger
-from models.timer import PomodoroTimer
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QSizePolicy, QSpacerItem, QWidget
 from qfluentwidgets import FluentIcon, ToolTipFilter, ToolTipPosition
+
+from config_values import ConfigValues
+from constants import TimerState
+from models.timer import PomodoroTimer
 from ui_py.ui_pomodoro_view import Ui_PomodoroView
 
 

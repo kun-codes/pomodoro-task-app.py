@@ -1,7 +1,8 @@
 import os
 
-from constants import APPLICATION_NAME, ORGANIZATION_NAME
 from PySide6.QtCore import QCoreApplication, QSettings
+
+from constants import APPLICATION_NAME, ORGANIZATION_NAME
 
 QCoreApplication.setOrganizationName(ORGANIZATION_NAME)
 QCoreApplication.setApplicationName(APPLICATION_NAME)

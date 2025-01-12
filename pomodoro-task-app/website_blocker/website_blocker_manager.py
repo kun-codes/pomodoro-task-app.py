@@ -3,11 +3,12 @@ import shlex
 import subprocess
 import threading
 
-from config_values import ConfigValues
-from constants import MITMDUMP_COMMAND_LINUX, MITMDUMP_COMMAND_WINDOWS
 from loguru import logger
 from PySide6.QtCore import QObject
 from uniproxy import Uniproxy
+
+from config_values import ConfigValues
+from constants import MITMDUMP_COMMAND_LINUX, MITMDUMP_COMMAND_WINDOWS
 from website_blocker.utils import kill_process
 
 

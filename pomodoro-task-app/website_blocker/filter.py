@@ -9,8 +9,9 @@ import sys
 # append directory containing constants.py to path so that BLOCK_HTML_MESSAGE can be imported correctly
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from constants import BLOCK_HTML_MESSAGE
 from mitmproxy import ctx, http
+
+from constants import BLOCK_HTML_MESSAGE
 
 
 def load(loader):

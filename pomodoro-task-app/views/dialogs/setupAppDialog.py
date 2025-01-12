@@ -1,4 +1,3 @@
-from constants import APPLICATION_NAME
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QDesktopServices
 from qfluentwidgets import (
@@ -7,6 +6,8 @@ from qfluentwidgets import (
     MessageBoxBase,
     SubtitleLabel,
 )
+
+from constants import APPLICATION_NAME
 from views.dialogs.setupAppDialogConfirmationDialog import SetupAppDialogConfirmationDialog
 
 

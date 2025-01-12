@@ -1,10 +1,11 @@
 from loguru import logger
-from models.config import AppSettings
-from models.db_tables import Task, TaskType
-from models.workspace_lookup import WorkspaceLookup
 from PySide6.QtCore import QAbstractListModel, QByteArray, QDataStream, QIODevice, QMimeData, QModelIndex, Qt, Signal
 from PySide6.QtGui import QColor
 from sqlalchemy import update
+
+from models.config import AppSettings
+from models.db_tables import Task, TaskType
+from models.workspace_lookup import WorkspaceLookup
 from utils.db_utils import get_session
 
 

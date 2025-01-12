@@ -1,6 +1,7 @@
-from models.task_lookup import TaskLookup
 from PySide6.QtCore import QTime
 from qfluentwidgets import MessageBoxBase, SubtitleLabel, TimePicker
+
+from models.task_lookup import TaskLookup
 
 
 class EditTaskTimeDialog(MessageBoxBase):

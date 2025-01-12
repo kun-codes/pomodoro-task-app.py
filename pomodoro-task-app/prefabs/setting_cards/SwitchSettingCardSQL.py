@@ -1,9 +1,10 @@
 from typing import Union
 
-from prefabs.config.config_item_sql import ConfigItemSQL
-from prefabs.config.qconfig_sql import qconfig_custom
 from PySide6.QtGui import QIcon
 from qfluentwidgets import FluentIconBase, SwitchSettingCard
+
+from prefabs.config.config_item_sql import ConfigItemSQL
+from prefabs.config.qconfig_sql import qconfig_custom
 
 
 class SwitchSettingCardSQL(SwitchSettingCard):

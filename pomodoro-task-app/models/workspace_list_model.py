@@ -1,6 +1,7 @@
 from loguru import logger
-from models.db_tables import CurrentWorkspace, Workspace
 from PySide6.QtCore import QAbstractListModel, QItemSelectionModel, QModelIndex, Qt, Signal
+
+from models.db_tables import CurrentWorkspace, Workspace
 from utils.db_utils import get_session
 
 
