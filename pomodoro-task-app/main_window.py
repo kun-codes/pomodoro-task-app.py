@@ -12,14 +12,13 @@ from models.task_list_model import TaskListModel
 from models.workspace_list_model import WorkspaceListModel
 from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
-from PySide6.QtCore import Qt, QUrl
-from PySide6.QtGui import QDesktopServices, QIcon
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 from qfluentwidgets import (
     FluentIcon,
     InfoBar,
     InfoBarPosition,
-    MessageBox,
     NavigationItemPosition,
     SystemThemeListener,
     Theme,

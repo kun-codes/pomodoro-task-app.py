@@ -2,8 +2,8 @@ from constants import APPLICATION_NAME
 from PySide6.QtCore import Qt
 from qfluentwidgets import (
     BodyLabel,
-    SubtitleLabel,
     MessageBoxBase,
+    SubtitleLabel,
 )
 
 
@@ -29,6 +29,5 @@ class SetupAppDialogConfirmationDialog(MessageBoxBase):
         self.initWidget()
 
     def initWidget(self):
-
         self.bodyLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.bodyLabel.setOpenExternalLinks(True)

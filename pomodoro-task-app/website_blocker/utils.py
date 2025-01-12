@@ -5,8 +5,9 @@
 
 import os
 import shlex
-import subprocess
 import signal
+import subprocess
+
 import psutil
 
 
