@@ -1,7 +1,6 @@
 from constants import APPLICATION_NAME
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QDesktopServices
-from PySide6.QtWidgets import QSizePolicy
 from qfluentwidgets import (
     BodyLabel,
     FluentIcon,
@@ -36,7 +35,6 @@ class SetupAppDialog(MessageBoxBase):
         self.initWidget()
 
     def initWidget(self):
-
         self.titleLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.bodyLabel.setWordWrap(True)

@@ -1,7 +1,7 @@
+from loguru import logger
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices
-from loguru import logger
-from qfluentwidgets import MessageBoxBase, SubtitleLabel, BodyLabel
+from qfluentwidgets import BodyLabel, MessageBoxBase, SubtitleLabel
 
 
 class UpdateDialog(MessageBoxBase):
