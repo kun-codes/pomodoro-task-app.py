@@ -35,6 +35,7 @@ extend-exclude = [
     "pomodoro-task-app/ui_py",
     "pomodoro-task-app/resources",
 ]
+src = ["pomodoro-task-app"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
