@@ -26,7 +26,6 @@ from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
 from resources import logos_rc
 from utils.check_for_updates import checkForUpdates
-from utils.check_valid_db import checkValidDB
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.time_conversion import convert_ms_to_hh_mm_ss
 from views.dialogs.setupAppDialog import SetupAppDialog
@@ -45,7 +44,6 @@ class MainWindow(PomodoroFluentWindow):
 
         self.is_first_run = self.check_first_run()
         # self.checkForUpdates()
-        checkValidDB()
 
         self.workplace_list_model = WorkspaceListModel()
 

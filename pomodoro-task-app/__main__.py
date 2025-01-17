@@ -4,6 +4,7 @@ import sys
 from PySide6.QtWidgets import QApplication
 
 from main_window import MainWindow
+from utils.check_valid_db import checkValidDB
 
 
 def handle_signal(signal, frame):
@@ -13,6 +14,8 @@ def handle_signal(signal, frame):
 
 
 if __name__ == "__main__":
+    checkValidDB()
+
     app = QApplication(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()
