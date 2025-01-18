@@ -154,6 +154,3 @@ class AllowlistExceptionURL(Base):
     url = Column(String, nullable=False)
 
     workspace = relationship("Workspace", back_populates="allowlist_exception_urls")
-
-
-Base.metadata.create_all(engine)
