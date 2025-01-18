@@ -92,8 +92,8 @@ jobs:
                         ./pyproject.toml=./pyproject.toml
                         ./mitmdump=./mitmdump
                         ./alembic.ini=./alembic.ini
-                        ./migrations/*.py=./migrations/
-                        ./migrations/versions/*.py=./migrations/versions/
+                        ./pomodoro_task_app/migrations/*.py=./pomodoro_task_app/migrations/
+                        ./pomodoro_task_app/migrations/versions/*.py=./pomodoro_task_app/migrations/versions/
 
             -   name: Build Executable (Windows)
                 if: matrix.os == 'windows-latest'
@@ -114,8 +114,8 @@ jobs:
                         .\pyproject.toml=.\pyproject.toml
                         .\mitmdump.exe=.\mitmdump.exe
                         .\alembic.ini=.\alembic.ini
-                        .\migrations\*.py=.\migrations\
-                        .\migrations\versions\*.py=.\migrations\versions\
+                        .\pomodoro_task_app\migrations\*.py=.\pomodoro_task_app\migrations\
+                        .\pomodoro_task_app\migrations\versions\*.py=.\pomodoro_task_app\migrations\versions\
 
             -   name: Install tree (MacOS)
                 if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
