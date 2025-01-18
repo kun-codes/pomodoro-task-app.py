@@ -43,8 +43,8 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 
 class TaskType(Enum):
-    TODO = "todo"
-    COMPLETED = "completed"
+    TODO = "TODO"
+    COMPLETED = "COMPLETED"
 
 
 class Version(Base):
