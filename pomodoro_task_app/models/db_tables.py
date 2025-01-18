@@ -54,7 +54,6 @@ class Version(Base):
 
     id = Column(Integer, primary_key=True)
     app_version = Column(String, nullable=False)
-    schema_version = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     updated_at = Column(
         DateTime(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc)
