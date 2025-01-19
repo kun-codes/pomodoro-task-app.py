@@ -84,11 +84,16 @@ jobs:
                     enable-plugins: 'pyside6'
                     macos-app-icon: 'assets/logo.icns'
                     linux-icon: 'assets/logo.ico'
+                    include-module: |
+                        logging.config
                     include-data-files: |
                         ./pomodoro_task_app/website_blocker/filter.py=./website_blocker/filter.py
                         ./pomodoro_task_app/constants.py=./constants.py
                         ./pyproject.toml=./pyproject.toml
                         ./mitmdump=./mitmdump
+                        ./alembic.ini=./alembic.ini
+                        ./pomodoro_task_app/migrations/*.py=./pomodoro_task_app/migrations/
+                        ./pomodoro_task_app/migrations/versions/*.py=./pomodoro_task_app/migrations/versions/
 
             -   name: Build Executable (Windows)
                 if: matrix.os == 'windows-latest'
@@ -101,11 +106,16 @@ jobs:
                     windows-icon-from-ico: 'assets/logo.ico'
                     mingw64: true
                     enable-plugins: 'pyside6'
+                    include-module: |
+                        logging.config
                     include-data-files: |
                         .\pomodoro_task_app\website_blocker\filter.py=.\website_blocker\filter.py
                         .\pomodoro_task_app\constants.py=.\constants.py
                         .\pyproject.toml=.\pyproject.toml
                         .\mitmdump.exe=.\mitmdump.exe
+                        .\alembic.ini=.\alembic.ini
+                        .\pomodoro_task_app\migrations\*.py=.\pomodoro_task_app\migrations\
+                        .\pomodoro_task_app\migrations\versions\*.py=.\pomodoro_task_app\migrations\versions\
 
             -   name: Install tree (MacOS)
                 if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'

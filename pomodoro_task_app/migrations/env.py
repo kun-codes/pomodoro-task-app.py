@@ -1,17 +1,10 @@
-import sys
-import os
 from logging.config import fileConfig
 
 from loguru import logger
-
 from alembic import context
 
-# Add the pomodoro_task_app directory to the system path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pomodoro_task_app')))
-
-from pomodoro_task_app.models.db_tables import Base, db_path, engine
-# from pomodoro_task_app.config_paths import db_path
-
+from models.db_tables import Base, engine
+from config_paths import db_path
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

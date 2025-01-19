@@ -8,6 +8,7 @@ from alembic.config import Config
 
 from main_window import MainWindow
 from utils.check_valid_db import checkValidDB
+from utils.is_nuitka import is_nuitka
 
 
 def handle_signal(signal, frame):
@@ -17,7 +18,10 @@ def handle_signal(signal, frame):
 
 # https://alembic.sqlalchemy.org/en/latest/cookbook.html#building-an-up-to-date-database-from-scratch
 def run_alembic_upgrade():
-    alembic_ini_path = Path(__file__).parent.parent / "alembic.ini"
+    if is_nuitka():
+        alembic_ini_path = Path("alembic.ini")
+    else:
+        alembic_ini_path = Path(__file__).parent.parent / "alembic.ini"
     alembic_cfg = Config(alembic_ini_path)
     # alembic_cfg.set_main_option("script_location", str(Path(__file__).parent.parent / "migrations"))
     command.upgrade(alembic_cfg, "head")
