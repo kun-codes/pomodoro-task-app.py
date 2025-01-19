@@ -32,11 +32,11 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 line-length = 120
 extend-exclude = [
-    "pomodoro-task-app/ui",
-    "pomodoro-task-app/ui_py",
-    "pomodoro-task-app/resources",
+    "pomodoro_task_app/ui",
+    "pomodoro_task_app/ui_py",
+    "pomodoro_task_app/resources",
 ]
-src = ["pomodoro-task-app"]
+src = ["pomodoro_task_app"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
