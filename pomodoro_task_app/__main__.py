@@ -3,8 +3,8 @@ import sys
 from pathlib import Path
 
 from alembic import command
-from PySide6.QtWidgets import QApplication
 from alembic.config import Config
+from PySide6.QtWidgets import QApplication
 
 from main_window import MainWindow
 from utils.check_valid_db import checkValidDB

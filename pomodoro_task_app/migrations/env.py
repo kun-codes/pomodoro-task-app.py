@@ -1,10 +1,10 @@
 from logging.config import fileConfig
 
-from loguru import logger
 from alembic import context
+from loguru import logger
 
-from models.db_tables import Base, engine
 from config_paths import db_path
+from models.db_tables import Base, engine
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
