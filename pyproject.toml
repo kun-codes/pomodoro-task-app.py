@@ -19,6 +19,7 @@ uniproxy = "^0.1.4"
 loguru = "^0.7.2"
 semver = "^3.0.2"
 certifi = "^2024.12.14"
+alembic = "^1.14.0"
 
 [tool.poetry.group.build.dependencies]
 nuitka = "^2.5.9"

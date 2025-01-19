@@ -43,8 +43,8 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 
 class TaskType(Enum):
-    TODO = "todo"
-    COMPLETED = "completed"
+    TODO = "TODO"
+    COMPLETED = "COMPLETED"
 
 
 class Version(Base):
@@ -54,7 +54,6 @@ class Version(Base):
 
     id = Column(Integer, primary_key=True)
     app_version = Column(String, nullable=False)
-    schema_version = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     updated_at = Column(
         DateTime(timezone=True), default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc)
@@ -155,6 +154,3 @@ class AllowlistExceptionURL(Base):
     url = Column(String, nullable=False)
 
     workspace = relationship("Workspace", back_populates="allowlist_exception_urls")
-
-
-Base.metadata.create_all(engine)

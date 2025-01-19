@@ -79,16 +79,21 @@ jobs:
                 with:
                     nuitka-version: 'main'
                     script-name: |
-                        pomodoro-task-app/__main__.py
+                        pomodoro_task_app/__main__.py
                     mode: ${{ (matrix.os == 'macos-latest' || matrix.os == 'macos-13') && 'app' || 'standalone' }}
                     enable-plugins: 'pyside6'
                     macos-app-icon: 'assets/logo.icns'
                     linux-icon: 'assets/logo.ico'
+                    include-module: |
+                        logging.config
                     include-data-files: |
-                        ./pomodoro-task-app/website_blocker/filter.py=./website_blocker/filter.py
-                        ./pomodoro-task-app/constants.py=./constants.py
+                        ./pomodoro_task_app/website_blocker/filter.py=./website_blocker/filter.py
+                        ./pomodoro_task_app/constants.py=./constants.py
                         ./pyproject.toml=./pyproject.toml
                         ./mitmdump=./mitmdump
+                        ./alembic.ini=./alembic.ini
+                        ./pomodoro_task_app/migrations/*.py=./pomodoro_task_app/migrations/
+                        ./pomodoro_task_app/migrations/versions/*.py=./pomodoro_task_app/migrations/versions/
 
             -   name: Build Executable (Windows)
                 if: matrix.os == 'windows-latest'
@@ -96,16 +101,21 @@ jobs:
                 with:
                     nuitka-version: 'main'
                     script-name: |
-                        pomodoro-task-app\__main__.py
+                        pomodoro_task_app\__main__.py
                     mode: standalone
                     windows-icon-from-ico: 'assets/logo.ico'
                     mingw64: true
                     enable-plugins: 'pyside6'
+                    include-module: |
+                        logging.config
                     include-data-files: |
-                        .\pomodoro-task-app\website_blocker\filter.py=.\website_blocker\filter.py
-                        .\pomodoro-task-app\constants.py=.\constants.py
+                        .\pomodoro_task_app\website_blocker\filter.py=.\website_blocker\filter.py
+                        .\pomodoro_task_app\constants.py=.\constants.py
                         .\pyproject.toml=.\pyproject.toml
                         .\mitmdump.exe=.\mitmdump.exe
+                        .\alembic.ini=.\alembic.ini
+                        .\pomodoro_task_app\migrations\*.py=.\pomodoro_task_app\migrations\
+                        .\pomodoro_task_app\migrations\versions\*.py=.\pomodoro_task_app\migrations\versions\
 
             -   name: Install tree (MacOS)
                 if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'

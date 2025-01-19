@@ -8,7 +8,7 @@ def checkValidDB():
         # Initialize version info if not exists
         # todo: make a upgrade db function too for future app versions
         if not session.query(Version).first():
-            version = Version(app_version=get_app_version(), schema_version="1")
+            version = Version(app_version=get_app_version())
             session.add(version)
             session.commit()
 
