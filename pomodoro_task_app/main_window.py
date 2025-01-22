@@ -18,7 +18,7 @@ from qfluentwidgets import (
 from config_paths import settings_dir
 from config_values import ConfigValues
 from constants import FIRST_RUN_DOTFILE_NAME, TimerState, UpdateCheckResult, URLListType, WebsiteFilterType
-from models.config import load_workspace_settings, workspace_specific_settings
+from models.config import app_settings, load_workspace_settings, workspace_specific_settings
 from models.db_tables import TaskType
 from models.task_list_model import TaskListModel
 from models.workspace_list_model import WorkspaceListModel
@@ -29,6 +29,7 @@ from utils.check_for_updates import checkForUpdates
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.time_conversion import convert_ms_to_hh_mm_ss
 from views.dialogs.setupAppDialog import SetupAppDialog
+from views.dialogs.tutorialDialog import TutorialDialog
 from views.dialogs.updateDialog import UpdateDialog
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
 from views.subinterfaces.pomodoro_view import PomodoroView
@@ -68,6 +69,8 @@ class MainWindow(PomodoroFluentWindow):
 
         self.themeListener = SystemThemeListener(self)
         self.themeListener.start()
+
+        self.isSafeToShowTutorial = False
 
         self.connectSignalsToSlots()
         self.initNavigation()
@@ -563,6 +566,39 @@ class MainWindow(PomodoroFluentWindow):
         # for notifications
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(self.showNotifications)
 
+        self.stackedWidget.currentChanged.connect(self.showTutorial)
+
+    def showTutorial(self):
+        if self.isSafeToShowTutorial:
+            if (self.stackedWidget.currentWidget().objectName() == "task_interface" and
+                    not app_settings.get(app_settings.has_visited_task_view)):
+                app_settings.set(app_settings.has_visited_task_view, True)
+                taskViewTutorialDialog = TutorialDialog(
+                    self.window(),
+                    "Task View Tutorial",
+                )
+                taskViewTutorialDialog.show()
+
+                app_settings.set(app_settings.has_visited_task_view, True)
+            elif (self.stackedWidget.currentWidget().objectName() == "pomodoro_interface" and
+                    not app_settings.get(app_settings.has_visited_pomodoro_view)):
+                pomodoroViewTutorialDialog = TutorialDialog(
+                    self.window(),
+                    "Pomodoro View Tutorial",
+                )
+                pomodoroViewTutorialDialog.show()
+
+                app_settings.set(app_settings.has_visited_pomodoro_view, True)
+            elif (self.stackedWidget.currentWidget().objectName() == "website_filter_interface" and
+                    not app_settings.get(app_settings.has_visited_website_filter_view)):
+                websiteFilterViewTutorialDialog = TutorialDialog(
+                    self.window(),
+                    "Website Filter View Tutorial",
+                )
+                websiteFilterViewTutorialDialog.show()
+
+                app_settings.set(app_settings.has_visited_website_filter_view, True)
+
     def on_website_filter_enabled_setting_changed(self):
         enable_website_filter_setting_value = ConfigValues.ENABLE_WEBSITE_FILTER
 
@@ -656,6 +692,7 @@ class MainWindow(PomodoroFluentWindow):
         # todo: give a guided tour of the app to the user
 
         if ConfigValues.CHECK_FOR_UPDATES_ON_START:
+            # calling self.handleUpdates() on first run
             self.handleUpdates()  # added self.checkForUpdates here so that it is called after the setup dialog
             # is closed
 
@@ -687,6 +724,10 @@ class MainWindow(PomodoroFluentWindow):
                 position=InfoBarPosition.TOP_RIGHT,
                 parent=self.window(),
             )
+
+        if self.is_first_run:
+            self.isSafeToShowTutorial = True
+            self.showTutorial()
 
     def showEvent(self, event):
         logger.debug("MainWindow showEvent")
