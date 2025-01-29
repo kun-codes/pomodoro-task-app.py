@@ -25,6 +25,7 @@ from models.workspace_list_model import WorkspaceListModel
 from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
 from resources import logos_rc
+from resources import tutorial_gifs_rc
 from utils.check_for_updates import checkForUpdates
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.time_conversion import convert_ms_to_hh_mm_ss
@@ -577,6 +578,8 @@ class MainWindow(PomodoroFluentWindow):
                     self.window(),
                     "Task View Tutorial",
                 )
+                taskViewTutorialDialog.addImage("img_1.gif", "this is a dog", "first", "First")
+                taskViewTutorialDialog.addImage("img_2.gif", "this is a cat", "second", "Second")
                 taskViewTutorialDialog.show()
 
                 app_settings.set(app_settings.has_visited_task_view, True)
