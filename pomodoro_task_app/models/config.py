@@ -42,6 +42,9 @@ class AppSettings(QConfig):
 
     proxy_port = RangeConfigItem("AppSettings", "ProxyPort", 8080, RangeValidator(1024, 65535))
     check_for_updates_on_start = ConfigItem("AppSettings", "CheckForUpdatesOnStart", True, BoolValidator())
+    has_visited_task_view = ConfigItem("AppSettings", "HasVisitedTaskView", False, BoolValidator())
+    has_visited_pomodoro_view = ConfigItem("AppSettings", "HasVisitedPomodoroView", False, BoolValidator())
+    has_visited_website_filter_view = ConfigItem("AppSettings", "HasVisitedWebsiteFilterView", False, BoolValidator())
 
 
 workspace_specific_settings = WorkspaceSettings()
