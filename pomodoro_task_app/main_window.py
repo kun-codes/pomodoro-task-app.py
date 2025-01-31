@@ -111,6 +111,7 @@ class MainWindow(PomodoroFluentWindow):
 
     def initWindow(self):
         self.resize(1000, 800)
+        # self.resize(715, 650)
         self.setMinimumWidth(715)
         self.setWindowTitle("Pomodoro Task List App")
         self.setWindowIcon(QIcon(":/logosPrefix/logos/logo.svg"))
@@ -578,8 +579,8 @@ class MainWindow(PomodoroFluentWindow):
                     self.window(),
                     "Task View Tutorial",
                 )
-                taskViewTutorialDialog.addImage("img_1.gif", "this is a dog", "first", "First")
-                taskViewTutorialDialog.addImage("img_2.gif", "this is a cat", "second", "Second")
+                taskViewTutorialDialog.addImage("ezgif.gif", "this is a dog")
+                taskViewTutorialDialog.addImage("img_2.gif", "this is a cat")
                 taskViewTutorialDialog.show()
 
                 app_settings.set(app_settings.has_visited_task_view, True)
@@ -589,6 +590,8 @@ class MainWindow(PomodoroFluentWindow):
                     self.window(),
                     "Pomodoro View Tutorial",
                 )
+                pomodoroViewTutorialDialog.addImage("adjust time.gif", "You can adjust the duration"
+                                                                       " of the pomodoro session in the settings")
                 pomodoroViewTutorialDialog.show()
 
                 app_settings.set(app_settings.has_visited_pomodoro_view, True)

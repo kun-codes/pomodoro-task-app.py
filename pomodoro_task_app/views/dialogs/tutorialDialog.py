@@ -90,10 +90,9 @@ class TutorialDialog(MessageBoxBase):
                 isDeleteOnClose = True
             )
 
-    def addImage(self, imgPath: str, captionText: str, objectName: str, tabText: str):
+    def addImage(self, imgPath: str, captionText: str):
         containerWidget = QWidget(parent=self)
         containerWidgetLayout = QVBoxLayout(containerWidget)
-        containerWidget.setObjectName(objectName)
 
         imageLabel = ImageLabel(imgPath, parent=self)
         imageLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
