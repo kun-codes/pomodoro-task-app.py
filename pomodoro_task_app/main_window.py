@@ -42,6 +42,10 @@ from website_blocker.website_blocker_manager import WebsiteBlockerManager
 class MainWindow(PomodoroFluentWindow):
     def __init__(self):
         super().__init__()
+        self.initial_launch = True  # this keeps track of whether the window is showing for the first time or not
+        # when app is un-minimized after minimizing the app, self.showEvent() will still be called which will trigger
+        # the dialogs mentioned in self.showEvent() to show again which is an undesirable behaviour. So, to prevent
+        # this, self.initial_launch is set to False when self.showEvent() is called for the first time
 
         self.is_first_run = self.check_first_run()
         # self.checkForUpdates()
@@ -237,6 +241,7 @@ class MainWindow(PomodoroFluentWindow):
     def bottomBarPauseResumeButtonClicked(self):
         # Sync state with pomodoro view button
         self.pomodoro_interface.pauseResumeButton.setChecked(self.bottomBar.pauseResumeButton.isChecked())
+        logger.debug(f"Window state: {self.windowState()}")
         self.pomodoro_interface.pauseResumeButtonClicked()
 
         # Update bottom bar button icon
@@ -741,11 +746,15 @@ class MainWindow(PomodoroFluentWindow):
     def showEvent(self, event):
         logger.debug("MainWindow showEvent")
         super().showEvent(event)
+
+        if not self.initial_launch:
+            return
+
+        self.initial_launch = False
         if self.is_first_run and self.setupAppConfirmationDialog is not None:
             self.setupAppConfirmationDialog.show()
-        else:
-            if self.updateDialog is not None:
-                self.updateDialog.show()
+        elif self.updateDialog is not None:
+            self.updateDialog.show()
 
     def closeEvent(self, event):
         self.website_blocker_manager.stop_filtering(delete_proxy=True)
