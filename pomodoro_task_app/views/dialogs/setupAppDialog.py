@@ -7,8 +7,11 @@ from qfluentwidgets import (
     SubtitleLabel,
 )
 
+from config_values import ConfigValues
 from constants import APPLICATION_NAME
-from views.dialogs.setupAppDialogConfirmationDialog import SetupAppDialogConfirmationDialog
+from utils.find_mitmdump_executable import get_mitmdump_path
+from views.dialogs.postSetupVerificationDialog import PostSetupVerificationDialog
+from website_blocker.website_blocker_manager import WebsiteBlockerManager
 
 
 class SetupAppDialog(MessageBoxBase):
@@ -34,6 +37,7 @@ class SetupAppDialog(MessageBoxBase):
         self.cancelButton.setText("Close")
 
         self.initWidget()
+        self.initTemporaryWebsiteBlockerManager()
 
     def initWidget(self):
         self.titleLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -61,8 +65,18 @@ class SetupAppDialog(MessageBoxBase):
         QDesktopServices.openUrl(url)
 
     def onCloseButtonClicked(self):
-        confirmation_dialog = SetupAppDialogConfirmationDialog(self)
+        confirmation_dialog = PostSetupVerificationDialog(self)
 
         if confirmation_dialog.exec():
+            self.temporary_website_blocker_manager.stop_filtering(delete_proxy=True)  # stopping website filtering here
+            # because this function will only be triggered after confirmation_dialog is accepted
             self.accept()
-            # self.close()
+
+    def initTemporaryWebsiteBlockerManager(self):
+        self.temporary_website_blocker_manager = WebsiteBlockerManager()
+        self.temporary_website_blocker_manager.start_filtering(
+            listening_port=ConfigValues.PROXY_PORT,
+            joined_addresses="example.com",
+            block_type="blocklist",
+            mitmdump_bin_path=get_mitmdump_path(),
+        )
