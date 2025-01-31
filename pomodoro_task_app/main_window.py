@@ -28,7 +28,7 @@ from resources import logos_rc
 from utils.check_for_updates import checkForUpdates
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.time_conversion import convert_ms_to_hh_mm_ss
-from views.dialogs.setupAppDialog import SetupAppDialog
+from views.dialogs.preSetupConfirmationDialog import PreSetupConfirmationDialog
 from views.dialogs.tutorialDialog import TutorialDialog
 from views.dialogs.updateDialog import UpdateDialog
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
@@ -678,28 +678,32 @@ class MainWindow(PomodoroFluentWindow):
 
     def setupMitmproxy(self):
         logger.debug("Setting up mitmproxy")
-        self.temporary_website_blocker_manager = WebsiteBlockerManager()
-        self.temporary_website_blocker_manager.start_filtering(
-            listening_port=ConfigValues.PROXY_PORT,
-            joined_addresses="example.com",
-            block_type="blocklist",
-            mitmdump_bin_path=get_mitmdump_path(),
-        )
+        self.setupAppConfirmationDialog = PreSetupConfirmationDialog(parent=self.window())
 
         # setupAppDialog is a modal dialog, so it will block the main window until it is closed
-        self.setupAppDialog = SetupAppDialog(parent=self.window())
-        self.setupAppDialog.accepted.connect(lambda: self.giveGuidedTour())
+        self.setupAppConfirmationDialog.accepted.connect(lambda: self.giveGuidedTour())
+        self.setupAppConfirmationDialog.rejected.connect(self.onSetupAppConfirmationDialogRejected)
 
     def giveGuidedTour(self):
-        self.temporary_website_blocker_manager.stop_filtering(delete_proxy=True)  # stopping website filtering here
-        # because this function will only be triggered after self.setupAppDialog is closed
-
+        # self.temporary_website_blocker_manager.stop_filtering(delete_proxy=True)  # stopping website filtering here
+        # # because this function will only be triggered after self.setupAppDialog is closed
+        #
         # todo: give a guided tour of the app to the user
 
         if ConfigValues.CHECK_FOR_UPDATES_ON_START:
             # calling self.handleUpdates() on first run
             self.handleUpdates()  # added self.checkForUpdates here so that it is called after the setup dialog
             # is closed
+
+    def onSetupAppConfirmationDialogRejected(self):
+        # delete the first run file so that the setup dialog is shown again when the app is started next time
+        settings_dir_path = Path(settings_dir)
+        first_run_dotfile_path = settings_dir_path.joinpath(FIRST_RUN_DOTFILE_NAME)
+
+        if first_run_dotfile_path.exists():
+            first_run_dotfile_path.unlink()
+
+        self.close()
 
     def handleUpdates(self):
         update_check_result = checkForUpdates()
@@ -737,8 +741,8 @@ class MainWindow(PomodoroFluentWindow):
     def showEvent(self, event):
         logger.debug("MainWindow showEvent")
         super().showEvent(event)
-        if self.is_first_run and self.setupAppDialog is not None:
-            self.setupAppDialog.show()
+        if self.is_first_run and self.setupAppConfirmationDialog is not None:
+            self.setupAppConfirmationDialog.show()
         else:
             if self.updateDialog is not None:
                 self.updateDialog.show()

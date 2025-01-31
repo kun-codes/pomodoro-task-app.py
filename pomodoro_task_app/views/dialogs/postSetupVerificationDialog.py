@@ -8,7 +8,7 @@ from qfluentwidgets import (
 from constants import APPLICATION_NAME
 
 
-class SetupAppDialogConfirmationDialog(MessageBoxBase):
+class PostSetupVerificationDialog(MessageBoxBase):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.titleLabel = SubtitleLabel("Are you sure you have set up website filtering correctly?", parent=self)
