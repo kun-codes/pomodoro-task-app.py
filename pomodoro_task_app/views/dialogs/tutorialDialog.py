@@ -1,19 +1,16 @@
-from loguru import logger
-from PySide6.QtCore import Qt, QUrl, QSize
-from PySide6.QtWidgets import QStackedWidget, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QSizePolicy
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QStackedWidget, QVBoxLayout, QWidget
 from qfluentwidgets import (
+    BodyLabel,
+    FluentIcon,
+    ImageLabel,
+    InfoBarIcon,
     MessageBoxBase,
+    PillToolButton,
     SegmentedWidget,
     SubtitleLabel,
-    ImageLabel,
-    CaptionLabel,
-    FlipView,
-    PillToolButton,
-    FluentIcon,
     TeachingTip,
-    InfoBarIcon,
     TeachingTipTailPosition,
-    BodyLabel,
 )
 
 
