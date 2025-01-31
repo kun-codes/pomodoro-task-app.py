@@ -67,6 +67,7 @@ class TutorialDialog(MessageBoxBase):
         # self.widget.resize(int(2 * self.parent().width() / 3), int(2 * self.parent().height() / 3))
 
         self.__connectSignalsToSlots()
+        self.updateNavigationButtons()
 
     def __connectSignalsToSlots(self):
         # disconnecting yesButton and cancelButton from the default slots, as they were connected in the parent class
@@ -108,13 +109,21 @@ class TutorialDialog(MessageBoxBase):
         currentIndex = self.stackedWidget.currentIndex()
         if currentIndex > 0:
             self.stackedWidget.setCurrentIndex(currentIndex - 1)
+            self.updateNavigationButtons()
 
     def showNextImage(self):
         currentIndex = self.stackedWidget.currentIndex()
         if currentIndex < self.stackedWidget.count() - 1:
             self.stackedWidget.setCurrentIndex(currentIndex + 1)
+            self.updateNavigationButtons()
 
     def show(self):
         super().show()
         self.stackedWidget.setCurrentIndex(0)
+        self.updateNavigationButtons()
+
+    def updateNavigationButtons(self):
+        currentIndex = self.stackedWidget.currentIndex()
+        self.leftButton.setEnabled(currentIndex > 0)
+        self.rightButton.setEnabled(currentIndex < self.stackedWidget.count() - 1)
 
