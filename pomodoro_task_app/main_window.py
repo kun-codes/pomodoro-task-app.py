@@ -119,6 +119,8 @@ class MainWindow(PomodoroFluentWindow):
         self.setWindowTitle("Pomodoro Task List App")
         self.setWindowIcon(QIcon(":/logosPrefix/logos/logo.svg"))
 
+        self.setMicaEffectEnabled(app_settings.get(app_settings.mica_enabled))
+
     def initSystemTray(self):
         """Initialize system tray icon and notifications"""
         self.tray = QSystemTrayIcon(self)
@@ -573,6 +575,9 @@ class MainWindow(PomodoroFluentWindow):
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(self.showNotifications)
 
         self.stackedWidget.currentChanged.connect(self.showTutorial)
+
+        # for mica effect
+        self.settings_interface.micaEnableChanged.connect(self.setMicaEffectEnabled)
 
     def showTutorial(self):
         if self.isSafeToShowTutorial:

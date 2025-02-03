@@ -13,6 +13,7 @@ from constants import (
 from models.db_tables import Workspace
 from prefabs.config.config_item_sql import ConfigItemSQL, RangeConfigItemSQL
 from prefabs.config.qconfig_sql import QConfigSQL, qconfig_custom
+from utils.is_win_11 import isWin11
 
 
 class WorkspaceSettings(QConfigSQL):
@@ -45,6 +46,7 @@ class AppSettings(QConfig):
     has_visited_task_view = ConfigItem("AppSettings", "HasVisitedTaskView", False, BoolValidator())
     has_visited_pomodoro_view = ConfigItem("AppSettings", "HasVisitedPomodoroView", False, BoolValidator())
     has_visited_website_filter_view = ConfigItem("AppSettings", "HasVisitedWebsiteFilterView", False, BoolValidator())
+    mica_enabled = ConfigItem("MainWindow", "MicaEnabled", isWin11(), BoolValidator())
 
 
 workspace_specific_settings = WorkspaceSettings()

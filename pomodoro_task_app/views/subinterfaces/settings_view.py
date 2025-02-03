@@ -1,5 +1,5 @@
 from loguru import logger
-from PySide6.QtCore import Qt, QUrl
+from PySide6.QtCore import Qt, QUrl, Signal
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QApplication, QWidget
 from qfluentwidgets import (
@@ -27,12 +27,15 @@ from prefabs.setting_cards.SwitchSettingCardSQL import SwitchSettingCardSQL
 from ui_py.ui_settings_view import Ui_SettingsView
 from utils.check_for_updates import checkForUpdates
 from utils.get_app_version import get_app_version
+from utils.is_win_11 import isWin11
 
 
 class SettingsView(QWidget, Ui_SettingsView):
     """
     For settings view of the app
     """
+
+    micaEnableChanged = Signal(bool)
 
     def __init__(self):
         super().__init__()
@@ -123,6 +126,14 @@ class SettingsView(QWidget, Ui_SettingsView):
             self.tr("Change the theme color of you application"),
             self.personalization_settings_group,
         )
+        if isWin11():
+            self.mica_card = SwitchSettingCard(
+                FluentIcon.TRANSPARENT,
+                "Mica effect",
+                "Apply semi transparent to windows and surfaces",
+                app_settings.mica_enabled,
+                self.personalization_settings_group
+            )
 
         # Update Settings
         self.update_settings_group = SettingCardGroup("Updates", self.scrollArea)
@@ -167,6 +178,9 @@ class SettingsView(QWidget, Ui_SettingsView):
 
         self.personalization_settings_group.addSettingCard(self.theme_card)
         self.personalization_settings_group.addSettingCard(self.theme_color_card)
+        if isWin11():
+            self.personalization_settings_group.addSettingCard(self.mica_card)
+
 
         self.scrollAreaWidgetContents.layout().addWidget(self.personalization_settings_group)
 
@@ -303,6 +317,8 @@ class SettingsView(QWidget, Ui_SettingsView):
     def __connectSignalToSlot(self):
         self.theme_card.optionChanged.connect(lambda ci: setTheme(workspace_specific_settings.get(ci)))
         self.theme_color_card.colorChanged.connect(lambda c: setThemeColor(c))
+        if isWin11():
+            self.mica_card.checkedChanged.connect(self.micaEnableChanged)
         # self.proxy_port_card.valueChanged.connect
 
         self.check_for_updates_now_card.clicked.connect(self.checkForUpdatesNow)
