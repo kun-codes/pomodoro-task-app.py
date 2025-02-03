@@ -126,13 +126,14 @@ class SettingsView(QWidget, Ui_SettingsView):
             self.tr("Change the theme color of you application"),
             self.personalization_settings_group,
         )
-        self.mica_card = SwitchSettingCard(
-            FluentIcon.TRANSPARENT,
-            "Mica effect",
-            "Apply semi transparent to windows and surfaces",
-            app_settings.micaEnabled,
-            self.personalization_settings_group
-        )
+        if isWin11():
+            self.mica_card = SwitchSettingCard(
+                FluentIcon.TRANSPARENT,
+                "Mica effect",
+                "Apply semi transparent to windows and surfaces",
+                app_settings.mica_enabled,
+                self.personalization_settings_group
+            )
 
         # Update Settings
         self.update_settings_group = SettingCardGroup("Updates", self.scrollArea)
@@ -316,7 +317,8 @@ class SettingsView(QWidget, Ui_SettingsView):
     def __connectSignalToSlot(self):
         self.theme_card.optionChanged.connect(lambda ci: setTheme(workspace_specific_settings.get(ci)))
         self.theme_color_card.colorChanged.connect(lambda c: setThemeColor(c))
-        self.mica_card.checkedChanged.connect(self.micaEnableChanged)
+        if isWin11():
+            self.mica_card.checkedChanged.connect(self.micaEnableChanged)
         # self.proxy_port_card.valueChanged.connect
 
         self.check_for_updates_now_card.clicked.connect(self.checkForUpdatesNow)
