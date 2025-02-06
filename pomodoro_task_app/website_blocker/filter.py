@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from mitmproxy import ctx, http
 
-from constants import BLOCK_HTML_MESSAGE
+from constants import BLOCK_HTML_MESSAGE, MITMDUMP_SHUTDOWN_URL
 
 
 def load(loader):
@@ -20,6 +20,18 @@ def load(loader):
 
 
 def request(flow):
+    # https://docs.mitmproxy.org/stable/addons-examples/#shutdown
+    if flow.request.pretty_url == MITMDUMP_SHUTDOWN_URL:
+        print("Shutting down mitmdump...")
+        # Send confirmation response before shutdown
+        flow.response = http.Response.make(
+            200,
+            b"Shutting down mitmproxy...\n",
+            {"Content-Type": "text/plain"}
+        )
+        ctx.master.shutdown()
+        return
+
     addresses = ctx.options.addresses_str.split(",")
     addresses = set(addresses)
 
