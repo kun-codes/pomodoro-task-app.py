@@ -45,6 +45,7 @@ BLOCK_HTML_MESSAGE = f"<h1>Website blocked by {APPLICATION_NAME}!</h1>"
 
 UPDATE_CHECK_URL = "https://raw.githubusercontent.com/kun-codes/pomodoro-task-app.py/refs/heads/main/pyproject.toml"
 NEW_RELEASE_URL = "https://github.com/kun-codes/pomodoro-task-app.py/releases/latest"
+MITMDUMP_SHUTDOWN_URL = f"http://shutdown.{APPLICATION_NAME.lower()}.internal/"
 
 
 class WebsiteFilterType(Enum):
