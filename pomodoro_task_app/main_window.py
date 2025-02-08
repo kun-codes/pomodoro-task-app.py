@@ -11,6 +11,7 @@ from qfluentwidgets import (
     InfoBar,
     InfoBarPosition,
     NavigationItemPosition,
+    PushButton,
     SystemThemeListener,
     Theme,
 )
@@ -76,11 +77,11 @@ class MainWindow(PomodoroFluentWindow):
 
         self.isSafeToShowTutorial = False
 
-        self.connectSignalsToSlots()
         self.initNavigation()
         self.initWindow()
         self.initSystemTray()
         self.initBottomBar()
+        self.connectSignalsToSlots()
 
         self.website_filter_interface.setEnabled(ConfigValues.ENABLE_WEBSITE_FILTER)
 
@@ -402,7 +403,7 @@ class MainWindow(PomodoroFluentWindow):
         """
         return self.task_interface.todoTasksList.model().currentTaskIndex()
 
-    def spawnTaskStartedInfoBar(self):
+    def spawnTaskStartedInfoBar(self, triggering_button: PushButton):
         if self.get_current_task_id() is None:
             return  # current task index can be None only when there is no tasks in todo list since when timer starts
         # a task would be automatically selected as the current task if any number of tasks other than zero are present
@@ -411,7 +412,7 @@ class MainWindow(PomodoroFluentWindow):
         # get name of task by its ID
         current_task_name = self.task_interface.todoTasksList.model().getTaskNameById(self.get_current_task_id())
 
-        if not self.pomodoro_interface.pauseResumeButton.isChecked():
+        if not triggering_button.isChecked():
             InfoBar.success(
                 title="Task Started",
                 content=f'Task named "{current_task_name}" has started',
@@ -522,7 +523,12 @@ class MainWindow(PomodoroFluentWindow):
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(
             lambda timerState: self.task_interface.autoSetCurrentTaskID() if timerState == TimerState.WORK else None
         )
-        self.pomodoro_interface.pauseResumeButton.clicked.connect(self.spawnTaskStartedInfoBar)
+        self.pomodoro_interface.pauseResumeButton.clicked.connect(lambda: self.spawnTaskStartedInfoBar(
+            self.pomodoro_interface.pauseResumeButton
+        ))
+        self.bottomBar.pauseResumeButton.clicked.connect(lambda: self.spawnTaskStartedInfoBar(
+            self.bottomBar.pauseResumeButton
+        ))
         self.pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.timeout.connect(self.updateTaskTime)
         self.task_interface.completedTasksList.model().taskMovedSignal.connect(self.check_current_task_moved)
         self.pomodoro_interface.pomodoro_timer_obj.sessionStoppedSignal.connect(self.updateTaskTimeDB)
