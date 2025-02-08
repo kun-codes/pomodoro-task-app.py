@@ -355,6 +355,7 @@ class MainWindow(PomodoroFluentWindow):
 
         urls = None
         block_type = None
+        joined_urls = ""
 
         if website_filter_type == WebsiteFilterType.BLOCKLIST:  # blocklist
             urls = self.website_filter_interface.model.get_urls(URLListType.BLOCKLIST)
