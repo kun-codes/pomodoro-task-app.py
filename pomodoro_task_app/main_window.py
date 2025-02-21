@@ -3,7 +3,7 @@ from pathlib import Path
 
 import darkdetect
 from loguru import logger
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 from qfluentwidgets import (
@@ -595,8 +595,8 @@ class MainWindow(PomodoroFluentWindow):
                     self.window(),
                     "Task View Tutorial",
                 )
-                # taskViewTutorialDialog.addImage("ezgif.gif", "this is a dog")
-                # taskViewTutorialDialog.addImage("img_2.gif", "this is a cat")
+                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile("add task.mkv"), "this is the first subtitle")
+                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile("delete task.mkv"), "this is a subtitle")
                 taskViewTutorialDialog.show()
 
                 app_settings.set(app_settings.has_visited_task_view, True)
