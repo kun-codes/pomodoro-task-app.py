@@ -72,6 +72,14 @@ jobs:
                     Expand-Archive -Path "mitmproxy-11.0.2-windows-x86_64.zip" -DestinationPath .
                     Copy-Item -Path "mitmdump.exe" -Destination "pomodoro-task-app.py\mitmdump.exe"
                     cd "pomodoro-task-app.py"
+                    
+            # Remove problematic brew libs if Intel Mac
+            # https://github.com/Nuitka/Nuitka/issues/2853#issuecomment-2119520735
+            - name: Remove problematic brew libs
+              if: matrix.os == 'macos-13'
+              run: |
+                  brew remove --force --ignore-dependencies openssl@3
+                  brew cleanup openssl@3
 
             -   name: Build Executable (Linux and MacOS)
                 if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'macos-13'
