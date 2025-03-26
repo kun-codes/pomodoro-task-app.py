@@ -102,6 +102,7 @@ jobs:
                         ./alembic.ini=./alembic.ini
                         ./pomodoro_task_app/migrations/*.py=./pomodoro_task_app/migrations/
                         ./pomodoro_task_app/migrations/versions/*.py=./pomodoro_task_app/migrations/versions/
+                        ./pomodoro_task_app/resources/tutorial_videos/*.mp4=./resources/tutorial_videos/
 
             -   name: Build Executable (Windows)
                 if: matrix.os == 'windows-latest'
@@ -124,6 +125,7 @@ jobs:
                         .\alembic.ini=.\alembic.ini
                         .\pomodoro_task_app\migrations\*.py=.\pomodoro_task_app\migrations\
                         .\pomodoro_task_app\migrations\versions\*.py=.\pomodoro_task_app\migrations\versions\
+                        .\pomodoro_task_app\resources\tutorial_videos\*.mp4=.\resources\tutorial_videos\
 
             -   name: Install tree (MacOS)
                 if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
