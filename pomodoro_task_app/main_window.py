@@ -591,12 +591,48 @@ class MainWindow(PomodoroFluentWindow):
             if (self.stackedWidget.currentWidget().objectName() == "task_interface" and
                     not app_settings.get(app_settings.has_visited_task_view)):
                 app_settings.set(app_settings.has_visited_task_view, True)
+
+                theme = app_settings.theme.value.lower()
+
                 taskViewTutorialDialog = TutorialDialog(
+
                     self.window(),
                     "Task View Tutorial",
                 )
-                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile("add task.mkv"), "this is the first subtitle")
-                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile("delete task.mkv"), "this is a subtitle")
+
+                # not using qt resources as videos aren't playable via qt resources and even if
+                # they are compiled into a resources python file, they take too much space for the python file.
+                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile(
+                    f"resources/tutorial_videos/{theme}_add_task.mp4"),
+                    "Add new tasks by clicking the \"Add Task\" button and entering the task name."
+                )
+                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile(
+                    f"resources/tutorial_videos/{theme}_editing_task_name.mp4"),
+                    "You can edit the task name by double clicking on the task name."
+                )
+                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile(
+                    f"resources/tutorial_videos/{theme}_editing_task_time.mp4"),
+                    "You can edit the elapsed time and the estimated time by selecting the task"
+                    "and clicking the \"Edit Task Time\" button."
+                )
+                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile(
+                    f"resources/tutorial_videos/{theme}_set_current_task.mp4"),
+                    "You can set the current task by selecting the task and clicking the "
+                    "\"Set Current Task\" button."
+                )
+                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile(
+                    f"resources/tutorial_videos/{theme}_reordering_tasks.mp4"),
+                    "You can reorder tasks by dragging them up or down in the task lists."
+                )
+                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile(
+                    f"resources/tutorial_videos/{theme}_moving_task_to_completed_task.mp4"),
+                    "You can mark tasks as completed by dragging them to the completed task list."
+                )
+                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile(
+                    f"resources/tutorial_videos/{theme}_delete_task.mp4"),
+                    "You can delete tasks by selecting the task and clicking the \"Delete Task\" button."
+                )
+
                 taskViewTutorialDialog.show()
 
                 app_settings.set(app_settings.has_visited_task_view, True)
@@ -606,8 +642,6 @@ class MainWindow(PomodoroFluentWindow):
                     self.window(),
                     "Pomodoro View Tutorial",
                 )
-                # pomodoroViewTutorialDialog.addImage("adjust time.gif", "You can adjust the duration"
-                #                                                        " of the pomodoro session in the settings")
                 pomodoroViewTutorialDialog.show()
 
                 app_settings.set(app_settings.has_visited_pomodoro_view, True)
