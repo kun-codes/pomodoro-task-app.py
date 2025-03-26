@@ -123,6 +123,7 @@ class TutorialDialog(MessageBoxBase):
         containerWidget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         containerWidgetLayout = QVBoxLayout(containerWidget)
+        containerWidgetLayout.setSpacing(20)
 
         videoWidget = AutoLoopVideoWidget(parent=self)
         videoWidget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -133,6 +134,7 @@ class TutorialDialog(MessageBoxBase):
 
         captionLabel = BodyLabel(captionText, self)
         captionLabel.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        captionLabel.setWordWrap(True)
 
         containerWidgetLayout.addWidget(videoWidget, 1)
         containerWidgetLayout.addWidget(captionLabel, 0)
