@@ -95,7 +95,6 @@ jobs:
                     include-module: |
                         logging.config
                     include-qt-plugins: |
-                        sensible
                         multimedia
                     include-data-files: |
                         ./pomodoro_task_app/website_blocker/filter.py=./website_blocker/filter.py
@@ -121,7 +120,6 @@ jobs:
                     include-module: |
                         logging.config
                     include-qt-plugins: |
-                        sensible
                         multimedia
                     include-data-files: |
                         .\pomodoro_task_app\website_blocker\filter.py=.\website_blocker\filter.py
