@@ -98,6 +98,7 @@ jobs:
                         multimedia
                     noinclude-qt-plugins: |
                         pdf
+                        qml
                     include-data-files: |
                         ./pomodoro_task_app/website_blocker/filter.py=./website_blocker/filter.py
                         ./pomodoro_task_app/constants.py=./constants.py
@@ -125,6 +126,7 @@ jobs:
                         multimedia
                     noinclude-qt-plugins: |
                         pdf
+                        qml
                     include-data-files: |
                         .\pomodoro_task_app\website_blocker\filter.py=.\website_blocker\filter.py
                         .\pomodoro_task_app\constants.py=.\constants.py
