@@ -5,6 +5,7 @@ import darkdetect
 from loguru import logger
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QIcon
+from PySide6.QtMultimedia import QMediaPlayer
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 from qfluentwidgets import (
     FluentIcon,
@@ -600,6 +601,8 @@ class MainWindow(PomodoroFluentWindow):
                     "Task View Tutorial",
                 )
 
+                self.check_multimedia()
+
                 # not using qt resources as videos aren't playable via qt resources and even if
                 # they are compiled into a resources python file, they take too much space for the python file.
                 taskViewTutorialDialog.addVideo(QUrl.fromLocalFile(
@@ -633,6 +636,8 @@ class MainWindow(PomodoroFluentWindow):
                     "You can delete tasks by selecting the task and clicking the \"Delete Task\" button."
                 )
 
+                self.check_multimedia()
+
                 taskViewTutorialDialog.show()
 
                 app_settings.set(app_settings.has_visited_task_view, True)
@@ -654,6 +659,12 @@ class MainWindow(PomodoroFluentWindow):
                 websiteFilterViewTutorialDialog.show()
 
                 app_settings.set(app_settings.has_visited_website_filter_view, True)
+
+    def check_multimedia(self):
+        player = QMediaPlayer()
+        print(f"Media player available: {player is not None}")
+        print(f"Media player error: {player.error()}")
+        print(f"Media player error string: {player.errorString()}")
 
     def on_website_filter_enabled_setting_changed(self):
         enable_website_filter_setting_value = ConfigValues.ENABLE_WEBSITE_FILTER
