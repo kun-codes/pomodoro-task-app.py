@@ -94,6 +94,9 @@ jobs:
                     linux-icon: 'assets/logo.ico'
                     include-module: |
                         logging.config
+                    include-qt-plugins: |
+                        multimedia
+                        multimediawidgets
                     include-data-files: |
                         ./pomodoro_task_app/website_blocker/filter.py=./website_blocker/filter.py
                         ./pomodoro_task_app/constants.py=./constants.py
@@ -117,6 +120,9 @@ jobs:
                     enable-plugins: 'pyside6'
                     include-module: |
                         logging.config
+                    include-qt-plugins: |
+                        multimedia
+                        multimediawidgets
                     include-data-files: |
                         .\pomodoro_task_app\website_blocker\filter.py=.\website_blocker\filter.py
                         .\pomodoro_task_app\constants.py=.\constants.py
