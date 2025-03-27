@@ -1,6 +1,7 @@
 from loguru import logger
 from PySide6.QtCore import QAbstractListModel, QByteArray, QDataStream, QIODevice, QMimeData, QModelIndex, Qt, Signal
 from PySide6.QtGui import QColor
+from qfluentwidgets import FluentIcon
 from sqlalchemy import update
 
 from models.config import AppSettings
@@ -44,7 +45,7 @@ class TaskListModel(QAbstractListModel):
                     "task_position": task.task_position,
                     "elapsed_time": task.elapsed_time,  # in ms
                     "target_time": task.target_time,  # in ms
-                    "icon": None,
+                    "icon": FluentIcon.PLAY if self.task_type == TaskType.TODO else FluentIcon.MENU,
                 }
                 for task in session.query(Task)
                 .filter(Task.task_type == self.task_type)
@@ -103,6 +104,12 @@ class TaskListModel(QAbstractListModel):
             target_time = value
             self.tasks[row]["target_time"] = target_time
             self.update_db()
+            self.dataChanged.emit(index, index)
+            return True
+        elif role == self.IconRole:
+            row = index.row()
+            icon = value
+            self.tasks[row]["icon"] = icon
             self.dataChanged.emit(index, index)
             return True
         return False
@@ -178,7 +185,7 @@ class TaskListModel(QAbstractListModel):
                     "task_position": row,
                     "elapsed_time": elapsed_time,
                     "target_time": target_time,
-                    "icon": None,
+                    "icon": FluentIcon.PLAY if self.task_type == TaskType.TODO else FluentIcon.MENU,
                 }
             )
 
@@ -272,6 +279,7 @@ class TaskListModel(QAbstractListModel):
             "task_position": row,
             "elapsed_time": 0,
             "target_time": 0,
+            "icon": FluentIcon.PLAY if self.task_type == TaskType.TODO else FluentIcon.MENU,
         }
 
         logger.debug(f"Task list new member: {task_list_new_member}")
