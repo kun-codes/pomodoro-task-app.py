@@ -292,6 +292,11 @@ class TaskListModel(QAbstractListModel):
             del self.tasks[row]
             logger.debug(f"tasks: {self.tasks}")
         self.endRemoveRows()
+
+        # Update task positions
+        for i, task in enumerate(self.tasks):
+            task["task_position"] = i
+
         self.layoutChanged.emit()
         return True
 
