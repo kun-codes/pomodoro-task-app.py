@@ -30,6 +30,9 @@ class TaskListItemDelegate(ListItemDelegate):
         task_id = model.data(index, TaskListModel.IDRole)  # Get task ID
 
         button = TransparentToggleToolButton(self.parent().viewport())
+
+        if self.parent().objectName() == "completedTasksList":
+            button.setCheckable(False)  # buttons in completedTasksList cannot be clicked
         button.setIcon(model.data(index, TaskListModel.IconRole))
         button.setFixedSize(self.button_size, self.button_size)
         button.setToolTip("Pause/Resume")
