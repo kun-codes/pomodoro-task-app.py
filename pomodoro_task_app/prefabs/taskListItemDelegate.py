@@ -1,7 +1,9 @@
-from PySide6.QtCore import QModelIndex, QRect, Qt
+from PySide6.QtCore import QModelIndex, QRect, Qt, QEvent
 from PySide6.QtGui import QColor, QFontMetrics, QPainter
 from PySide6.QtWidgets import QListView, QStyledItemDelegate, QStyleOptionViewItem, QWidget
-from qfluentwidgets import ListItemDelegate, isDarkTheme
+from loguru import logger
+from qfluentwidgets import ListItemDelegate, isDarkTheme, ToolButton, FluentIcon, ToggleToolButton, \
+    TransparentToggleToolButton
 
 from models.task_list_model import TaskListModel
 from utils.time_conversion import convert_ms_to_hh_mm_ss
@@ -12,9 +14,74 @@ class TaskListItemDelegate(ListItemDelegate):
 
     def __init__(self, parent: QListView):
         super().__init__(parent)
+        self.buttons = {}  # Store buttons for each row
+        self.button_size = 24  # Size of the tool button
+        self.button_margin = 5  # Margin around the button
+
+        # Connect to the parent's viewport to listen for mouse events
+        parent.viewport().installEventFilter(self)
+
+        logger.debug(f"Model: {parent.model()}")
+
+
+    def createButton(self, index):
+        """Create a ToolButton for the specified index"""
+        model = self.parent().model()
+        task_id = model.data(index, TaskListModel.IDRole)  # Get task ID
+
+        button = TransparentToggleToolButton(self.parent().viewport())
+        button.setIcon(model.data(index, TaskListModel.IconRole))
+        button.setFixedSize(self.button_size, self.button_size)
+        button.setToolTip("Pause/Resume")
+
+        # Connect using task_id instead of row
+        button.clicked.connect(lambda checked, tid=task_id: self.onButtonClicked(checked, tid))
+
+        # Store button with task_id as key
+        self.buttons[task_id] = button
+        return button
+
+    def onButtonClicked(self, checked, task_id):
+        """Handle button clicks using task_id"""
+        if self.parent().objectName() == 'completedTasksList':
+            return
+
+        model = self.parent().model()
+
+        # Find the row for this task_id
+        row = -1
+        for i in range(model.rowCount()):
+            index = model.index(i, 0)
+            if model.data(index, TaskListModel.IDRole) == task_id:
+                row = i
+                break
+
+        if row == -1:
+            return
+
+        index = model.index(row, 0)
+        task_name = model.data(index, Qt.DisplayRole)
+        logger.debug(f"Button clicked for task ID {task_id}, row {row}: {task_name}, checked: {checked}")
+
+        button = self.buttons[task_id]
+        icon = FluentIcon.PAUSE if checked else FluentIcon.PLAY
+        model.setData(index, icon, TaskListModel.IconRole, update_db=False)
+        button.setIcon(icon)
+
+        # Set every other button to unchecked
+        for i in range(model.rowCount()):
+            idx = model.index(i, 0)
+            tid = model.data(idx, TaskListModel.IDRole)
+            if tid != task_id and tid in self.buttons:
+                self.buttons[tid].setChecked(False)
+                model.setData(idx, FluentIcon.PLAY, TaskListModel.IconRole, update_db=False)
+                self.buttons[tid].setIcon(FluentIcon.PLAY)
+
+        if self.parent().objectName() == 'todoTasksList':
+            model.setCurrentTaskID(task_id)
+            self.parent().viewport().update()
 
     def paint(self, painter, option, index):
-        # I had to copy-paste the method from TableItemDelegate
         painter.save()
         painter.setPen(Qt.NoPen)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -89,16 +156,56 @@ class TaskListItemDelegate(ListItemDelegate):
         hello_world_rect = QRect(hello_world_x, option.rect.top(), time_text_width, option.rect.height())
         painter.drawText(hello_world_rect, Qt.AlignRight | Qt.AlignVCenter, time_text)
 
+        # Get task ID
+        task_id = index.data(TaskListModel.IDRole)
+
+        # Delete buttons for tasks that no longer exist
+        task_ids = set()
+        model = self.parent().model()
+        for i in range(model.rowCount()):
+            idx = model.index(i, 0)
+            task_ids.add(model.data(idx, TaskListModel.IDRole))
+
+        for tid in list(self.buttons.keys()):
+            if tid not in task_ids:
+                button = self.buttons.pop(tid)
+                button.deleteLater()
+
+        # Create or position the button for this task
+        if task_id not in self.buttons:
+            self.createButton(index)
+
+        button = self.buttons[task_id]
+        button_x = option.rect.left() + self.button_margin
+        button_y = option.rect.top() + (option.rect.height() - self.button_size) // 2
+        button.setGeometry(button_x, button_y, self.button_size, self.button_size)
+        button.setVisible(True)
+
         painter.restore()
 
-        # reduce option.rect from the right by the width of the time text
-        option.rect.adjust(0, 0, -time_text_width - 10, 0)
-        QStyledItemDelegate.paint(self, painter, option, index)  # manually calling parent class paint method to avoid
-        # multiple calls to _drawBackground and _drawIndicator
+        # Adjust option.rect to account for button and time text
+        button_width = self.button_size + 2 * self.button_margin
+        adjusted_option = QStyleOptionViewItem(option)
+        adjusted_option.rect.adjust(button_width, 0, -time_text_width - 10, 0)
+
+        QStyledItemDelegate.paint(self, painter, adjusted_option, index)
 
     def updateEditorGeometry(self, editor: QWidget, option: QStyleOptionViewItem, index: QModelIndex):
         rect = option.rect
         y = rect.y() + (rect.height() - editor.height()) // 2
-        x, w = max(5, rect.x()), rect.width() - 5  # breadth of indicator drawn is 3, arbitrarily set to 5
+
+        # Account for button width
+        button_width = self.button_size + 2 * self.button_margin
+        x = max(5, rect.x() + button_width)
+        w = rect.width() - button_width - 5  # Adjust width for button
 
         editor.setGeometry(x, y, w, rect.height())
+
+    def sizeHint(self, option, index):
+        """Ensure the item is tall enough for the button"""
+        size = super().sizeHint(option, index)
+        min_height = self.button_size + 2 * self.margin
+        if size.height() < min_height:
+            size.setHeight(min_height)
+        return size
+
