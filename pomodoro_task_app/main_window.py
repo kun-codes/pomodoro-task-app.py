@@ -68,6 +68,8 @@ class MainWindow(PomodoroFluentWindow):
         self.website_filter_interface = WebsiteBlockerView(self.workplace_list_model)
         self.website_filter_interface.setObjectName("website_filter_interface")
 
+        self.setObjectName("main_window")
+
         self.manage_workspace_dialog = None
 
         self.website_blocker_manager = WebsiteBlockerManager()
@@ -228,7 +230,7 @@ class MainWindow(PomodoroFluentWindow):
             self.tray_menu_pause_resume_action.setEnabled(False)
             self.tray_menu_start_action.setEnabled(True)
 
-    # below 4 methods are for the bottom bar
+    # below 2 methods are for the bottom bar
     def initBottomBar(self):
         self.update_bottom_bar_timer_label()
 
@@ -252,23 +254,6 @@ class MainWindow(PomodoroFluentWindow):
             self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
         else:
             self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PAUSE)
-
-    def syncBottomBarPauseResumeButton(self):
-        """Sync bottom bar button state with pomodoro view button"""
-        self.bottomBar.pauseResumeButton.setChecked(self.pomodoro_interface.pauseResumeButton.isChecked())
-        if self.bottomBar.pauseResumeButton.isChecked():
-            self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
-        else:
-            self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PAUSE)
-
-    def changeBottomBarPauseResumeButtonCheckedState(self, checked_state: bool):
-        """Reset bottom bar button to initial state"""
-        if checked_state:
-            self.bottomBar.pauseResumeButton.setChecked(True)
-            self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
-        else:
-            self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PAUSE)
-            self.bottomBar.pauseResumeButton.setChecked(False)
 
     def showNotifications(self, timerState, isSkipped):
         title = ""
@@ -403,6 +388,12 @@ class MainWindow(PomodoroFluentWindow):
         Convenience method to get the current task index from the todoTasksList model
         """
         return self.task_interface.todoTasksList.model().currentTaskIndex()
+
+    def get_todo_task_list_item_delegate(self):
+        """
+        Convenience method to get the item delegate of the todo list
+        """
+        return self.task_interface.todoTasksList.itemDelegate()
 
     def spawnTaskStartedInfoBar(self, triggering_button: PushButton):
         if self.get_current_task_id() is None:
@@ -559,17 +550,7 @@ class MainWindow(PomodoroFluentWindow):
         )
         self.stackedWidget.mousePressEvent = self.onStackedWidgetClicked
         self.settings_interface.proxy_port_card.valueChanged.connect(self.update_proxy_port)
-        # Sync pomodoro view button state with bottom bar button
-        self.pomodoro_interface.pauseResumeButton.clicked.connect(lambda: self.syncBottomBarPauseResumeButton())
-        self.pomodoro_interface.pomodoro_timer_obj.sessionStoppedSignal.connect(
-            lambda: self.changeBottomBarPauseResumeButtonCheckedState(True)
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.waitForUserInputSignal.connect(
-            lambda: self.changeBottomBarPauseResumeButtonCheckedState(True)
-        )
-        self.pomodoro_interface.pomodoro_timer_obj.durationSkippedSignal.connect(
-            lambda: self.changeBottomBarPauseResumeButtonCheckedState(False)
-        )
+
         self.task_interface.todoTasksList.model().currentTaskChangedSignal.connect(
             lambda task_id: self.bottomBar.taskLabel.setText(
                 f"Current Task: {self.task_interface.todoTasksList.model().getTaskNameById(task_id)}"
@@ -585,6 +566,59 @@ class MainWindow(PomodoroFluentWindow):
 
         # for mica effect
         self.settings_interface.micaEnableChanged.connect(self.setMicaEffectEnabled)
+
+        self.pomodoro_interface.pomodoro_timer_obj.sessionPausedSignal.connect(
+            self.setPauseResumeButtonsToPlayIcon
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.sessionStoppedSignal.connect(
+            self.setPauseResumeButtonsToPlayIcon
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.sessionStartedSignal.connect(
+            self.setPauseResumeButtonsToPauseIcon
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.waitForUserInputSignal.connect(
+            self.setPauseResumeButtonsToPauseIcon
+        )
+        self.pomodoro_interface.pomodoro_timer_obj.durationSkippedSignal.connect(
+            self.setPauseResumeButtonsToPauseIcon
+        )
+        self.task_interface.todoTasksList.itemDelegate().pauseResumeButtonClicked.connect(
+            lambda task_id, checked:
+            self.setPauseResumeButtonsToPauseIcon(True) if checked else self.setPauseResumeButtonsToPlayIcon(True)
+        )
+
+    def setPauseResumeButtonsToPauseIcon(self, skip_delegate_button=False):
+        self.pomodoro_interface.pauseResumeButton.setIcon(FluentIcon.PAUSE)
+        self.pomodoro_interface.pauseResumeButton.setChecked(False)
+
+        self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PAUSE)
+        self.bottomBar.pauseResumeButton.setChecked(False)
+
+        # todo: find why this is required
+        if skip_delegate_button or self.get_current_task_id() is None:
+            return
+
+        self.get_todo_task_list_item_delegate().buttons[self.get_current_task_id()].setChecked(True)
+        self.get_todo_task_list_item_delegate().setCheckedStateOfButton(
+            checked=True,
+            task_id=self.get_current_task_id()
+        )
+
+    def setPauseResumeButtonsToPlayIcon(self, skip_delegate_button=False):
+        self.pomodoro_interface.pauseResumeButton.setIcon(FluentIcon.PLAY)
+        self.pomodoro_interface.pauseResumeButton.setChecked(True)
+
+        self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
+        self.bottomBar.pauseResumeButton.setChecked(True)
+
+        if skip_delegate_button or self.get_current_task_id() is None:
+            return
+
+        self.get_todo_task_list_item_delegate().buttons[self.get_current_task_id()].setChecked(False)
+        self.get_todo_task_list_item_delegate().setCheckedStateOfButton(
+            checked=False,
+            task_id=self.get_current_task_id()
+        )
 
     def showTutorial(self):
         if self.isSafeToShowTutorial:

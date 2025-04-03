@@ -1,9 +1,8 @@
-from PySide6.QtCore import QModelIndex, QRect, Qt, QEvent
+from loguru import logger
+from PySide6.QtCore import QModelIndex, QRect, Qt, Signal
 from PySide6.QtGui import QColor, QFontMetrics, QPainter
 from PySide6.QtWidgets import QListView, QStyledItemDelegate, QStyleOptionViewItem, QWidget
-from loguru import logger
-from qfluentwidgets import ListItemDelegate, isDarkTheme, ToolButton, FluentIcon, ToggleToolButton, \
-    TransparentToggleToolButton
+from qfluentwidgets import FluentIcon, ListItemDelegate, TransparentToggleToolButton, isDarkTheme
 
 from models.task_list_model import TaskListModel
 from utils.time_conversion import convert_ms_to_hh_mm_ss
@@ -11,6 +10,8 @@ from utils.time_conversion import convert_ms_to_hh_mm_ss
 
 class TaskListItemDelegate(ListItemDelegate):
     """List item delegate"""
+
+    pauseResumeButtonClicked = Signal(int, bool)  # task_id of clicked button, checked state of clicked button
 
     def __init__(self, parent: QListView):
         super().__init__(parent)
@@ -21,6 +22,8 @@ class TaskListItemDelegate(ListItemDelegate):
         # Connect to the parent's viewport to listen for mouse events
         parent.viewport().installEventFilter(self)
 
+        self._pomodoro_interface = None
+
         logger.debug(f"Model: {parent.model()}")
 
 
@@ -30,16 +33,34 @@ class TaskListItemDelegate(ListItemDelegate):
         task_id = model.data(index, TaskListModel.IDRole)  # Get task ID
 
         button = TransparentToggleToolButton(self.parent().viewport())
+
+        if self.parent().objectName() == "completedTasksList":
+            button.setCheckable(False)  # buttons in completedTasksList cannot be clicked
+
         button.setIcon(model.data(index, TaskListModel.IconRole))
+
         button.setFixedSize(self.button_size, self.button_size)
         button.setToolTip("Pause/Resume")
 
-        # Connect using task_id instead of row
         button.clicked.connect(lambda checked, tid=task_id: self.onButtonClicked(checked, tid))
 
         # Store button with task_id as key
         self.buttons[task_id] = button
         return button
+
+    def _get_pomodoro_interface(self):
+        # find the parent widget with the name "pomodoro_interface"
+        if self._pomodoro_interface:
+            return self._pomodoro_interface
+
+        parent = self.parent()
+        while parent:
+            if parent.objectName() == "main_window":
+                break
+            parent = parent.parent()
+
+        # find child of parent with name pomodoro_interface
+        return parent.findChild(QWidget, "pomodoro_interface", options=Qt.FindChildOption.FindChildrenRecursively)
 
     def onButtonClicked(self, checked, task_id):
         """Handle button clicks using task_id"""
@@ -57,13 +78,26 @@ class TaskListItemDelegate(ListItemDelegate):
                 break
 
         if row == -1:
+            logger.warning(f"Triggered after clicking buttons inside taskList. Task ID {task_id} not found in model.")
             return
+
+        # simulate the click the pauseResumeButton of pomodoro_interface but don't actually click it
+        button = self.buttons[task_id]
+        self.pauseResumeButtonClicked.emit(task_id, button.isChecked())
+
+        if self._pomodoro_interface is None:  # get the pomodoro_interface only if it is not already set
+            self._pomodoro_interface = self._get_pomodoro_interface()
+
+        # hack to stop the timer so that when another item in this delegate is clicked while timer is running, the
+        # duration isn't restarted. Its similar to pausing and resuming but the pause in this case has almost no
+        # downtime
+        self._pomodoro_interface.pomodoro_timer_obj.pomodoro_timer.stop()
+        self._pomodoro_interface.pauseResumeButtonClicked()
 
         index = model.index(row, 0)
         task_name = model.data(index, Qt.DisplayRole)
         logger.debug(f"Button clicked for task ID {task_id}, row {row}: {task_name}, checked: {checked}")
 
-        button = self.buttons[task_id]
         icon = FluentIcon.PAUSE if checked else FluentIcon.PLAY
         model.setData(index, icon, TaskListModel.IconRole, update_db=False)
         button.setIcon(icon)
@@ -80,6 +114,12 @@ class TaskListItemDelegate(ListItemDelegate):
         if self.parent().objectName() == 'todoTasksList':
             model.setCurrentTaskID(task_id)
             self.parent().viewport().update()
+
+    def setCheckedStateOfButton(self, task_id, checked):
+        button = self.buttons.get(task_id)
+        if button:
+            button.setChecked(checked)
+            button.setIcon(FluentIcon.PAUSE if checked else FluentIcon.PLAY)
 
     def paint(self, painter, option, index):
         painter.save()
