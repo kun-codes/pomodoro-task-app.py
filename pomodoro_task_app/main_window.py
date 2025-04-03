@@ -68,6 +68,8 @@ class MainWindow(PomodoroFluentWindow):
         self.website_filter_interface = WebsiteBlockerView(self.workplace_list_model)
         self.website_filter_interface.setObjectName("website_filter_interface")
 
+        self.setObjectName("main_window")
+
         self.manage_workspace_dialog = None
 
         self.website_blocker_manager = WebsiteBlockerManager()
@@ -387,6 +389,12 @@ class MainWindow(PomodoroFluentWindow):
         """
         return self.task_interface.todoTasksList.model().currentTaskIndex()
 
+    def get_todo_task_list_item_delegate(self):
+        """
+        Convenience method to get the item delegate of the todo list
+        """
+        return self.task_interface.todoTasksList.itemDelegate()
+
     def spawnTaskStartedInfoBar(self, triggering_button: PushButton):
         if self.get_current_task_id() is None:
             return  # current task index can be None only when there is no tasks in todo list since when timer starts
@@ -574,20 +582,43 @@ class MainWindow(PomodoroFluentWindow):
         self.pomodoro_interface.pomodoro_timer_obj.durationSkippedSignal.connect(
             self.setPauseResumeButtonsToPauseIcon
         )
+        self.task_interface.todoTasksList.itemDelegate().pauseResumeButtonClicked.connect(
+            lambda task_id, checked:
+            self.setPauseResumeButtonsToPauseIcon(True) if checked else self.setPauseResumeButtonsToPlayIcon(True)
+        )
 
-    def setPauseResumeButtonsToPauseIcon(self):
+    def setPauseResumeButtonsToPauseIcon(self, skip_delegate_button=False):
         self.pomodoro_interface.pauseResumeButton.setIcon(FluentIcon.PAUSE)
         self.pomodoro_interface.pauseResumeButton.setChecked(False)
 
         self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PAUSE)
         self.bottomBar.pauseResumeButton.setChecked(False)
 
-    def setPauseResumeButtonsToPlayIcon(self):
+        # todo: find why this is required
+        if skip_delegate_button or self.get_current_task_id() is None:
+            return
+
+        self.get_todo_task_list_item_delegate().buttons[self.get_current_task_id()].setChecked(True)
+        self.get_todo_task_list_item_delegate().setCheckedStateOfButton(
+            checked=True,
+            task_id=self.get_current_task_id()
+        )
+
+    def setPauseResumeButtonsToPlayIcon(self, skip_delegate_button=False):
         self.pomodoro_interface.pauseResumeButton.setIcon(FluentIcon.PLAY)
         self.pomodoro_interface.pauseResumeButton.setChecked(True)
 
         self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
         self.bottomBar.pauseResumeButton.setChecked(True)
+
+        if skip_delegate_button or self.get_current_task_id() is None:
+            return
+
+        self.get_todo_task_list_item_delegate().buttons[self.get_current_task_id()].setChecked(False)
+        self.get_todo_task_list_item_delegate().setCheckedStateOfButton(
+            checked=False,
+            task_id=self.get_current_task_id()
+        )
 
     def showTutorial(self):
         if self.isSafeToShowTutorial:
