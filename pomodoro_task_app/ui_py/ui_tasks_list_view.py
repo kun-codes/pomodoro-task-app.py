@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'tasks_list_view.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -45,11 +45,6 @@ class Ui_TaskView(object):
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
-
-        self.changeCurrentTaskButton = ToolButton(self.scrollAreaWidgetContents)
-        self.changeCurrentTaskButton.setObjectName(u"changeCurrentTaskButton")
-
-        self.horizontalLayout.addWidget(self.changeCurrentTaskButton)
 
         self.editTaskTimeButton = ToolButton(self.scrollAreaWidgetContents)
         self.editTaskTimeButton.setObjectName(u"editTaskTimeButton")

@@ -60,7 +60,6 @@ class TaskListView(Ui_TaskView, QWidget):
         self.addTaskButton.setIcon(FluentIcon.ADD)
         self.deleteTaskButton.setIcon(FluentIcon.DELETE)
         self.editTaskTimeButton.setIcon(FluentIcon.EDIT)
-        self.changeCurrentTaskButton.setIcon(CustomFluentIcon.CHANGE_CURRENT_TASK)
 
         self.addTaskButton.setToolTip("Add Task")
         self.addTaskButton.installEventFilter(
@@ -74,16 +73,11 @@ class TaskListView(Ui_TaskView, QWidget):
         self.editTaskTimeButton.installEventFilter(
             ToolTipFilter(self.editTaskTimeButton, showDelay=300, position=ToolTipPosition.BOTTOM)
         )
-        self.changeCurrentTaskButton.setToolTip("Change Current Task")
-        self.changeCurrentTaskButton.installEventFilter(
-            ToolTipFilter(self.changeCurrentTaskButton, showDelay=300, position=ToolTipPosition.BOTTOM)
-        )
 
     def connectSignalsToSlots(self):
         self.addTaskButton.clicked.connect(self.addTask)
         self.deleteTaskButton.clicked.connect(self.deleteTask)
         self.editTaskTimeButton.clicked.connect(self.editTaskTime)
-        self.changeCurrentTaskButton.clicked.connect(self.setCurrentTaskID)
 
     def addTask(self):
         dialog = AddTaskDialog(self.window())
@@ -164,14 +158,6 @@ class TaskListView(Ui_TaskView, QWidget):
             self.todoTasksList.model().setCurrentTaskID(self.todoTasksList.model().index(0).data(TaskListModel.IDRole))
         else:
             self.todoTasksList.model().setCurrentTaskID(None)
-
-        self.todoTasksList.viewport().update()
-
-    def setCurrentTaskID(self):
-        # self.todoTasksList.model().setCurrentTaskIndex(self.todoTasksList.selectionModel().currentIndex())
-        self.todoTasksList.model().setCurrentTaskID(
-            self.todoTasksList.selectionModel().currentIndex().data(TaskListModel.IDRole)
-        )
 
         self.todoTasksList.viewport().update()
 
