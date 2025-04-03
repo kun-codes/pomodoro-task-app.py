@@ -33,11 +33,12 @@ class TaskListItemDelegate(ListItemDelegate):
 
         if self.parent().objectName() == "completedTasksList":
             button.setCheckable(False)  # buttons in completedTasksList cannot be clicked
+
         button.setIcon(model.data(index, TaskListModel.IconRole))
+
         button.setFixedSize(self.button_size, self.button_size)
         button.setToolTip("Pause/Resume")
 
-        # Connect using task_id instead of row
         button.clicked.connect(lambda checked, tid=task_id: self.onButtonClicked(checked, tid))
 
         # Store button with task_id as key
@@ -60,6 +61,7 @@ class TaskListItemDelegate(ListItemDelegate):
                 break
 
         if row == -1:
+            logger.warning(f"Triggered after clicking buttons inside taskList. Task ID {task_id} not found in model.")
             return
 
         index = model.index(row, 0)
