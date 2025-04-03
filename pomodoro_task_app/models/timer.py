@@ -19,6 +19,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
     sessionStoppedSignal = Signal()
     waitForUserInputSignal = Signal()
     sessionPausedSignal = Signal()
+    sessionStartedSignal = Signal()
     durationSkippedSignal = Signal()
 
     def __init__(self):
@@ -106,6 +107,7 @@ class PomodoroTimer(QObject):  # Inherit from QObject to support signals
 
     def startDuration(self):
         self.pomodoro_timer.start(self.timer_resolution)
+        self.sessionStartedSignal.emit()
 
     def pauseDuration(self):
         self.previous_timer_state = self.timer_state
