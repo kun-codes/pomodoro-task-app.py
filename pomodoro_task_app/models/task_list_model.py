@@ -128,12 +128,28 @@ class TaskListModel(QAbstractListModel):
         return Qt.DropAction.MoveAction
 
     def mimeData(self, indexes):
+        # First update the elapsed time for the task before drag starts
+        if self.task_type == TaskType.TODO and self.current_task_id is not None:
+            # Update the database with the current elapsed time to avoid losing time during drag
+            current_task_index = None
+            for i, task in enumerate(self.tasks):
+                if task["id"] == self.current_task_id:
+                    current_task_index = self.index(i)
+                    break
+                    
+            if current_task_index is not None:
+                self.setData(current_task_index, task["elapsed_time"], self.ElapsedTimeRole, update_db=True)
+        
         mime_data = QMimeData()
         encoded_data = QByteArray()
         stream = QDataStream(encoded_data, QIODevice.WriteOnly)
+        
+        # Store rows being dragged
+        rows_being_dragged = []
         for index in indexes:
             if index.isValid():
                 row = index.row()
+                rows_being_dragged.append(row)
                 task_id = self.tasks[row]["id"]
                 stream.writeInt32(row)
                 stream.writeInt32(task_id)
@@ -141,25 +157,19 @@ class TaskListModel(QAbstractListModel):
                 stream.writeInt64(self.tasks[row]["elapsed_time"])
                 stream.writeInt64(self.tasks[row]["target_time"])
 
-        # update task positions
-        rows_to_be_remove = []
-        for index in indexes:
-            if index.isValid():
-                row = index.row()
-                rows_to_be_remove.append(row)
+        # Store the indices being dragged in the mime data for later use
+        task_ids_bytes = QByteArray()
+        id_stream = QDataStream(task_ids_bytes, QIODevice.WriteOnly)
+        for row in rows_being_dragged:
+            id_stream.writeInt32(self.tasks[row]["id"])
+        mime_data.setData("application/x-task-ids", task_ids_bytes)
 
-        removed_rows_count = 0
-        for i, task in enumerate(self.tasks):
-            if i in rows_to_be_remove:
-                task["task_position"] = -1  # setting task position to -1 to indicate that it will be removed
-                removed_rows_count += 1
-            else:
-                task["task_position"] = i - removed_rows_count  # subtracting removed rows count from current index
-                # so that numbers skipped for removed rows are accounted for
-        self.update_db()
+        # Don't update task positions or database here - we'll do that in dropMimeData
+        # This prevents prematurely marking tasks with position -1 when they might be
+        # dropped back in the same position
 
-        logger.debug(self.task_type)
-        logger.debug(self.tasks)
+        logger.debug(f"Dragging from task type: {self.task_type}")
+        logger.debug(f"Rows being dragged: {rows_being_dragged}")
 
         mime_data.setData("application/x-qabstractitemmodeldatalist", encoded_data)
         return mime_data
@@ -168,44 +178,103 @@ class TaskListModel(QAbstractListModel):
         if not data.hasFormat("application/x-qabstractitemmodeldatalist"):
             return False
 
+        logger.debug(f"row: {row}")
+
+        # If row is -1, it means drop at the end
+        # Qt signals this special case when items are dropped:
+        # 1. After the last visible item
+        # 2. In empty space below items
+        # 3. In a location that doesn't map to a specific row
+        if row == -1:
+            row = self.rowCount()
+
         encoded_data = data.data("application/x-qabstractitemmodeldatalist")
         stream = QDataStream(encoded_data, QIODevice.ReadOnly)
-        new_tasks = []
-
+        
+        # Create a list to store tasks being dropped
+        drop_tasks = []
+        task_ids = []
+        
+        # Read all task data from the stream
         while not stream.atEnd():
-            original_row = stream.readInt32()  # noqa: F841
+            source_row = stream.readInt32()
             task_id = stream.readInt32()
+            task_ids.append(task_id)
             task_name = stream.readQString()
             elapsed_time = stream.readInt64()
             target_time = stream.readInt64()
-            new_tasks.append(
-                {
-                    "id": task_id,
-                    "task_name": task_name,
-                    "task_position": row,
-                    "elapsed_time": elapsed_time,
-                    "target_time": target_time,
-                    "icon": FluentIcon.PLAY if self.task_type == TaskType.TODO else FluentIcon.MENU,
-                }
-            )
-
-        self.beginInsertRows(parent, row, row + len(new_tasks) - 1)
-        for task in new_tasks:
-            self.tasks.insert(row, task)
-            row += 1
-            self.taskMovedSignal.emit(task["id"], self.task_type)
-        self.endInsertRows()
-
-        # Update task positions
+            
+            # For the current task, check if we need to update the elapsed time from in-memory cache
+            if self.task_type == TaskType.TODO and self.current_task_id == task_id:
+                # Get the latest in-memory elapsed time value
+                for existing_task in self.tasks:
+                    if existing_task["id"] == task_id:
+                        # Use the most up-to-date value
+                        elapsed_time = existing_task["elapsed_time"]
+                        logger.debug(f"Updated elapsed time for current task during drop: {elapsed_time}")
+                        break
+            
+            drop_tasks.append({
+                "id": task_id,
+                "task_name": task_name,
+                "task_position": None,  # Will be set later
+                "elapsed_time": elapsed_time,
+                "target_time": target_time,
+                "icon": FluentIcon.PLAY if self.task_type == TaskType.TODO else FluentIcon.MENU,
+            })
+        
+        # Find which tasks in our current model need to be removed (moved)
+        task_id_to_original_row = {}
         for i, task in enumerate(self.tasks):
+            if task["id"] in task_ids:
+                task_id_to_original_row[task["id"]] = i
+        
+        # Check if this is a drop in the exact same position
+        if len(task_id_to_original_row) == 1 and len(drop_tasks) == 1:
+            original_pos = task_id_to_original_row[drop_tasks[0]["id"]]
+            # Check if we're dropping at the same position or just after (which is effectively the same)
+            if original_pos == row or original_pos + 1 == row:
+                logger.debug(f"Task dropped at same position: {original_pos} -> {row}")
+                return False  # No change needed, cancel the operation
+        
+        # Create a new list for tasks in their new order
+        new_tasks = []
+        
+        # 1. First add all tasks before the insertion point except the ones being moved
+        for i in range(row):
+            if i >= len(self.tasks):
+                break
+            if self.tasks[i]["id"] not in task_ids:
+                new_tasks.append(self.tasks[i])
+        
+        # 2. Insert the moved tasks
+        for task in drop_tasks:
+            new_tasks.append(task)
+        
+        # 3. Add all remaining tasks except the ones being moved
+        for i in range(row, len(self.tasks)):
+            if self.tasks[i]["id"] not in task_ids:
+                new_tasks.append(self.tasks[i])
+        
+        # Set task positions
+        for i, task in enumerate(new_tasks):
             task["task_position"] = i
-
+        
+        # Emit signals for moved tasks
+        for task in drop_tasks:
+            self.taskMovedSignal.emit(task["id"], self.task_type)
+        
+        # Replace the tasks list with our new ordered list
+        self.beginResetModel()
+        self.tasks = new_tasks
+        self.endResetModel()
+        
+        # Update database
         self.update_db()
-
-        logger.debug(self.task_type)
-        logger.debug(self.tasks)
-
-        self.layoutChanged.emit()
+        
+        logger.debug(f"Task type: {self.task_type}")
+        logger.debug(f"Tasks after drop: {[t['id'] for t in self.tasks]}")
+        
         return True
 
     def update_db(self):
