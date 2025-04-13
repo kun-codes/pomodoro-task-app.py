@@ -178,15 +178,17 @@ class TaskListModel(QAbstractListModel):
         if not data.hasFormat("application/x-qabstractitemmodeldatalist"):
             return False
 
-        logger.debug(f"row: {row}")
-
-        # If row is -1, it means drop at the end
-        # Qt signals this special case when items are dropped:
-        # 1. After the last visible item
-        # 2. In empty space below items
-        # 3. In a location that doesn't map to a specific row
-        if row == -1:
-            row = self.rowCount()
+        # Use the parent index row when dropping directly onto an item
+        # This handles the case of dropping directly on another task
+        if parent.isValid():
+            # When dropping onto an item, we want to place the dragged item after it
+            drop_position = parent.row() + 1
+        else:
+            # If row is -1, it means drop at the end or in an empty space
+            if row == -1:
+                drop_position = self.rowCount()
+            else:
+                drop_position = row
 
         encoded_data = data.data("application/x-qabstractitemmodeldatalist")
         stream = QDataStream(encoded_data, QIODevice.ReadOnly)
@@ -229,32 +231,43 @@ class TaskListModel(QAbstractListModel):
             if task["id"] in task_ids:
                 task_id_to_original_row[task["id"]] = i
         
+        # Adjust the drop position if we're moving tasks from above the drop position
+        # This accounts for the "gap" created by removing items
+        offset = 0
+        for task_id, original_row in task_id_to_original_row.items():
+            if original_row < drop_position:
+                offset += 1
+        
+        drop_position -= offset
+        logger.debug(f"Adjusted drop position after offset: {drop_position}")
+        
         # Check if this is a drop in the exact same position
         if len(task_id_to_original_row) == 1 and len(drop_tasks) == 1:
             original_pos = task_id_to_original_row[drop_tasks[0]["id"]]
-            # Check if we're dropping at the same position or just after (which is effectively the same)
-            if original_pos == row or original_pos + 1 == row:
-                logger.debug(f"Task dropped at same position: {original_pos} -> {row}")
+            # Check if we're dropping at the same position
+            if original_pos == drop_position:
+                logger.debug(f"Task dropped at same position: {original_pos} -> {drop_position}")
                 return False  # No change needed, cancel the operation
         
         # Create a new list for tasks in their new order
         new_tasks = []
         
-        # 1. First add all tasks before the insertion point except the ones being moved
-        for i in range(row):
-            if i >= len(self.tasks):
-                break
-            if self.tasks[i]["id"] not in task_ids:
-                new_tasks.append(self.tasks[i])
+        # Create a copy of the tasks excluding the ones being moved
+        filtered_tasks = [task for task in self.tasks if task["id"] not in task_ids]
         
-        # 2. Insert the moved tasks
+        # Insert all tasks before the drop position
+        for i in range(drop_position):
+            if i >= len(filtered_tasks):
+                break
+            new_tasks.append(filtered_tasks[i])
+        
+        # Insert the dropped tasks at the drop position
         for task in drop_tasks:
             new_tasks.append(task)
         
-        # 3. Add all remaining tasks except the ones being moved
-        for i in range(row, len(self.tasks)):
-            if self.tasks[i]["id"] not in task_ids:
-                new_tasks.append(self.tasks[i])
+        # Insert all remaining tasks after the drop position
+        for i in range(drop_position, len(filtered_tasks)):
+            new_tasks.append(filtered_tasks[i])
         
         # Set task positions
         for i, task in enumerate(new_tasks):
