@@ -1,6 +1,7 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QRect
 from PySide6.QtWidgets import QAbstractItemView, QListView, QWidget
-from qfluentwidgets import LineEdit, ListItemDelegate, ListView
+from PySide6.QtGui import QPainter, QBrush, QPen, QColor
+from qfluentwidgets import LineEdit, ListItemDelegate, ListView, isDarkTheme
 
 from prefabs.taskListItemDelegate import TaskListItemDelegate
 from ui_py.ui_tasks_list_view import Ui_TaskView
@@ -28,6 +29,82 @@ class TaskList(ListView):
         self.setItemDelegate(TaskListItemDelegate(self))
 
         self.editor_width_reduction = 5  # the same number in TaskListItemDelegate's updateEditorGeometry method
+        
+        # Custom drop indicator properties
+        self.dropIndicatorRect = QRect()
+        self.dropIndicatorPosition = -1
+
+    def paintEvent(self, event):
+        """
+        Override the paint event to add custom drop indicator drawing
+        source: https://oglop.gitbooks.io/pyqt-pyside-cookbook/content/tree/drop_indicator.html
+        """
+        super().paintEvent(event)
+        if self.state() == QAbstractItemView.State.DraggingState:
+            painter = QPainter(self.viewport())
+            self.paintDropIndicator(painter)
+
+    def paintDropIndicator(self, painter):
+        """
+        Draw a custom white drop indicator
+        source: https://oglop.gitbooks.io/pyqt-pyside-cookbook/content/tree/drop_indicator.html
+        """
+        if not self.dropIndicatorRect.isNull():
+            rect = self.dropIndicatorRect
+            if isDarkTheme():
+                brush = QBrush(QColor(Qt.white))
+            else:
+                brush =QBrush(QColor(Qt.black))
+            
+            if rect.height() == 0:
+                # Draw a horizontal line for above/below positions
+                rect.setWidth(rect.width() - 6)  # subtract 6 pixels so that right side of drop indicator
+                # shows within bounds of TaskList
+                pen = QPen(brush, 1, Qt.PenStyle.SolidLine)
+                painter.setPen(pen)
+                painter.drawLine(rect.topLeft(), rect.topRight())
+            else:
+                # Draw a rectangle for on-item position
+                rect.setWidth(rect.width() - 6)  # subtract 6 pixels so that right side of drop indicator
+                # shows within bounds of TaskList
+                pen = QPen(brush, 1, Qt.PenStyle.SolidLine)
+                painter.setPen(pen)
+                painter.drawRect(rect)
+
+    def dragMoveEvent(self, event):
+        """
+        Update the drop indicator position during drag move events
+        source: https://oglop.gitbooks.io/pyqt-pyside-cookbook/content/tree/drop_indicator.html
+        """
+        super().dragMoveEvent(event)
+        
+        pos = event.position().toPoint()
+        index = self.indexAt(pos)
+        
+        if index.isValid():
+            rect = self.visualRect(index)
+            
+            # Determine drop position (above, on, or below item)
+            margin = 5
+            if pos.y() - rect.top() < margin:
+                # Above item
+                self.dropIndicatorPosition = QAbstractItemView.DropIndicatorPosition.AboveItem
+                self.dropIndicatorRect = QRect(rect.left(), rect.top(), rect.width(), 0)
+            elif rect.bottom() - pos.y() < margin:
+                # Below item
+                self.dropIndicatorPosition = QAbstractItemView.DropIndicatorPosition.BelowItem
+                self.dropIndicatorRect = QRect(rect.left(), rect.bottom(), rect.width(), 0)
+            else:
+                # On item
+                self.dropIndicatorPosition = QAbstractItemView.DropIndicatorPosition.OnItem
+                self.dropIndicatorRect = QRect(rect.left(), rect.top(), rect.width(), rect.height())
+        else:
+            # On empty space
+            self.dropIndicatorPosition = QAbstractItemView.DropIndicatorPosition.OnViewport
+            self.dropIndicatorRect = QRect()
+            
+        # Force a repaint to update the indicator
+        self.viewport().update()
 
     def edit(self, index, trigger, event):
         """
@@ -111,6 +188,10 @@ class TaskList(ListView):
         is done to overcome bugs in the original code in qfluentwidgets where the pressed row was not getting reset
         when an item was dropped.
         """
+        # Clear drop indicator before processing the drop
+        self.dropIndicatorRect = QRect()
+        self.viewport().update()
+
         parent_view = self.parentWidget()
         while parent_view is not None:
             if isinstance(parent_view, Ui_TaskView):  # using Ui_TaskView because view.subinterfaces.tasks_view.TaskList
