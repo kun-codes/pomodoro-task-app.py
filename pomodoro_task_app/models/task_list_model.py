@@ -136,14 +136,14 @@ class TaskListModel(QAbstractListModel):
                 if task["id"] == self.current_task_id:
                     current_task_index = self.index(i)
                     break
-                    
+
             if current_task_index is not None:
                 self.setData(current_task_index, task["elapsed_time"], self.ElapsedTimeRole, update_db=True)
-        
+
         mime_data = QMimeData()
         encoded_data = QByteArray()
         stream = QDataStream(encoded_data, QIODevice.WriteOnly)
-        
+
         # Store rows being dragged
         rows_being_dragged = []
         for index in indexes:
@@ -192,11 +192,11 @@ class TaskListModel(QAbstractListModel):
 
         encoded_data = data.data("application/x-qabstractitemmodeldatalist")
         stream = QDataStream(encoded_data, QIODevice.ReadOnly)
-        
+
         # Create a list to store tasks being dropped
         drop_tasks = []
         task_ids = []
-        
+
         # Read all task data from the stream
         while not stream.atEnd():
             source_row = stream.readInt32()
@@ -205,7 +205,7 @@ class TaskListModel(QAbstractListModel):
             task_name = stream.readQString()
             elapsed_time = stream.readInt64()
             target_time = stream.readInt64()
-            
+
             # For the current task, check if we need to update the elapsed time from in-memory cache
             if self.task_type == TaskType.TODO and self.current_task_id == task_id:
                 # Get the latest in-memory elapsed time value
@@ -215,7 +215,7 @@ class TaskListModel(QAbstractListModel):
                         elapsed_time = existing_task["elapsed_time"]
                         logger.debug(f"Updated elapsed time for current task during drop: {elapsed_time}")
                         break
-            
+
             drop_tasks.append({
                 "id": task_id,
                 "task_name": task_name,
@@ -224,23 +224,23 @@ class TaskListModel(QAbstractListModel):
                 "target_time": target_time,
                 "icon": FluentIcon.PLAY if self.task_type == TaskType.TODO else FluentIcon.MENU,
             })
-        
+
         # Find which tasks in our current model need to be removed (moved)
         task_id_to_original_row = {}
         for i, task in enumerate(self.tasks):
             if task["id"] in task_ids:
                 task_id_to_original_row[task["id"]] = i
-        
+
         # Adjust the drop position if we're moving tasks from above the drop position
         # This accounts for the "gap" created by removing items
         offset = 0
         for task_id, original_row in task_id_to_original_row.items():
             if original_row < drop_position:
                 offset += 1
-        
+
         drop_position -= offset
         logger.debug(f"Adjusted drop position after offset: {drop_position}")
-        
+
         # Check if this is a drop in the exact same position
         if len(task_id_to_original_row) == 1 and len(drop_tasks) == 1:
             original_pos = task_id_to_original_row[drop_tasks[0]["id"]]
@@ -248,46 +248,46 @@ class TaskListModel(QAbstractListModel):
             if original_pos == drop_position:
                 logger.debug(f"Task dropped at same position: {original_pos} -> {drop_position}")
                 return False  # No change needed, cancel the operation
-        
+
         # Create a new list for tasks in their new order
         new_tasks = []
-        
+
         # Create a copy of the tasks excluding the ones being moved
         filtered_tasks = [task for task in self.tasks if task["id"] not in task_ids]
-        
+
         # Insert all tasks before the drop position
         for i in range(drop_position):
             if i >= len(filtered_tasks):
                 break
             new_tasks.append(filtered_tasks[i])
-        
+
         # Insert the dropped tasks at the drop position
         for task in drop_tasks:
             new_tasks.append(task)
-        
+
         # Insert all remaining tasks after the drop position
         for i in range(drop_position, len(filtered_tasks)):
             new_tasks.append(filtered_tasks[i])
-        
+
         # Set task positions
         for i, task in enumerate(new_tasks):
             task["task_position"] = i
-        
+
         # Emit signals for moved tasks
         for task in drop_tasks:
             self.taskMovedSignal.emit(task["id"], self.task_type)
-        
+
         # Replace the tasks list with our new ordered list
         self.beginResetModel()
         self.tasks = new_tasks
         self.endResetModel()
-        
+
         # Update database
         self.update_db()
-        
+
         logger.debug(f"Task type: {self.task_type}")
         logger.debug(f"Tasks after drop: {[t['id'] for t in self.tasks]}")
-        
+
         return True
 
     def update_db(self):
