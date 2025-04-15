@@ -4,7 +4,6 @@ from qfluentwidgets import FluentIcon, SimpleCardWidget, TitleLabel, ToolTipFilt
 
 from models.db_tables import TaskType
 from models.task_list_model import TaskListModel
-from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.taskList import TaskList
 from ui_py.ui_tasks_list_view import Ui_TaskView
 from views.dialogs.addTaskDialog import AddTaskDialog

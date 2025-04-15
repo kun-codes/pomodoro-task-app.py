@@ -1,6 +1,6 @@
-from PySide6.QtCore import Qt, QRect
+from PySide6.QtCore import QRect, Qt
+from PySide6.QtGui import QBrush, QColor, QPainter, QPen
 from PySide6.QtWidgets import QAbstractItemView, QListView, QWidget
-from PySide6.QtGui import QPainter, QBrush, QPen, QColor
 from qfluentwidgets import LineEdit, ListItemDelegate, ListView, isDarkTheme
 
 from prefabs.taskListItemDelegate import TaskListItemDelegate
@@ -29,7 +29,7 @@ class TaskList(ListView):
         self.setItemDelegate(TaskListItemDelegate(self))
 
         self.editor_width_reduction = 5  # the same number in TaskListItemDelegate's updateEditorGeometry method
-        
+
         # Custom drop indicator properties
         self.dropIndicatorRect = QRect()
         self.dropIndicatorPosition = -1
@@ -55,7 +55,7 @@ class TaskList(ListView):
                 brush = QBrush(QColor(Qt.white))
             else:
                 brush =QBrush(QColor(Qt.black))
-            
+
             if rect.height() == 0:
                 # Draw a horizontal line for above/below positions
                 rect.setWidth(rect.width() - 6)  # subtract 6 pixels so that right side of drop indicator
@@ -77,13 +77,13 @@ class TaskList(ListView):
         source: https://oglop.gitbooks.io/pyqt-pyside-cookbook/content/tree/drop_indicator.html
         """
         super().dragMoveEvent(event)
-        
+
         pos = event.position().toPoint()
         index = self.indexAt(pos)
-        
+
         if index.isValid():
             rect = self.visualRect(index)
-            
+
             # Determine drop position (above, on, or below item)
             margin = 5
             if pos.y() - rect.top() < margin:
@@ -102,7 +102,7 @@ class TaskList(ListView):
             # On empty space
             self.dropIndicatorPosition = QAbstractItemView.DropIndicatorPosition.OnViewport
             self.dropIndicatorRect = QRect()
-            
+
         # Force a repaint to update the indicator
         self.viewport().update()
 
