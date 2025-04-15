@@ -54,22 +54,22 @@ jobs:
             -   name: Download latest version of mitmproxy (Linux and MacOS)
                 if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'macos-13'
                 run: |
+                    set -e
                     cd ..
                     if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-                        wget https://downloads.mitmproxy.org/${{ env.LATEST_VERSION }}/mitmproxy-${{ env.LATEST_VERSION }}-linux-x86_64.tar.gz
+                        wget https://downloads.mitmproxy.org/${{ env.LATEST_VERSION }}/mitmproxy-${{ env.LATEST_VERSION }}-linux-x86_64.tar.gz || { echo "Failed to download mitmproxy for Linux"; exit 1; }
                         tar -xvf mitmproxy-${{ env.LATEST_VERSION }}-linux-x86_64.tar.gz
                         cp mitmdump pomodoro-task-app.py/mitmdump
                     elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-                        curl -LO https://downloads.mitmproxy.org/${{ env.LATEST_VERSION }}/mitmproxy-${{ env.LATEST_VERSION }}-macos-arm64.tar.gz
+                        curl -LO https://downloads.mitmproxy.org/${{ env.LATEST_VERSION }}/mitmproxy-${{ env.LATEST_VERSION }}-macos-arm64.tar.gz || { echo "Failed to download mitmproxy for macOS (arm64)"; exit 1; }
                         tar -xvf mitmproxy-${{ env.LATEST_VERSION }}-macos-arm64.tar.gz
                         cp mitmproxy.app/Contents/MacOS/mitmdump pomodoro-task-app.py/mitmdump
                     elif [[ "${{ matrix.os }}" == "macos-13" ]]; then
-                        curl -LO https://downloads.mitmproxy.org/${{ env.LATEST_VERSION }}/mitmproxy-${{ env.LATEST_VERSION }}-macos-x86_64.tar.gz
+                        curl -LO https://downloads.mitmproxy.org/${{ env.LATEST_VERSION }}/mitmproxy-${{ env.LATEST_VERSION }}-macos-x86_64.tar.gz || { echo "Failed to download mitmproxy for macOS (x86_64)"; exit 1; }
                         tar -xvf mitmproxy-${{ env.LATEST_VERSION }}-macos-x86_64.tar.gz
                         cp mitmproxy.app/Contents/MacOS/mitmdump pomodoro-task-app.py/mitmdump
                     fi
                     cd pomodoro-task-app.py
-
             -   name: Get latest mitmproxy version
                 run: |
                     $LATEST_VERSION = (Invoke-RestMethod -Uri "https://api.github.com/repos/mitmproxy/mitmproxy/releases/latest").tag_name
@@ -79,7 +79,12 @@ jobs:
                 if: matrix.os == 'windows-latest'
                 run: |
                     cd ..
-                    Invoke-WebRequest -Uri "https://downloads.mitmproxy.org/${{ env.LATEST_VERSION }}/mitmproxy-${{ env.LATEST_VERSION }}-windows-x86_64.zip" -OutFile "mitmproxy-${{ env.LATEST_VERSION }}-windows-x86_64.zip"
+                    try {
+                        Invoke-WebRequest -Uri "https://downloads.mitmproxy.org/${{ env.LATEST_VERSION }}/mitmproxy-${{ env.LATEST_VERSION }}-windows-x86_64.zip" -OutFile "mitmproxy-${{ env.LATEST_VERSION }}-windows-x86_64.zip"
+                    } catch {
+                        Write-Error "Failed to download mitmproxy for Windows"
+                        exit 1
+                    }
                     Expand-Archive -Path "mitmproxy-${{ env.LATEST_VERSION }}-windows-x86_64.zip" -DestinationPath .
                     Copy-Item -Path "mitmdump.exe" -Destination "pomodoro-task-app.py\mitmdump.exe"
                     cd "pomodoro-task-app.py"
