@@ -48,8 +48,9 @@ jobs:
             -   name: Get latest mitmproxy version
                 if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'macos-13'
                 run: |
-                    MITMPROXY_LATEST_VERSION=$(curl -s https://api.github.com/repos/mitmproxy/mitmproxy/releases/latest | jq -r '.tag_name')
-                    echo "MITMPROXY_LATEST_VERSION=${MITMPROXY_LATEST_VERSION}" >> $GITHUB_ENV
+                    VERSION_WITH_V=$(curl -s https://api.github.com/repos/mitmproxy/mitmproxy/releases/latest | jq -r '.tag_name')
+                    LATEST_VERSION=${VERSION_WITH_V#v}
+                    echo "LATEST_VERSION=${LATEST_VERSION}" >> $GITHUB_ENV
 
             -   name: Download latest version of mitmproxy (Linux and MacOS)
                 if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'macos-13'
@@ -70,9 +71,12 @@ jobs:
                         cp mitmproxy.app/Contents/MacOS/mitmdump pomodoro-task-app.py/mitmdump
                     fi
                     cd pomodoro-task-app.py
+
             -   name: Get latest mitmproxy version
+                if: matrix.os == 'windows-latest'
                 run: |
-                    $LATEST_VERSION = (Invoke-RestMethod -Uri "https://api.github.com/repos/mitmproxy/mitmproxy/releases/latest").tag_name
+                    $VERSION_WITH_V = (Invoke-RestMethod -Uri "https://api.github.com/repos/mitmproxy/mitmproxy/releases/latest").tag_name
+                    $LATEST_VERSION = $VERSION_WITH_V -replace '^v',''
                     echo "LATEST_VERSION=$LATEST_VERSION" >> $env:GITHUB_ENV
 
             -   name: Download latest version of mitmproxy (Windows)
