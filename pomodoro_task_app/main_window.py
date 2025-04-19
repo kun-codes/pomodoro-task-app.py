@@ -3,7 +3,7 @@ from pathlib import Path
 
 import darkdetect
 from loguru import logger
-from PySide6.QtCore import Qt, QUrl
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 from qfluentwidgets import (
@@ -18,7 +18,14 @@ from qfluentwidgets import (
 
 from config_paths import settings_dir
 from config_values import ConfigValues
-from constants import FIRST_RUN_DOTFILE_NAME, TimerState, UpdateCheckResult, URLListType, WebsiteFilterType
+from constants import (
+    FIRST_RUN_DOTFILE_NAME,
+    InterfaceType,
+    TimerState,
+    UpdateCheckResult,
+    URLListType,
+    WebsiteFilterType,
+)
 from models.config import app_settings, load_workspace_settings, workspace_specific_settings
 from models.db_tables import TaskType
 from models.task_list_model import TaskListModel
@@ -26,11 +33,11 @@ from models.workspace_list_model import WorkspaceListModel
 from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
 from resources import logos_rc
+from tutorial.taskInterfaceTutorial import TaskInterfaceTutorial
 from utils.check_for_updates import checkForUpdates
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.time_conversion import convert_ms_to_hh_mm_ss
 from views.dialogs.preSetupConfirmationDialog import PreSetupConfirmationDialog
-from views.dialogs.tutorialDialog import TutorialDialog
 from views.dialogs.updateDialog import UpdateDialog
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
 from views.subinterfaces.pomodoro_view import PomodoroView
@@ -562,7 +569,7 @@ class MainWindow(PomodoroFluentWindow):
         # for notifications
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(self.showNotifications)
 
-        self.stackedWidget.currentChanged.connect(self.showTutorial)
+        # self.stackedWidget.currentChanged.connect(self.showTutorial)
 
         # for mica effect
         self.settings_interface.micaEnableChanged.connect(self.setMicaEffectEnabled)
@@ -621,39 +628,44 @@ class MainWindow(PomodoroFluentWindow):
         )
 
     def showTutorial(self):
-        if self.isSafeToShowTutorial:
-            if (self.stackedWidget.currentWidget().objectName() == "task_interface" and
-                    not app_settings.get(app_settings.has_visited_task_view)):
-                app_settings.set(app_settings.has_visited_task_view, True)
-                taskViewTutorialDialog = TutorialDialog(
-                    self.window(),
-                    "Task View Tutorial",
-                )
-                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile("add task.mkv"), "this is the first subtitle")
-                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile("delete task.mkv"), "this is a subtitle")
-                taskViewTutorialDialog.show()
+        self.taskInterfaceTutorial = TaskInterfaceTutorial(self, InterfaceType.TASK_INTERFACE)
 
-                app_settings.set(app_settings.has_visited_task_view, True)
-            elif (self.stackedWidget.currentWidget().objectName() == "pomodoro_interface" and
-                    not app_settings.get(app_settings.has_visited_pomodoro_view)):
-                pomodoroViewTutorialDialog = TutorialDialog(
-                    self.window(),
-                    "Pomodoro View Tutorial",
-                )
-                # pomodoroViewTutorialDialog.addImage("adjust time.gif", "You can adjust the duration"
-                #                                                        " of the pomodoro session in the settings")
-                pomodoroViewTutorialDialog.show()
+        if not ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL:
+            self.taskInterfaceTutorial.start()
 
-                app_settings.set(app_settings.has_visited_pomodoro_view, True)
-            elif (self.stackedWidget.currentWidget().objectName() == "website_filter_interface" and
-                    not app_settings.get(app_settings.has_visited_website_filter_view)):
-                websiteFilterViewTutorialDialog = TutorialDialog(
-                    self.window(),
-                    "Website Filter View Tutorial",
-                )
-                websiteFilterViewTutorialDialog.show()
-
-                app_settings.set(app_settings.has_visited_website_filter_view, True)
+        # if self.isSafeToShowTutorial:
+        #     if (self.stackedWidget.currentWidget().objectName() == "task_interface" and
+        #             not app_settings.get(app_settings.has_visited_task_view)):
+        #         app_settings.set(app_settings.has_visited_task_view, True)
+        #         taskViewTutorialDialog = TutorialDialog(
+        #             self.window(),
+        #             "Task View Tutorial",
+        #         )
+        #         taskViewTutorialDialog.addVideo(QUrl.fromLocalFile("add task.mkv"), "this is the first subtitle")
+        #         taskViewTutorialDialog.addVideo(QUrl.fromLocalFile("delete task.mkv"), "this is a subtitle")
+        #         taskViewTutorialDialog.show()
+        #
+        #         app_settings.set(app_settings.has_visited_task_view, True)
+        #     elif (self.stackedWidget.currentWidget().objectName() == "pomodoro_interface" and
+        #             not app_settings.get(app_settings.has_visited_pomodoro_view)):
+        #         pomodoroViewTutorialDialog = TutorialDialog(
+        #             self.window(),
+        #             "Pomodoro View Tutorial",
+        #         )
+        #         # pomodoroViewTutorialDialog.addImage("adjust time.gif", "You can adjust the duration"
+        #         #                                                        " of the pomodoro session in the settings")
+        #         pomodoroViewTutorialDialog.show()
+        #
+        #         app_settings.set(app_settings.has_visited_pomodoro_view, True)
+        #     elif (self.stackedWidget.currentWidget().objectName() == "website_filter_interface" and
+        #             not app_settings.get(app_settings.has_visited_website_filter_view)):
+        #         websiteFilterViewTutorialDialog = TutorialDialog(
+        #             self.window(),
+        #             "Website Filter View Tutorial",
+        #         )
+        #         websiteFilterViewTutorialDialog.show()
+        #
+        #         app_settings.set(app_settings.has_visited_website_filter_view, True)
 
     def on_website_filter_enabled_setting_changed(self):
         enable_website_filter_setting_value = ConfigValues.ENABLE_WEBSITE_FILTER

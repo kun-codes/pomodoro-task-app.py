@@ -76,3 +76,10 @@ class UpdateCheckResult(Enum):
     UPDATE_AVAILABLE = "Update available"
     NETWORK_UNREACHABLE = "Network Unreachable"
     UNKNOWN_ERROR = "An unknown error occurred"
+
+
+class InterfaceType(Enum):
+    TASK_INTERFACE = 0
+    POMODORO_INTERFACE = 1
+    WEBSITE_FILTER_INTERFACE = 2
+    SETTINGS_INTERFACE = 3

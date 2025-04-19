@@ -43,9 +43,13 @@ class AppSettings(QConfig):
 
     proxy_port = RangeConfigItem("AppSettings", "ProxyPort", 8080, RangeValidator(1024, 65535))
     check_for_updates_on_start = ConfigItem("AppSettings", "CheckForUpdatesOnStart", True, BoolValidator())
-    has_visited_task_view = ConfigItem("AppSettings", "HasVisitedTaskView", False, BoolValidator())
-    has_visited_pomodoro_view = ConfigItem("AppSettings", "HasVisitedPomodoroView", False, BoolValidator())
-    has_visited_website_filter_view = ConfigItem("AppSettings", "HasVisitedWebsiteFilterView", False, BoolValidator())
+    has_completed_task_view_tutorial = ConfigItem("AppSettings", "HasCompletedTaskViewTutorial", False, BoolValidator())
+    has_completed_pomodoro_view_tutorial = ConfigItem(
+        "AppSettings", "HasCompletedPomodoroViewTutorial", False, BoolValidator()
+    )
+    has_completed_website_filter_view_tutorial = ConfigItem(
+        "AppSettings", "HasCompletedWebsiteFilterViewTutorial", False, BoolValidator()
+    )
     mica_enabled = ConfigItem("MainWindow", "MicaEnabled", isWin11(), BoolValidator())
 
 
