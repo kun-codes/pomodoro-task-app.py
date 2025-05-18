@@ -628,6 +628,10 @@ class MainWindow(PomodoroFluentWindow):
         )
 
     def showTutorial(self):
+        if not self.is_first_run:
+            return
+
+        self.isSafeToShowTutorial = True
         self.taskInterfaceTutorial = TaskInterfaceTutorial(self, InterfaceType.TASK_INTERFACE)
 
         if not ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL:
@@ -748,10 +752,6 @@ class MainWindow(PomodoroFluentWindow):
         self.setupAppConfirmationDialog.rejected.connect(self.onSetupAppConfirmationDialogRejected)
 
     def giveGuidedTour(self):
-        # self.temporary_website_blocker_manager.stop_filtering(delete_proxy=True)  # stopping website filtering here
-        # # because this function will only be triggered after self.setupAppDialog is closed
-        #
-        # todo: give a guided tour of the app to the user
 
         if ConfigValues.CHECK_FOR_UPDATES_ON_START:
             # calling self.handleUpdates() on first run
@@ -781,11 +781,10 @@ class MainWindow(PomodoroFluentWindow):
             # for runs which aren't first run, self.setupMitmproxy() is not run, so self.updateDialog is shown
             # when MainWindow is shown, in self.showEvent()
             if self.is_first_run and self.updateDialog is not None:
+                self.updateDialog.finished.connect(self.showTutorial)
                 self.updateDialog.show()
-
         elif update_check_result == UpdateCheckResult.UP_TO_DATE:
-            pass
-
+            self.showTutorial()
         elif update_check_result == UpdateCheckResult.NETWORK_UNREACHABLE:
             InfoBar.error(
                 title="Update Check Failed",
@@ -796,9 +795,6 @@ class MainWindow(PomodoroFluentWindow):
                 position=InfoBarPosition.TOP_RIGHT,
                 parent=self.window(),
             )
-
-        if self.is_first_run:
-            self.isSafeToShowTutorial = True
             self.showTutorial()
 
     def showEvent(self, event):
