@@ -21,7 +21,8 @@ class InterfaceTutorial(QObject):
             if self.current_step == 0:
                 QTimer.singleShot(1000, self.tutorial_steps[self.current_step])  # wait for 1 second before showing
                 # the first step
-            self.tutorial_steps[self.current_step]()
+            else:
+                self.tutorial_steps[self.current_step]()
 
     def next_step(self):
         logger.debug(f"Next step: {self.current_step}")
