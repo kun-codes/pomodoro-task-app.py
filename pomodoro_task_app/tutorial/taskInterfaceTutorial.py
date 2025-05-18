@@ -36,6 +36,8 @@ class TaskInterfaceTutorial(InterfaceTutorial):
         self.tutorial_steps.append(self._enable_buttons)
         self.tutorial_steps.append(self._last_step)
 
+        self.main_window.isSafeToShowTutorial = False  # block tutorials of other interfaces from showing
+
     def _todo_task_list_step(self):
         self._todo_task_list_step_tip = TransientPopupTeachingTip.create(
             target=self.main_window.task_interface.todoTasksList,
@@ -359,5 +361,6 @@ class TaskInterfaceTutorial(InterfaceTutorial):
         # this is the last step
         app_settings.set(app_settings.has_completed_task_view_tutorial, True)
         ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL = True
+        self.main_window.isSafeToShowTutorial = True  # allow other tutorials to show
 
 
