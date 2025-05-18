@@ -569,7 +569,7 @@ class MainWindow(PomodoroFluentWindow):
         # for notifications
         self.pomodoro_interface.pomodoro_timer_obj.timerStateChangedSignal.connect(self.showNotifications)
 
-        # self.stackedWidget.currentChanged.connect(self.showTutorial)
+        self.stackedWidget.currentChanged.connect(self.showTutorial)
 
         # for mica effect
         self.settings_interface.micaEnableChanged.connect(self.setMicaEffectEnabled)
@@ -627,14 +627,14 @@ class MainWindow(PomodoroFluentWindow):
             task_id=self.get_current_task_id()
         )
 
-    def showTutorial(self):
+    def showTutorial(self, index: int):
         if not self.is_first_run:
             return
 
         self.isSafeToShowTutorial = True
-        self.taskInterfaceTutorial = TaskInterfaceTutorial(self, InterfaceType.TASK_INTERFACE)
 
-        if not ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL:
+        if not ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL and self.isSafeToShowTutorial and index == InterfaceType.TASK_INTERFACE.value:
+            self.taskInterfaceTutorial = TaskInterfaceTutorial(self, InterfaceType.TASK_INTERFACE)
             self.taskInterfaceTutorial.start()
 
         # if self.isSafeToShowTutorial:
@@ -774,10 +774,10 @@ class MainWindow(PomodoroFluentWindow):
             # for runs which aren't first run, self.setupMitmproxy() is not run, so self.updateDialog is shown
             # when MainWindow is shown, in self.showEvent()
             if self.is_first_run and self.updateDialog is not None:
-                self.updateDialog.finished.connect(self.showTutorial)
+                self.updateDialog.finished.connect(lambda: self.showTutorial(InterfaceType.TASK_INTERFACE.value))
                 self.updateDialog.show()
         elif update_check_result == UpdateCheckResult.UP_TO_DATE:
-            self.showTutorial()
+            self.showTutorial(InterfaceType.TASK_INTERFACE.value)
         elif update_check_result == UpdateCheckResult.NETWORK_UNREACHABLE:
             InfoBar.error(
                 title="Update Check Failed",
@@ -788,7 +788,7 @@ class MainWindow(PomodoroFluentWindow):
                 position=InfoBarPosition.TOP_RIGHT,
                 parent=self.window(),
             )
-            self.showTutorial()
+            self.showTutorial(InterfaceType.TASK_INTERFACE.value)
 
     def showEvent(self, event):
         logger.debug("MainWindow showEvent")

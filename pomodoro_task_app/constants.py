@@ -83,3 +83,17 @@ class InterfaceType(Enum):
     POMODORO_INTERFACE = 1
     WEBSITE_FILTER_INTERFACE = 2
     SETTINGS_INTERFACE = 3
+
+
+# https://pyqt-fluent-widgets.readthedocs.io/en/latest/navigation.html
+class InterfacePosition(Enum):
+    # 0 = Top Layout of Panel of Navigation Panel
+    TASK_INTERFACE = (0, 2)
+    POMODORO_INTERFACE = (0, 3)
+    WEBSITE_FILTER_INTERFACE = (0, 4)
+
+    # 1 = Scroll Layout of Panel of Navigation Panel
+
+    # 2 = Bottom Layout of Panel of Navigation Panel
+    WORKSPACE_MANAGER_DIALOG = (2, 0)
+    SETTINGS_INTERFACE = (2, 1)

@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QWidget
 from qfluentwidgets import FluentIcon, FluentWindow, TeachingTipTailPosition
 
 from config_values import ConfigValues
-from constants import InterfaceType
+from constants import InterfaceType, InterfacePosition
 from models.config import app_settings
 from models.task_list_model import TaskListModel
 from prefabs.targetClickTeachingTip import TargetClickTeachingTip
@@ -13,12 +13,14 @@ from prefabs.transientPopupTeachingTip import TransientPopupTeachingTip
 from tutorial.interfaceTutorial import InterfaceTutorial
 from views.dialogs.addTaskDialog import AddTaskDialog
 from views.dialogs.editTaskTimeDialog import EditTaskTimeDialog
+from utils.setNavButtonEnabled import setNavButtonEnabled
 
 
 class TaskInterfaceTutorial(InterfaceTutorial):
     def __init__(self, main_window: FluentWindow, interface_type: InterfaceType):
         super().__init__(main_window, interface_type)
 
+        self.tutorial_steps.append(self._first_step)
         self.tutorial_steps.append(self._todo_task_list_step)
         self.tutorial_steps.append(self._completed_task_list_step)
         self.tutorial_steps.append(self._select_first_task_step)
@@ -36,7 +38,16 @@ class TaskInterfaceTutorial(InterfaceTutorial):
         self.tutorial_steps.append(self._enable_buttons)
         self.tutorial_steps.append(self._last_step)
 
+    def _first_step(self):
         self.main_window.isSafeToShowTutorial = False  # block tutorials of other interfaces from showing
+
+        setNavButtonEnabled(self.main_window, InterfacePosition.POMODORO_INTERFACE, False)
+        setNavButtonEnabled(self.main_window, InterfacePosition.WEBSITE_FILTER_INTERFACE, False)
+
+        setNavButtonEnabled(self.main_window, InterfacePosition.WORKSPACE_MANAGER_DIALOG, False)
+        setNavButtonEnabled(self.main_window, InterfacePosition.SETTINGS_INTERFACE, False)
+
+        self.next_step()
 
     def _todo_task_list_step(self):
         self._todo_task_list_step_tip = TransientPopupTeachingTip.create(
@@ -363,4 +374,8 @@ class TaskInterfaceTutorial(InterfaceTutorial):
         ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL = True
         self.main_window.isSafeToShowTutorial = True  # allow other tutorials to show
 
+        setNavButtonEnabled(self.main_window, InterfacePosition.POMODORO_INTERFACE, True)
+        setNavButtonEnabled(self.main_window, InterfacePosition.WEBSITE_FILTER_INTERFACE, True)
 
+        setNavButtonEnabled(self.main_window, InterfacePosition.WORKSPACE_MANAGER_DIALOG, True)
+        setNavButtonEnabled(self.main_window, InterfacePosition.SETTINGS_INTERFACE, True)
