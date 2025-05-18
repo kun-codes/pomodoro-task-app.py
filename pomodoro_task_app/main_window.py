@@ -748,15 +748,8 @@ class MainWindow(PomodoroFluentWindow):
         self.setupAppConfirmationDialog = PreSetupConfirmationDialog(parent=self.window())
 
         # setupAppDialog is a modal dialog, so it will block the main window until it is closed
-        self.setupAppConfirmationDialog.accepted.connect(lambda: self.giveGuidedTour())
+        self.setupAppConfirmationDialog.accepted.connect(lambda: self.handleUpdates() if ConfigValues.CHECK_FOR_UPDATES_ON_START else None)
         self.setupAppConfirmationDialog.rejected.connect(self.onSetupAppConfirmationDialogRejected)
-
-    def giveGuidedTour(self):
-
-        if ConfigValues.CHECK_FOR_UPDATES_ON_START:
-            # calling self.handleUpdates() on first run
-            self.handleUpdates()  # added self.checkForUpdates here so that it is called after the setup dialog
-            # is closed
 
     def onSetupAppConfirmationDialogRejected(self):
         # delete the first run file so that the setup dialog is shown again when the app is started next time
@@ -776,7 +769,7 @@ class MainWindow(PomodoroFluentWindow):
 
             # for first run, the control flow is like this
             # self.setupMitmproxy() ---MainWindow is show---> self.setupAppDialog.show() ---
-            # ---setupAppDialog is closed---> self.giveGuidedTour()  ---> self.checkForUpdates()
+            # ---setupAppDialog is closed---> self.handleUpdates()
 
             # for runs which aren't first run, self.setupMitmproxy() is not run, so self.updateDialog is shown
             # when MainWindow is shown, in self.showEvent()
