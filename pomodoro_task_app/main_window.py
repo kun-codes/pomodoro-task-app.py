@@ -33,6 +33,7 @@ from models.workspace_list_model import WorkspaceListModel
 from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
 from resources import logos_rc
+from tutorial.pomodoroInterfaceTutorial import PomodoroInterfaceTutorial
 from tutorial.taskInterfaceTutorial import TaskInterfaceTutorial
 from utils.check_for_updates import checkForUpdates
 from utils.find_mitmdump_executable import get_mitmdump_path
@@ -636,6 +637,10 @@ class MainWindow(PomodoroFluentWindow):
         if not ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL and self.isSafeToShowTutorial and index == InterfaceType.TASK_INTERFACE.value:
             self.taskInterfaceTutorial = TaskInterfaceTutorial(self, InterfaceType.TASK_INTERFACE)
             self.taskInterfaceTutorial.start()
+
+        if not ConfigValues.HAS_COMPLETED_POMODORO_VIEW_TUTORIAL and self.isSafeToShowTutorial and index == InterfaceType.POMODORO_INTERFACE.value:
+            self.pomodoroInterfaceTutorial = PomodoroInterfaceTutorial(self, InterfaceType.POMODORO_INTERFACE)
+            self.pomodoroInterfaceTutorial.start()
 
         # if self.isSafeToShowTutorial:
         #     if (self.stackedWidget.currentWidget().objectName() == "task_interface" and
