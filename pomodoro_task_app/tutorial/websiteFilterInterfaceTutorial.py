@@ -1,10 +1,8 @@
-from loguru import logger
-from qfluentwidgets import FluentWindow, FluentIcon, TeachingTipTailPosition, PopupTeachingTip
+from qfluentwidgets import FluentIcon, FluentWindow, TeachingTipTailPosition
 
 from config_values import ConfigValues
 from constants import InterfacePosition, InterfaceType, WebsiteFilterType
 from models.config import app_settings
-from prefabs.targetClickTeachingTip import TargetClickTeachingTip
 from prefabs.transientPopupTeachingTip import TransientPopupTeachingTip
 from tutorial.interfaceTutorial import InterfaceTutorial
 from utils.setNavButtonEnabled import setNavButtonEnabled
@@ -34,7 +32,8 @@ class WebsiteFilterInterfaceTutorial(InterfaceTutorial):
         self._select_website_filter_type_step_tip = TransientPopupTeachingTip.create(
             target=self.main_window.website_filter_interface.blockTypeComboBox,
             title="You can select the type of website filter",
-            content="\"Blocklist\" will block the websites you add to the list.\n\"Allowlist\" will only allow the websites you add to the list.",
+            content="\"Blocklist\" will block the websites you add to the list.\n"
+                    "\"Allowlist\" will only allow the websites you add to the list.",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
             tailPosition=TeachingTipTailPosition.TOP,
@@ -49,7 +48,9 @@ class WebsiteFilterInterfaceTutorial(InterfaceTutorial):
 
     def _enter_websites_step(self):
 
-        current_website_filter_type: WebsiteFilterType = self.main_window.website_filter_interface.model.get_website_filter_type()
+        current_website_filter_type: WebsiteFilterType = (
+            self.main_window.website_filter_interface.model.get_website_filter_type()
+        )
         active_code_editor = self.main_window.website_filter_interface.blockListTextEdit if \
             current_website_filter_type == WebsiteFilterType.BLOCKLIST else \
             self.main_window.website_filter_interface.allowListTextEdit

@@ -635,16 +635,21 @@ class MainWindow(PomodoroFluentWindow):
 
         self.isSafeToShowTutorial = True
 
-        if not ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL and self.isSafeToShowTutorial and index == InterfaceType.TASK_INTERFACE.value:
+        if not ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL and self.isSafeToShowTutorial and \
+                index == InterfaceType.TASK_INTERFACE.value:
             self.taskInterfaceTutorial = TaskInterfaceTutorial(self, InterfaceType.TASK_INTERFACE)
             self.taskInterfaceTutorial.start()
 
-        if not ConfigValues.HAS_COMPLETED_POMODORO_VIEW_TUTORIAL and self.isSafeToShowTutorial and index == InterfaceType.POMODORO_INTERFACE.value:
+        if not ConfigValues.HAS_COMPLETED_POMODORO_VIEW_TUTORIAL and self.isSafeToShowTutorial and \
+                index == InterfaceType.POMODORO_INTERFACE.value:
             self.pomodoroInterfaceTutorial = PomodoroInterfaceTutorial(self, InterfaceType.POMODORO_INTERFACE)
             self.pomodoroInterfaceTutorial.start()
 
-        if not ConfigValues.HAS_COMPLETED_WEBSITE_FILTER_VIEW_TUTORIAL and self.isSafeToShowTutorial and index == InterfaceType.WEBSITE_FILTER_INTERFACE.value:
-            self.websiteFilterInterfaceTutorial = WebsiteFilterInterfaceTutorial(self, InterfaceType.WEBSITE_FILTER_INTERFACE)
+        if not ConfigValues.HAS_COMPLETED_WEBSITE_FILTER_VIEW_TUTORIAL and self.isSafeToShowTutorial and \
+                index == InterfaceType.WEBSITE_FILTER_INTERFACE.value:
+            self.websiteFilterInterfaceTutorial = (
+                WebsiteFilterInterfaceTutorial(self, InterfaceType.WEBSITE_FILTER_INTERFACE)
+            )
             self.websiteFilterInterfaceTutorial.start()
 
         # if self.isSafeToShowTutorial:
@@ -758,7 +763,9 @@ class MainWindow(PomodoroFluentWindow):
         self.setupAppConfirmationDialog = PreSetupConfirmationDialog(parent=self.window())
 
         # setupAppDialog is a modal dialog, so it will block the main window until it is closed
-        self.setupAppConfirmationDialog.accepted.connect(lambda: self.handleUpdates() if ConfigValues.CHECK_FOR_UPDATES_ON_START else None)
+        self.setupAppConfirmationDialog.accepted.connect(
+            lambda: self.handleUpdates() if ConfigValues.CHECK_FOR_UPDATES_ON_START else None
+        )
         self.setupAppConfirmationDialog.rejected.connect(self.onSetupAppConfirmationDialogRejected)
 
     def onSetupAppConfirmationDialogRejected(self):

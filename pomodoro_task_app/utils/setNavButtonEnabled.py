@@ -1,5 +1,7 @@
 from qfluentwidgets import FluentWindow
+
 from constants import InterfacePosition
+
 
 def setNavButtonEnabled(main_window: FluentWindow, interface_position: InterfacePosition, is_enabled: bool):
     layout, position_in_layout = interface_position.value

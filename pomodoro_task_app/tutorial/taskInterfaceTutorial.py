@@ -5,15 +5,15 @@ from PySide6.QtWidgets import QWidget
 from qfluentwidgets import FluentIcon, FluentWindow, TeachingTipTailPosition
 
 from config_values import ConfigValues
-from constants import InterfaceType, InterfacePosition
+from constants import InterfacePosition, InterfaceType
 from models.config import app_settings
 from models.task_list_model import TaskListModel
 from prefabs.targetClickTeachingTip import TargetClickTeachingTip
 from prefabs.transientPopupTeachingTip import TransientPopupTeachingTip
 from tutorial.interfaceTutorial import InterfaceTutorial
+from utils.setNavButtonEnabled import setNavButtonEnabled
 from views.dialogs.addTaskDialog import AddTaskDialog
 from views.dialogs.editTaskTimeDialog import EditTaskTimeDialog
-from utils.setNavButtonEnabled import setNavButtonEnabled
 
 
 class TaskInterfaceTutorial(InterfaceTutorial):
