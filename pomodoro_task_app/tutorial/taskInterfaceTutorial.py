@@ -41,6 +41,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
     def _first_step(self):
         self.main_window.isSafeToShowTutorial = False  # block tutorials of other interfaces from showing
 
+        setNavButtonEnabled(self.main_window, NavPanelButtonPosition.BACK_BUTTON, False)
         setNavButtonEnabled(self.main_window, NavPanelButtonPosition.POMODORO_INTERFACE, False)
         setNavButtonEnabled(self.main_window, NavPanelButtonPosition.WEBSITE_FILTER_INTERFACE, False)
 
@@ -374,6 +375,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
         ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL = True
         self.main_window.isSafeToShowTutorial = True  # allow other tutorials to show
 
+        setNavButtonEnabled(self.main_window, NavPanelButtonPosition.BACK_BUTTON, True)
         setNavButtonEnabled(self.main_window, NavPanelButtonPosition.POMODORO_INTERFACE, True)
         setNavButtonEnabled(self.main_window, NavPanelButtonPosition.WEBSITE_FILTER_INTERFACE, True)
 
