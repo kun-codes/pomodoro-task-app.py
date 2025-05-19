@@ -76,3 +76,27 @@ class UpdateCheckResult(Enum):
     UPDATE_AVAILABLE = "Update available"
     NETWORK_UNREACHABLE = "Network Unreachable"
     UNKNOWN_ERROR = "An unknown error occurred"
+
+
+class InterfaceType(Enum):
+    TASK_INTERFACE = 0
+    POMODORO_INTERFACE = 1
+    WEBSITE_FILTER_INTERFACE = 2
+    SETTINGS_INTERFACE = 3
+
+    DIALOG = -1
+
+
+# https://pyqt-fluent-widgets.readthedocs.io/en/latest/navigation.html
+class NavPanelButtonPosition(Enum):
+    # 0 = Top Layout of Panel of Navigation Panel
+    BACK_BUTTON = (0, 0)
+    TASK_INTERFACE = (0, 2)
+    POMODORO_INTERFACE = (0, 3)
+    WEBSITE_FILTER_INTERFACE = (0, 4)
+
+    # 1 = Scroll Layout of Panel of Navigation Panel
+
+    # 2 = Bottom Layout of Panel of Navigation Panel
+    WORKSPACE_MANAGER_DIALOG = (2, 0)
+    SETTINGS_INTERFACE = (2, 1)

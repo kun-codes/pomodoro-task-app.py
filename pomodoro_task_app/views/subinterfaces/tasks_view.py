@@ -1,6 +1,13 @@
+from loguru import logger
 from PySide6.QtCore import QModelIndex
 from PySide6.QtWidgets import QApplication, QSizePolicy, QVBoxLayout, QWidget
-from qfluentwidgets import FluentIcon, SimpleCardWidget, TitleLabel, ToolTipFilter, ToolTipPosition
+from qfluentwidgets import (
+    FluentIcon,
+    SimpleCardWidget,
+    TitleLabel,
+    ToolTipFilter,
+    ToolTipPosition,
+)
 
 from models.db_tables import TaskType
 from models.task_list_model import TaskListModel
@@ -85,6 +92,16 @@ class TaskListView(Ui_TaskView, QWidget):
             task_name = dialog.taskEdit.text()
             row = self.todoTasksList.model().rowCount(QModelIndex())
             self.todoTasksList.model().insertRow(row, QModelIndex(), task_name=task_name, task_type=TaskType.TODO)
+
+    def findMainWindow(self):
+        widget = self.parent()
+        while widget:
+            if widget.objectName() == "main_window":
+                logger.debug("Found main window.")
+                return widget
+            widget = widget.parent()
+
+        return None
 
     def deleteTask(self):
         # either one of the following will be selected

@@ -21,6 +21,8 @@ class CustomFluentIcon(FluentIconBase, Enum):
     CHANGE_CURRENT_TASK = "change_current_task"
     PLAY_PAUSE = "play_pause"
     EXIT = "exit"
+    CLICK = "click"
+    TEXT_ADD = "text_add"
 
     def path(self, theme=Theme.AUTO):
         # getIconColor() return "white" or "black" according to current theme

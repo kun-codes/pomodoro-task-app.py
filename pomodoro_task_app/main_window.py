@@ -3,7 +3,7 @@ from pathlib import Path
 
 import darkdetect
 from loguru import logger
-from PySide6.QtCore import Qt, QUrl
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 from qfluentwidgets import (
@@ -18,7 +18,14 @@ from qfluentwidgets import (
 
 from config_paths import settings_dir
 from config_values import ConfigValues
-from constants import FIRST_RUN_DOTFILE_NAME, TimerState, UpdateCheckResult, URLListType, WebsiteFilterType
+from constants import (
+    FIRST_RUN_DOTFILE_NAME,
+    InterfaceType,
+    TimerState,
+    UpdateCheckResult,
+    URLListType,
+    WebsiteFilterType,
+)
 from models.config import app_settings, load_workspace_settings, workspace_specific_settings
 from models.db_tables import TaskType
 from models.task_list_model import TaskListModel
@@ -26,11 +33,14 @@ from models.workspace_list_model import WorkspaceListModel
 from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
 from resources import logos_rc
+from tutorial.pomodoroInterfaceTutorial import PomodoroInterfaceTutorial
+from tutorial.taskInterfaceTutorial import TaskInterfaceTutorial
+from tutorial.websiteFilterInterfaceTutorial import WebsiteFilterInterfaceTutorial
+from tutorial.workspaceManagerDialogTutorial import WorkspaceManagerDialogTutorial
 from utils.check_for_updates import checkForUpdates
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.time_conversion import convert_ms_to_hh_mm_ss
 from views.dialogs.preSetupConfirmationDialog import PreSetupConfirmationDialog
-from views.dialogs.tutorialDialog import TutorialDialog
 from views.dialogs.updateDialog import UpdateDialog
 from views.dialogs.workspaceManagerDialog import ManageWorkspaceDialog
 from views.subinterfaces.pomodoro_view import PomodoroView
@@ -310,6 +320,7 @@ class MainWindow(PomodoroFluentWindow):
             )
 
         self.manage_workspace_dialog.show()
+        self.showWorkspaceManagerTutorial()
 
     def toggleUIElementsBasedOnTimerState(self, timerState):
         logger.warning(f"timerState: {timerState}")
@@ -620,40 +631,34 @@ class MainWindow(PomodoroFluentWindow):
             task_id=self.get_current_task_id()
         )
 
-    def showTutorial(self):
-        if self.isSafeToShowTutorial:
-            if (self.stackedWidget.currentWidget().objectName() == "task_interface" and
-                    not app_settings.get(app_settings.has_visited_task_view)):
-                app_settings.set(app_settings.has_visited_task_view, True)
-                taskViewTutorialDialog = TutorialDialog(
-                    self.window(),
-                    "Task View Tutorial",
-                )
-                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile("add task.mkv"), "this is the first subtitle")
-                taskViewTutorialDialog.addVideo(QUrl.fromLocalFile("delete task.mkv"), "this is a subtitle")
-                taskViewTutorialDialog.show()
+    def showTutorial(self, index: int):
+        self.isSafeToShowTutorial = True
 
-                app_settings.set(app_settings.has_visited_task_view, True)
-            elif (self.stackedWidget.currentWidget().objectName() == "pomodoro_interface" and
-                    not app_settings.get(app_settings.has_visited_pomodoro_view)):
-                pomodoroViewTutorialDialog = TutorialDialog(
-                    self.window(),
-                    "Pomodoro View Tutorial",
-                )
-                # pomodoroViewTutorialDialog.addImage("adjust time.gif", "You can adjust the duration"
-                #                                                        " of the pomodoro session in the settings")
-                pomodoroViewTutorialDialog.show()
+        if not ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL and self.isSafeToShowTutorial and \
+                index == InterfaceType.TASK_INTERFACE.value:
+            self.taskInterfaceTutorial = TaskInterfaceTutorial(self, InterfaceType.TASK_INTERFACE)
+            self.taskInterfaceTutorial.start()
 
-                app_settings.set(app_settings.has_visited_pomodoro_view, True)
-            elif (self.stackedWidget.currentWidget().objectName() == "website_filter_interface" and
-                    not app_settings.get(app_settings.has_visited_website_filter_view)):
-                websiteFilterViewTutorialDialog = TutorialDialog(
-                    self.window(),
-                    "Website Filter View Tutorial",
-                )
-                websiteFilterViewTutorialDialog.show()
+        if not ConfigValues.HAS_COMPLETED_POMODORO_VIEW_TUTORIAL and self.isSafeToShowTutorial and \
+                index == InterfaceType.POMODORO_INTERFACE.value:
+            self.pomodoroInterfaceTutorial = PomodoroInterfaceTutorial(self, InterfaceType.POMODORO_INTERFACE)
+            self.pomodoroInterfaceTutorial.start()
 
-                app_settings.set(app_settings.has_visited_website_filter_view, True)
+        if not ConfigValues.HAS_COMPLETED_WEBSITE_FILTER_VIEW_TUTORIAL and self.isSafeToShowTutorial and \
+                index == InterfaceType.WEBSITE_FILTER_INTERFACE.value:
+            self.websiteFilterInterfaceTutorial = (
+                WebsiteFilterInterfaceTutorial(self, InterfaceType.WEBSITE_FILTER_INTERFACE)
+            )
+            self.websiteFilterInterfaceTutorial.start()
+
+    def showWorkspaceManagerTutorial(self):
+        self.isSafeToShowTutorial = True
+
+        if not ConfigValues.HAS_COMPLETED_WORKSPACE_MANAGER_DIALOG_TUTORIAL and self.isSafeToShowTutorial:
+            self.workspaceManagerTutorial = (
+                WorkspaceManagerDialogTutorial(self, InterfaceType.DIALOG)
+            )
+            self.workspaceManagerTutorial.start()
 
     def on_website_filter_enabled_setting_changed(self):
         enable_website_filter_setting_value = ConfigValues.ENABLE_WEBSITE_FILTER
@@ -732,19 +737,10 @@ class MainWindow(PomodoroFluentWindow):
         self.setupAppConfirmationDialog = PreSetupConfirmationDialog(parent=self.window())
 
         # setupAppDialog is a modal dialog, so it will block the main window until it is closed
-        self.setupAppConfirmationDialog.accepted.connect(lambda: self.giveGuidedTour())
+        self.setupAppConfirmationDialog.accepted.connect(
+            lambda: self.handleUpdates() if ConfigValues.CHECK_FOR_UPDATES_ON_START else None
+        )
         self.setupAppConfirmationDialog.rejected.connect(self.onSetupAppConfirmationDialogRejected)
-
-    def giveGuidedTour(self):
-        # self.temporary_website_blocker_manager.stop_filtering(delete_proxy=True)  # stopping website filtering here
-        # # because this function will only be triggered after self.setupAppDialog is closed
-        #
-        # todo: give a guided tour of the app to the user
-
-        if ConfigValues.CHECK_FOR_UPDATES_ON_START:
-            # calling self.handleUpdates() on first run
-            self.handleUpdates()  # added self.checkForUpdates here so that it is called after the setup dialog
-            # is closed
 
     def onSetupAppConfirmationDialogRejected(self):
         # delete the first run file so that the setup dialog is shown again when the app is started next time
@@ -764,16 +760,15 @@ class MainWindow(PomodoroFluentWindow):
 
             # for first run, the control flow is like this
             # self.setupMitmproxy() ---MainWindow is show---> self.setupAppDialog.show() ---
-            # ---setupAppDialog is closed---> self.giveGuidedTour()  ---> self.checkForUpdates()
+            # ---setupAppDialog is closed---> self.handleUpdates()
 
             # for runs which aren't first run, self.setupMitmproxy() is not run, so self.updateDialog is shown
             # when MainWindow is shown, in self.showEvent()
-            if self.is_first_run and self.updateDialog is not None:
+            if self.updateDialog is not None:
+                self.updateDialog.finished.connect(lambda: self.showTutorial(InterfaceType.POMODORO_INTERFACE.value))
                 self.updateDialog.show()
-
         elif update_check_result == UpdateCheckResult.UP_TO_DATE:
-            pass
-
+            self.showTutorial(InterfaceType.TASK_INTERFACE.value)
         elif update_check_result == UpdateCheckResult.NETWORK_UNREACHABLE:
             InfoBar.error(
                 title="Update Check Failed",
@@ -784,10 +779,7 @@ class MainWindow(PomodoroFluentWindow):
                 position=InfoBarPosition.TOP_RIGHT,
                 parent=self.window(),
             )
-
-        if self.is_first_run:
-            self.isSafeToShowTutorial = True
-            self.showTutorial()
+            self.showTutorial(InterfaceType.TASK_INTERFACE.value)
 
     def showEvent(self, event):
         logger.debug("MainWindow showEvent")
