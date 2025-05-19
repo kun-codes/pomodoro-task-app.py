@@ -16,3 +16,6 @@ class ConfigValues:
     HAS_COMPLETED_WEBSITE_FILTER_VIEW_TUTORIAL = app_settings.get(
         app_settings.has_completed_website_filter_view_tutorial
     )
+    HAS_COMPLETED_WORKSPACE_MANAGER_DIALOG_TUTORIAL = app_settings.get(
+        app_settings.has_completed_workspace_manager_dialog_tutorial
+    )

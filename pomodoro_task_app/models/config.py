@@ -50,6 +50,9 @@ class AppSettings(QConfig):
     has_completed_website_filter_view_tutorial = ConfigItem(
         "AppSettings", "HasCompletedWebsiteFilterViewTutorial", False, BoolValidator()
     )
+    has_completed_workspace_manager_dialog_tutorial = ConfigItem(
+        "AppSettings", "HasCompletedWorkspaceManagerDialogTutorial", False, BoolValidator()
+    )
     mica_enabled = ConfigItem("MainWindow", "MicaEnabled", isWin11(), BoolValidator())
 
 

@@ -36,6 +36,7 @@ from resources import logos_rc
 from tutorial.pomodoroInterfaceTutorial import PomodoroInterfaceTutorial
 from tutorial.taskInterfaceTutorial import TaskInterfaceTutorial
 from tutorial.websiteFilterInterfaceTutorial import WebsiteFilterInterfaceTutorial
+from tutorial.workspaceManagerDialogTutorial import WorkspaceManagerDialogTutorial
 from utils.check_for_updates import checkForUpdates
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.time_conversion import convert_ms_to_hh_mm_ss
@@ -319,6 +320,7 @@ class MainWindow(PomodoroFluentWindow):
             )
 
         self.manage_workspace_dialog.show()
+        self.showWorkspaceManagerTutorial()
 
     def toggleUIElementsBasedOnTimerState(self, timerState):
         logger.warning(f"timerState: {timerState}")
@@ -635,10 +637,10 @@ class MainWindow(PomodoroFluentWindow):
 
         self.isSafeToShowTutorial = True
 
-        if not ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL and self.isSafeToShowTutorial and \
-                index == InterfaceType.TASK_INTERFACE.value:
-            self.taskInterfaceTutorial = TaskInterfaceTutorial(self, InterfaceType.TASK_INTERFACE)
-            self.taskInterfaceTutorial.start()
+        # if not ConfigValues.HAS_COMPLETED_TASK_VIEW_TUTORIAL and self.isSafeToShowTutorial and \
+        #         index == InterfaceType.TASK_INTERFACE.value:
+        #     self.taskInterfaceTutorial = TaskInterfaceTutorial(self, InterfaceType.TASK_INTERFACE)
+        #     self.taskInterfaceTutorial.start()
 
         if not ConfigValues.HAS_COMPLETED_POMODORO_VIEW_TUTORIAL and self.isSafeToShowTutorial and \
                 index == InterfaceType.POMODORO_INTERFACE.value:
@@ -685,6 +687,18 @@ class MainWindow(PomodoroFluentWindow):
         #         websiteFilterViewTutorialDialog.show()
         #
         #         app_settings.set(app_settings.has_visited_website_filter_view, True)
+
+    def showWorkspaceManagerTutorial(self):
+        if not self.is_first_run:
+            return
+
+        self.isSafeToShowTutorial = True
+
+        if not ConfigValues.HAS_COMPLETED_WORKSPACE_MANAGER_DIALOG_TUTORIAL and self.isSafeToShowTutorial:
+            self.workspaceManagerTutorial = (
+                WorkspaceManagerDialogTutorial(self, InterfaceType.DIALOG)
+            )
+            self.workspaceManagerTutorial.start()
 
     def on_website_filter_enabled_setting_changed(self):
         enable_website_filter_setting_value = ConfigValues.ENABLE_WEBSITE_FILTER
