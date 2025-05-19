@@ -8,6 +8,7 @@ from config_values import ConfigValues
 from constants import NavPanelButtonPosition, InterfaceType
 from models.config import app_settings
 from models.task_list_model import TaskListModel
+from prefabs.customFluentIcon import CustomFluentIcon
 from prefabs.targetClickTeachingTip import TargetClickTeachingTip
 from prefabs.transientPopupTeachingTip import TransientPopupTeachingTip
 from tutorial.interfaceTutorial import InterfaceTutorial
@@ -55,7 +56,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
             target=self.main_window.task_interface.todoTasksList,
             title="This card contains all the tasks which you have to do",
             content="",
-            icon=FluentIcon.ADD,
+            icon=FluentIcon.INFO,
             parent=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
             mainWindow=self.main_window,
@@ -71,7 +72,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
             target=self.main_window.task_interface.completedTasksList,
             title="This card contains all the tasks which you have completed",
             content="",
-            icon=FluentIcon.ADD,
+            icon=FluentIcon.INFO,
             parent=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
             mainWindow=self.main_window,
@@ -105,7 +106,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
             tailPosition=TeachingTipTailPosition.TOP,
-            icon=FluentIcon.ADD,
+            icon=CustomFluentIcon.CLICK,
             parent=self.main_window,
         )
         self._select_first_task_step_tip.destroyed.connect(self.next_step)
@@ -121,7 +122,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
             content="Click this button to edit the time of the selected task",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
-            icon=FluentIcon.ADD,
+            icon=CustomFluentIcon.CLICK,
             tailPosition=TeachingTipTailPosition.TOP,
             parent=self.main_window,
         )
@@ -150,7 +151,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
             content="",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
-            icon=FluentIcon.ADD,
+            icon=CustomFluentIcon.CLICK,
             tailPosition=TeachingTipTailPosition.RIGHT,
             parent=self.main_window,
             customSignalToDestroy=edit_task_time_dialog.elapsedTimePicker.timeChanged,
@@ -166,7 +167,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
             content="",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
-            icon=FluentIcon.ADD,
+            icon=CustomFluentIcon.CLICK,
             tailPosition=TeachingTipTailPosition.RIGHT,
             parent=self.main_window,
             customSignalToDestroy=edit_task_time_dialog.estimateTimePicker.timeChanged,
@@ -185,7 +186,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
             content="",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
-            icon=FluentIcon.ADD,
+            icon=CustomFluentIcon.CLICK,
             tailPosition=TeachingTipTailPosition.TOP,
             parent=self.main_window,
         )
@@ -203,7 +204,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
             content="",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
-            icon=FluentIcon.ADD,
+            icon=CustomFluentIcon.CLICK,
             tailPosition=TeachingTipTailPosition.TOP,
             parent=self.main_window,
         )
@@ -221,7 +222,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
             content="",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
-            icon=FluentIcon.ADD,
+            icon=CustomFluentIcon.CLICK,
             tailPosition=TeachingTipTailPosition.TOP,
             parent=self.main_window,
         )
@@ -248,7 +249,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
             content="",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
-            icon=FluentIcon.ADD,
+            icon=CustomFluentIcon.TEXT_ADD,
             tailPosition=TeachingTipTailPosition.TOP,
             parent=self.main_window,
             customSignalToDestroy=add_task_dialog.taskEdit.textEdited
@@ -269,7 +270,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
             content="",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
-            icon=FluentIcon.ADD,
+            icon=CustomFluentIcon.CLICK,
             tailPosition=TeachingTipTailPosition.TOP,
             parent=self.main_window,
             customSignalToDestroy=todo_task_list.model().rowsInserted,
@@ -300,7 +301,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
                 mainWindow=self.main_window,
                 interface_type=InterfaceType.TASK_INTERFACE,
                 tailPosition=TeachingTipTailPosition.TOP,
-                icon=FluentIcon.PLAY,
+                icon=CustomFluentIcon.CLICK,
                 parent=self.main_window,
             )
             self._start_first_task_step_tip.destroyed.connect(self.next_step)
@@ -331,7 +332,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
                 mainWindow=self.main_window,
                 interface_type=InterfaceType.TASK_INTERFACE,
                 tailPosition=TeachingTipTailPosition.TOP,
-                icon=FluentIcon.ADD,
+                icon=CustomFluentIcon.CLICK,
                 parent=self.main_window,
                 customSignalToDestroy=completed_task_list.model().modelReset
             )
@@ -354,7 +355,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
                 mainWindow=self.main_window,
                 interface_type=InterfaceType.TASK_INTERFACE,
                 tailPosition=TeachingTipTailPosition.BOTTOM,
-                icon=FluentIcon.ADD,
+                icon=CustomFluentIcon.CLICK,
                 parent=self.main_window,
             )
             self._stop_timer_step_tip.destroyed.connect(self.next_step)

@@ -32,7 +32,7 @@ class PomodoroInterfaceTutorial(InterfaceTutorial):
             target=self.main_window.pomodoro_interface.ProgressRing,
             title="This is the Pomodoro Timer",
             content="You can adjust Timer duration in the settings.",
-            icon=FluentIcon.ADD,
+            icon=FluentIcon.INFO,
             parent=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
             mainWindow=self.main_window,
