@@ -26,6 +26,11 @@ class TaskListItemDelegate(ListItemDelegate):
 
         logger.debug(f"Model: {parent.model()}")
 
+    def deleteAllButtons(self):
+        """Delete all buttons when there are no tasks"""
+        for button in list(self.buttons.values()):
+            button.deleteLater()
+        self.buttons.clear()
 
     def createButton(self, index):
         """Create a ToolButton for the specified index"""

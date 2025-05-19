@@ -39,6 +39,12 @@ class TaskList(ListView):
         Override the paint event to add custom drop indicator drawing
         source: https://oglop.gitbooks.io/pyqt-pyside-cookbook/content/tree/drop_indicator.html
         """
+        # Delete all buttons when there are no items in the model
+        if self.model() and self.model().rowCount() == 0:
+            delegate = self.itemDelegate()
+            if hasattr(delegate, 'deleteAllButtons'):
+                delegate.deleteAllButtons()
+
         super().paintEvent(event)
         if self.state() == QAbstractItemView.State.DraggingState:
             painter = QPainter(self.viewport())
