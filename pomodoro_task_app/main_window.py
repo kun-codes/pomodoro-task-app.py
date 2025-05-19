@@ -651,40 +651,6 @@ class MainWindow(PomodoroFluentWindow):
             )
             self.websiteFilterInterfaceTutorial.start()
 
-        # if self.isSafeToShowTutorial:
-        #     if (self.stackedWidget.currentWidget().objectName() == "task_interface" and
-        #             not app_settings.get(app_settings.has_visited_task_view)):
-        #         app_settings.set(app_settings.has_visited_task_view, True)
-        #         taskViewTutorialDialog = TutorialDialog(
-        #             self.window(),
-        #             "Task View Tutorial",
-        #         )
-        #         taskViewTutorialDialog.addVideo(QUrl.fromLocalFile("add task.mkv"), "this is the first subtitle")
-        #         taskViewTutorialDialog.addVideo(QUrl.fromLocalFile("delete task.mkv"), "this is a subtitle")
-        #         taskViewTutorialDialog.show()
-        #
-        #         app_settings.set(app_settings.has_visited_task_view, True)
-        #     elif (self.stackedWidget.currentWidget().objectName() == "pomodoro_interface" and
-        #             not app_settings.get(app_settings.has_visited_pomodoro_view)):
-        #         pomodoroViewTutorialDialog = TutorialDialog(
-        #             self.window(),
-        #             "Pomodoro View Tutorial",
-        #         )
-        #         # pomodoroViewTutorialDialog.addImage("adjust time.gif", "You can adjust the duration"
-        #         #                                                        " of the pomodoro session in the settings")
-        #         pomodoroViewTutorialDialog.show()
-        #
-        #         app_settings.set(app_settings.has_visited_pomodoro_view, True)
-        #     elif (self.stackedWidget.currentWidget().objectName() == "website_filter_interface" and
-        #             not app_settings.get(app_settings.has_visited_website_filter_view)):
-        #         websiteFilterViewTutorialDialog = TutorialDialog(
-        #             self.window(),
-        #             "Website Filter View Tutorial",
-        #         )
-        #         websiteFilterViewTutorialDialog.show()
-        #
-        #         app_settings.set(app_settings.has_visited_website_filter_view, True)
-
     def showWorkspaceManagerTutorial(self):
         self.isSafeToShowTutorial = True
 
