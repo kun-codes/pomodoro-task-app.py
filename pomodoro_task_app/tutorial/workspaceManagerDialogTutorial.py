@@ -1,4 +1,4 @@
-from qfluentwidgets import FluentWindow, FluentIcon
+from qfluentwidgets import FluentIcon, FluentWindow
 
 from config_values import ConfigValues
 from constants import InterfaceType

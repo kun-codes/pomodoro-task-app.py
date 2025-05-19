@@ -1,7 +1,7 @@
 from qfluentwidgets import FluentIcon, FluentWindow
 
 from config_values import ConfigValues
-from constants import NavPanelButtonPosition, InterfaceType
+from constants import InterfaceType, NavPanelButtonPosition
 from models.config import app_settings
 from prefabs.transientPopupTeachingTip import TransientPopupTeachingTip
 from tutorial.interfaceTutorial import InterfaceTutorial
