@@ -33,8 +33,8 @@ class WebsiteFilterInterfaceTutorial(InterfaceTutorial):
         self._select_website_filter_type_step_tip = TransientPopupTeachingTip.create(
             target=self.main_window.website_filter_interface.blockTypeComboBox,
             title="You can select the type of website filter",
-            content="\"Blocklist\" will block the websites you add to the list.\n"
-                    "\"Allowlist\" will only allow the websites you add to the list.",
+            content="\"Blocklist\" will block the websites you add to the list\n"
+                    "\"Allowlist\" will only allow the websites you add to the list and block all others",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
             tailPosition=TeachingTipTailPosition.TOP,
@@ -62,7 +62,7 @@ class WebsiteFilterInterfaceTutorial(InterfaceTutorial):
         self._enter_website_filters_tip = TransientPopupTeachingTip.create(
             target=active_code_editor,
             title=f"You can enter websites to {action} here",
-            content="You can enter multiple websites by writing them in separate lines.\n",
+            content="Multiple websites can be entered by typing them in separate lines.\n",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
             tailPosition=TeachingTipTailPosition.BOTTOM,
@@ -78,7 +78,7 @@ class WebsiteFilterInterfaceTutorial(InterfaceTutorial):
     def _save_websites_step(self):
         self._save_websites_step_tip = TransientPopupTeachingTip.create(
             target=self.main_window.website_filter_interface.saveButton,
-            title="Always save your changes",
+            title="Always save your changes after editing the list",
             content="",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,

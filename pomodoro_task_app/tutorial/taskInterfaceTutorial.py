@@ -118,8 +118,8 @@ class TaskInterfaceTutorial(InterfaceTutorial):
 
         self._invoke_first_task_edit_task_time_step_tip = TargetClickTeachingTip.create(
             target=self.main_window.task_interface.editTaskTimeButton,
-            title="Click this button",
-            content="Click this button to edit the time of the selected task",
+            title="Edit the time of the selected task",
+            content="",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
             icon=CustomFluentIcon.CLICK,
@@ -147,8 +147,8 @@ class TaskInterfaceTutorial(InterfaceTutorial):
 
         self._edit_first_task_time_elapsed_step_tip = TargetClickTeachingTip.create(
             target=edit_task_time_dialog.elapsedTimePicker,
-            title="Click to edit elapsed time of the selected task",
-            content="",
+            title="Try editing the elapsed time of the selected task",
+            content="Elapsed time is the time you have already spent on this task",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
             icon=CustomFluentIcon.CLICK,
@@ -163,8 +163,9 @@ class TaskInterfaceTutorial(InterfaceTutorial):
         edit_task_time_dialog = self.main_window.task_interface.window().findChild(EditTaskTimeDialog)
         self._edit_first_task_time_estimate_step_tip = TargetClickTeachingTip.create(
             target=edit_task_time_dialog.estimateTimePicker,
-            title="Click to edit estimated time of the selected task",
-            content="",
+            title="Now lets edit the estimated time of the selected task",
+            content="Esimated time is the time you think you will need to complete this task"
+                    "\nThis is an important part of Time Boxing",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
             icon=CustomFluentIcon.CLICK,
@@ -200,8 +201,8 @@ class TaskInterfaceTutorial(InterfaceTutorial):
 
         self._delete_first_task_step_tip = TargetClickTeachingTip.create(
             target=self.main_window.task_interface.deleteTaskButton,
-            title="Now lets delete the first task",
-            content="",
+            title="Try deleting the selected task",
+            content="Don't worry, we will add a new task soon",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
             icon=CustomFluentIcon.CLICK,
@@ -246,11 +247,12 @@ class TaskInterfaceTutorial(InterfaceTutorial):
         self._name_new_task_step_tip = TargetClickTeachingTip.create(
             target=add_task_dialog.taskEdit,
             title="Enter the name of the new task",
-            content="",
+            content="Name it something short and meaningful\n"
+                    "Good goals are SMART: Specific, Measurable, Achievable, Relevant, Time-bound",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
             icon=CustomFluentIcon.TEXT_ADD,
-            tailPosition=TeachingTipTailPosition.TOP,
+            tailPosition=TeachingTipTailPosition.RIGHT,
             parent=self.main_window,
             customSignalToDestroy=add_task_dialog.taskEdit.textEdited
         )
@@ -266,7 +268,7 @@ class TaskInterfaceTutorial(InterfaceTutorial):
 
         self._save_new_task_step_tip = TargetClickTeachingTip.create(
             target=add_task_dialog.yesButton,
-            title="Now lets save the new task",
+            title="Save the new task",
             content="",
             mainWindow=self.main_window,
             interface_type=InterfaceType.TASK_INTERFACE,
@@ -296,8 +298,8 @@ class TaskInterfaceTutorial(InterfaceTutorial):
 
             self._start_first_task_step_tip = TargetClickTeachingTip.create(
                 target=button,
-                title="Start this task",
-                content="Click on this button to start the task",
+                title="Start this new task",
+                content="Click on it's play button to start the task",
                 mainWindow=self.main_window,
                 interface_type=InterfaceType.TASK_INTERFACE,
                 tailPosition=TeachingTipTailPosition.TOP,
