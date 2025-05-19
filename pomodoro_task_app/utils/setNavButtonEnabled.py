@@ -19,5 +19,3 @@ def setNavButtonEnabled(main_window: FluentWindow, interface_position: NavPanelB
         item = panel_layout.itemAt(position_in_layout)
         if item and item.widget():
             item.widget().setEnabled(is_enabled)
-
-
