@@ -35,6 +35,7 @@ from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
 from resources import logos_rc
 from tutorial.pomodoroInterfaceTutorial import PomodoroInterfaceTutorial
 from tutorial.taskInterfaceTutorial import TaskInterfaceTutorial
+from tutorial.websiteFilterInterfaceTutorial import WebsiteFilterInterfaceTutorial
 from utils.check_for_updates import checkForUpdates
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.time_conversion import convert_ms_to_hh_mm_ss
@@ -641,6 +642,10 @@ class MainWindow(PomodoroFluentWindow):
         if not ConfigValues.HAS_COMPLETED_POMODORO_VIEW_TUTORIAL and self.isSafeToShowTutorial and index == InterfaceType.POMODORO_INTERFACE.value:
             self.pomodoroInterfaceTutorial = PomodoroInterfaceTutorial(self, InterfaceType.POMODORO_INTERFACE)
             self.pomodoroInterfaceTutorial.start()
+
+        if not ConfigValues.HAS_COMPLETED_WEBSITE_FILTER_VIEW_TUTORIAL and self.isSafeToShowTutorial and index == InterfaceType.WEBSITE_FILTER_INTERFACE.value:
+            self.websiteFilterInterfaceTutorial = WebsiteFilterInterfaceTutorial(self, InterfaceType.WEBSITE_FILTER_INTERFACE)
+            self.websiteFilterInterfaceTutorial.start()
 
         # if self.isSafeToShowTutorial:
         #     if (self.stackedWidget.currentWidget().objectName() == "task_interface" and
