@@ -84,6 +84,8 @@ class InterfaceType(Enum):
     WEBSITE_FILTER_INTERFACE = 2
     SETTINGS_INTERFACE = 3
 
+    DIALOG = -1
+
 
 # https://pyqt-fluent-widgets.readthedocs.io/en/latest/navigation.html
 class NavPanelButtonPosition(Enum):

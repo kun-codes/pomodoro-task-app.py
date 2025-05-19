@@ -22,6 +22,11 @@ class TransientPopupTeachingTip(PopupTeachingTip):
 
     def onTabChanged(self, index):
         logger.debug(f"Tab changed to index: {index}")
+
+        if self.interface_type.value == InterfaceType.DIALOG.value:  # no need to hide or show teaching tip
+            # if teaching tip is used on a dialog
+            return
+
         if index == self.interface_type.value:
             self.temporaryShow()
         else:
