@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QWidget
 from qfluentwidgets import FluentIcon, FluentWindow, TeachingTipTailPosition
 
 from config_values import ConfigValues
-from constants import NavPanelButtonPosition, InterfaceType
+from constants import InterfaceType, NavPanelButtonPosition
 from models.config import app_settings
 from models.task_list_model import TaskListModel
 from prefabs.customFluentIcon import CustomFluentIcon
