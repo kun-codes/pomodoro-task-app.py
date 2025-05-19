@@ -1,7 +1,7 @@
 from qfluentwidgets import FluentIcon, FluentWindow, TeachingTipTailPosition
 
 from config_values import ConfigValues
-from constants import InterfacePosition, InterfaceType, WebsiteFilterType
+from constants import NavPanelButtonPosition, InterfaceType, WebsiteFilterType
 from models.config import app_settings
 from prefabs.transientPopupTeachingTip import TransientPopupTeachingTip
 from tutorial.interfaceTutorial import InterfaceTutorial
@@ -21,11 +21,11 @@ class WebsiteFilterInterfaceTutorial(InterfaceTutorial):
     def _first_step(self):
         self.main_window.isSafeToShowTutorial = False
 
-        setNavButtonEnabled(self.main_window, InterfacePosition.TASK_INTERFACE, False)
-        setNavButtonEnabled(self.main_window, InterfacePosition.POMODORO_INTERFACE, False)
+        setNavButtonEnabled(self.main_window, NavPanelButtonPosition.TASK_INTERFACE, False)
+        setNavButtonEnabled(self.main_window, NavPanelButtonPosition.POMODORO_INTERFACE, False)
 
-        setNavButtonEnabled(self.main_window, InterfacePosition.WORKSPACE_MANAGER_DIALOG, False)
-        setNavButtonEnabled(self.main_window, InterfacePosition.SETTINGS_INTERFACE, False)
+        setNavButtonEnabled(self.main_window, NavPanelButtonPosition.WORKSPACE_MANAGER_DIALOG, False)
+        setNavButtonEnabled(self.main_window, NavPanelButtonPosition.SETTINGS_INTERFACE, False)
         self.next_step()
 
     def _select_website_filter_type_step(self):
@@ -97,11 +97,11 @@ class WebsiteFilterInterfaceTutorial(InterfaceTutorial):
         ConfigValues.HAS_COMPLETED_WEBSITE_FILTER_VIEW_TUTORIAL = True
         self.main_window.isSafeToShowTutorial = True
 
-        setNavButtonEnabled(self.main_window, InterfacePosition.TASK_INTERFACE, True)
-        setNavButtonEnabled(self.main_window, InterfacePosition.POMODORO_INTERFACE, True)
+        setNavButtonEnabled(self.main_window, NavPanelButtonPosition.TASK_INTERFACE, True)
+        setNavButtonEnabled(self.main_window, NavPanelButtonPosition.POMODORO_INTERFACE, True)
 
-        setNavButtonEnabled(self.main_window, InterfacePosition.WORKSPACE_MANAGER_DIALOG, True)
-        setNavButtonEnabled(self.main_window, InterfacePosition.SETTINGS_INTERFACE, True)
+        setNavButtonEnabled(self.main_window, NavPanelButtonPosition.WORKSPACE_MANAGER_DIALOG, True)
+        setNavButtonEnabled(self.main_window, NavPanelButtonPosition.SETTINGS_INTERFACE, True)
 
         self.teaching_tips.clear()
         self.current_step = 0

@@ -86,7 +86,7 @@ class InterfaceType(Enum):
 
 
 # https://pyqt-fluent-widgets.readthedocs.io/en/latest/navigation.html
-class InterfacePosition(Enum):
+class NavPanelButtonPosition(Enum):
     # 0 = Top Layout of Panel of Navigation Panel
     TASK_INTERFACE = (0, 2)
     POMODORO_INTERFACE = (0, 3)
