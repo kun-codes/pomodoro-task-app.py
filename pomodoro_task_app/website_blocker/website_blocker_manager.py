@@ -55,7 +55,7 @@ class WebsiteBlockerManager(QObject):
 
         self.stop_filtering(delete_proxy=False)
 
-        threading.Thread(target=self.proxy.join, daemon=True).start()
+        threading.Thread(target=self.proxy.join).start()
 
         worker = FilterWorker(self._start_mitmdump, listening_port, joined_addresses, block_type, mitmdump_bin_path)
         worker.operationCompleted.connect(self._on_start_completed)
@@ -91,7 +91,7 @@ class WebsiteBlockerManager(QObject):
         logger.debug("Inside WebsiteBlockerManager.stop_filtering().")
 
         if delete_proxy:
-            threading.Thread(target=self.proxy.delete_proxy, daemon=True).start()
+            threading.Thread(target=self.proxy.delete_proxy).start()
 
         worker = FilterWorker(self._shutdown_mitmdump)
         worker.operationCompleted.connect(self._on_stop_completed)
@@ -141,7 +141,7 @@ class WebsiteBlockerManager(QObject):
 
     def _force_kill_process(self):
         """Run kill_process in a thread to prevent GUI blocking"""
-        thread = threading.Thread(target=kill_process, daemon=True)
+        thread = threading.Thread(target=kill_process)
         thread.start()
         return True
 
