@@ -1,6 +1,8 @@
 import ssl
 from http.client import HTTPSConnection
 from urllib.parse import urlparse
+from typing import Callable, Optional
+from PySide6.QtCore import QThread, Signal, QObject
 
 import certifi
 import tomllib
@@ -10,6 +12,26 @@ from semver import Version
 from constants import UPDATE_CHECK_URL, UpdateCheckResult
 from utils.get_app_version import get_app_version
 
+
+class UpdateChecker(QObject):
+    """A thread-based update checker that doesn't block the GUI."""
+    updateCheckComplete = Signal(UpdateCheckResult)
+
+    def __init__(self):
+        super().__init__()
+        self._thread = QThread()
+        self.moveToThread(self._thread)
+        self._thread.started.connect(self._check_for_updates)
+
+    def start(self):
+        """Start the update check in a separate thread."""
+        self._thread.start()
+
+    def _check_for_updates(self):
+        """Internal method that performs the actual update check."""
+        result = checkForUpdates()
+        self.updateCheckComplete.emit(result)
+        self._thread.quit()
 
 def checkForUpdates():
     current_app_version = get_app_version()

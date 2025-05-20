@@ -37,7 +37,7 @@ from tutorial.pomodoroInterfaceTutorial import PomodoroInterfaceTutorial
 from tutorial.taskInterfaceTutorial import TaskInterfaceTutorial
 from tutorial.websiteFilterInterfaceTutorial import WebsiteFilterInterfaceTutorial
 from tutorial.workspaceManagerDialogTutorial import WorkspaceManagerDialogTutorial
-from utils.check_for_updates import checkForUpdates
+from utils.check_for_updates import checkForUpdates, UpdateChecker
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.time_conversion import convert_ms_to_hh_mm_ss
 from views.dialogs.preSetupConfirmationDialog import PreSetupConfirmationDialog
@@ -63,6 +63,7 @@ class MainWindow(PomodoroFluentWindow):
 
         # if current alembic revision is older than latest alembic revision then update db
 
+        self.update_checker = None
 
         self.workplace_list_model = WorkspaceListModel()
 
@@ -753,8 +754,31 @@ class MainWindow(PomodoroFluentWindow):
         self.close()
 
     def handleUpdates(self):
-        update_check_result = checkForUpdates()
-        if update_check_result == UpdateCheckResult.UPDATE_AVAILABLE:
+        # Using the threaded update checker to avoid freezing the GUI
+        if not self.update_checker:
+            self.update_checker = UpdateChecker()
+            # Connect signal to handle update check result
+            self.update_checker.updateCheckComplete.connect(self.onUpdateCheckComplete)
+
+        # Start the update check in a background thread
+        self.update_checker.start()
+
+        # Show a small info message to let the user know we're checking for updates
+        InfoBar.info(
+            title="Checking for Updates",
+            content="Checking for application updates...",
+            orient=Qt.Orientation.Vertical,
+            isClosable=True,
+            duration=3000,
+            position=InfoBarPosition.TOP_RIGHT,
+            parent=self.window(),
+        )
+
+    def onUpdateCheckComplete(self, result):
+        """Handle the result of the update check from the background thread."""
+        # The result is now already an UpdateCheckResult enum instance, no conversion needed
+
+        if result == UpdateCheckResult.UPDATE_AVAILABLE:
             # making the updateDialog
             self.updateDialog = UpdateDialog(parent=self.window())
 
@@ -765,11 +789,11 @@ class MainWindow(PomodoroFluentWindow):
             # for runs which aren't first run, self.setupMitmproxy() is not run, so self.updateDialog is shown
             # when MainWindow is shown, in self.showEvent()
             if self.updateDialog is not None:
-                self.updateDialog.finished.connect(lambda: self.showTutorial(InterfaceType.POMODORO_INTERFACE.value))
+                self.updateDialog.finished.connect(lambda: self.showTutorial(InterfaceType.TASK_INTERFACE.value))
                 self.updateDialog.show()
-        elif update_check_result == UpdateCheckResult.UP_TO_DATE:
+        elif result == UpdateCheckResult.UP_TO_DATE:
             self.showTutorial(InterfaceType.TASK_INTERFACE.value)
-        elif update_check_result == UpdateCheckResult.NETWORK_UNREACHABLE:
+        elif result == UpdateCheckResult.NETWORK_UNREACHABLE:
             InfoBar.error(
                 title="Update Check Failed",
                 content="Failed to check for updates: Network is unreachable",
