@@ -66,7 +66,7 @@ class PomodoroView(QWidget, Ui_PomodoroView):
 
         self.stopButton.setCheckable(False)
         self.pauseResumeButton.setCheckable(True)
-        self.pauseResumeButton.setChecked(True)
+        self.pauseResumeButton.setChecked(False)
         self.skipButton.setCheckable(False)
 
     def stopButtonClicked(self):
@@ -74,15 +74,15 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.pomodoro_timer_obj.stopSession()
 
     def pauseResumeButtonClicked(self):
-        if self.pauseResumeButton.isChecked():
-            self.pauseResumeButton.setIcon(FluentIcon.PLAY)
-            self.pomodoro_timer_obj.pauseDuration()
-        else:
+        if self.pauseResumeButton.isChecked():  # Button is checked, show PAUSE icon (timer running)
             self.pauseResumeButton.setIcon(FluentIcon.PAUSE)
             if self.pomodoro_timer_obj.getTimerState() == TimerState.NOTHING:
                 self.pomodoro_timer_obj.updateSessionProgress(False)
             self.pomodoro_timer_obj.setDuration()
             self.pomodoro_timer_obj.startDuration()
+        else:
+            self.pauseResumeButton.setIcon(FluentIcon.PLAY)
+            self.pomodoro_timer_obj.pauseDuration()
 
     def correctPauseResumeButtonIcon(self, timer_state: TimerState):
         if timer_state == TimerState.NOTHING:
@@ -131,10 +131,10 @@ class PomodoroView(QWidget, Ui_PomodoroView):
     def skipButtonClicked(self):
         self.pomodoro_timer_obj.skipDuration()
         self.pauseResumeButton.setIcon(FluentIcon.PAUSE)
-        self.pauseResumeButton.setChecked(False)
+        self.pauseResumeButton.setChecked(True)
 
     def resetPauseResumeButton(self):
-        self.pauseResumeButton.setChecked(True)
+        self.pauseResumeButton.setChecked(False)
         self.pauseResumeButton.setIcon(FluentIcon.PLAY)
 
     def isInitialWorkSession(self):
