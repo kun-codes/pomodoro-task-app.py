@@ -3898,14 +3898,14 @@ full = ["colorthief", "pillow", "scipy"]
 
 [[package]]
 name = "pysidesix-frameless-window"
-version = "0.7.2"
+version = "0.7.1"
 description = "A cross-platform frameless window based on pyside6, support Win32, Linux and macOS."
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "pysidesix_frameless_window-0.7.2-py3-none-any.whl", hash = "sha256:0f69970db7af0a6ae100693e1d28f11b4af58d1da7a0ca0cd8dc276ba9db9aba"},
-    {file = "pysidesix_frameless_window-0.7.2.tar.gz", hash = "sha256:945749f925fde5864bb7d8385b1d27e86df51dfeca1574fad7bc1a9799e07384"},
+    {file = "PySideSix-Frameless-Window-0.7.1.tar.gz", hash = "sha256:d6f103add32d8ca56fc12c12a2da1040dd334b5ead0edfe4c4994ed278e202cf"},
+    {file = "PySideSix_Frameless_Window-0.7.1-py3-none-any.whl", hash = "sha256:f853455a68afe4e63b4e398edc59896e36839415cc543c2caafcb96be42301a0"},
 ]
 
 [package.dependencies]
