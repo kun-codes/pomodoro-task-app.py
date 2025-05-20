@@ -285,6 +285,9 @@ class TaskListModel(QAbstractListModel):
         # Update database
         self.update_db()
 
+        # emit layoutChanged to notify the view of the changes
+        self.layoutChanged.emit()
+
         logger.debug(f"Task type: {self.task_type}")
         logger.debug(f"Tasks after drop: {[t['id'] for t in self.tasks]}")
 
