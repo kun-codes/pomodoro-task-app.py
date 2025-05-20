@@ -246,7 +246,7 @@ class MainWindow(PomodoroFluentWindow):
         self.update_bottom_bar_timer_label()
 
         self.bottomBar.pauseResumeButton.setCheckable(True)
-        self.bottomBar.pauseResumeButton.setChecked(True)
+        self.bottomBar.pauseResumeButton.setChecked(False)
         self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
         self.bottomBar.pauseResumeButton.clicked.connect(self.bottomBarPauseResumeButtonClicked)
         self.bottomBar.skipButton.clicked.connect(self.pomodoro_interface.skipButtonClicked)
@@ -261,7 +261,7 @@ class MainWindow(PomodoroFluentWindow):
         self.pomodoro_interface.pauseResumeButtonClicked()
 
         # Update bottom bar button icon
-        if self.bottomBar.pauseResumeButton.isChecked():
+        if not self.bottomBar.pauseResumeButton.isChecked():
             self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
         else:
             self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PAUSE)
@@ -416,7 +416,7 @@ class MainWindow(PomodoroFluentWindow):
         # get name of task by its ID
         current_task_name = self.task_interface.todoTasksList.model().getTaskNameById(self.get_current_task_id())
 
-        if not triggering_button.isChecked():
+        if triggering_button.isChecked():
             InfoBar.success(
                 title="Task Started",
                 content=f'Task named "{current_task_name}" has started',
@@ -601,10 +601,10 @@ class MainWindow(PomodoroFluentWindow):
 
     def setPauseResumeButtonsToPauseIcon(self, skip_delegate_button=False):
         self.pomodoro_interface.pauseResumeButton.setIcon(FluentIcon.PAUSE)
-        self.pomodoro_interface.pauseResumeButton.setChecked(False)
+        self.pomodoro_interface.pauseResumeButton.setChecked(True)
 
         self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PAUSE)
-        self.bottomBar.pauseResumeButton.setChecked(False)
+        self.bottomBar.pauseResumeButton.setChecked(True)
 
         # todo: find why this is required
         if skip_delegate_button or self.get_current_task_id() is None:
@@ -618,10 +618,10 @@ class MainWindow(PomodoroFluentWindow):
 
     def setPauseResumeButtonsToPlayIcon(self, skip_delegate_button=False):
         self.pomodoro_interface.pauseResumeButton.setIcon(FluentIcon.PLAY)
-        self.pomodoro_interface.pauseResumeButton.setChecked(True)
+        self.pomodoro_interface.pauseResumeButton.setChecked(False)
 
         self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
-        self.bottomBar.pauseResumeButton.setChecked(True)
+        self.bottomBar.pauseResumeButton.setChecked(False)
 
         if skip_delegate_button or self.get_current_task_id() is None:
             return

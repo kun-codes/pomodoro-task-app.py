@@ -18,7 +18,7 @@ class BottomBar(Ui_BottomBarWidget, QWidget):
 
         self.stopButton.setCheckable(False)
         self.pauseResumeButton.setCheckable(True)
-        self.pauseResumeButton.setChecked(True)
+        self.pauseResumeButton.setChecked(False)  # Changed from True to False to match PLAY icon
         self.skipButton.setCheckable(False)
 
         self.stopButton.setToolTip("Stop")
