@@ -25,7 +25,7 @@ from prefabs.setting_cards.SpinBoxSettingCard import SpinBoxSettingCard
 from prefabs.setting_cards.SpinBoxSettingCardSQL import SpinBoxSettingCardSQL
 from prefabs.setting_cards.SwitchSettingCardSQL import SwitchSettingCardSQL
 from ui_py.ui_settings_view import Ui_SettingsView
-from utils.check_for_updates import checkForUpdates
+from utils.check_for_updates import UpdateChecker
 from utils.get_app_version import get_app_version
 from utils.is_win_11 import isWin11
 
@@ -40,6 +40,8 @@ class SettingsView(QWidget, Ui_SettingsView):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
+        self.update_checker = None  # Will initialize when needed
 
         self.initSettings()
         self.initLayout()
@@ -204,7 +206,6 @@ class SettingsView(QWidget, Ui_SettingsView):
     #     FluentLabelBase:disabled {
     #         color: darkgray;
     #     }
-    #     """
     #
     #
     #     # from: https://github.com/zhiyiYo/PyQt-Fluent-Widgets/issues/707
@@ -275,9 +276,29 @@ class SettingsView(QWidget, Ui_SettingsView):
         logger.debug(f"Check For Updates On Start: {app_settings.get(app_settings.check_for_updates_on_start)}")
 
     def checkForUpdatesNow(self):
-        update_result = checkForUpdates()
+        """Check for updates using the UpdateChecker class"""
+        # Show a small info message to let the user know we're checking for updates
+        InfoBar.info(
+            title="Checking for Updates",
+            content="Checking for application updates...",
+            orient=Qt.Orientation.Vertical,
+            isClosable=True,
+            duration=3000,
+            parent=self,
+        )
 
-        if update_result == UpdateCheckResult.UPDATE_AVAILABLE:
+        # Initialize the update checker if it doesn't exist
+        if not self.update_checker:
+            self.update_checker = UpdateChecker()
+            # Connect signal to handle update check result
+            self.update_checker.updateCheckComplete.connect(self.onUpdateCheckComplete)
+
+        # Start the update check in a background thread
+        self.update_checker.start()
+
+    def onUpdateCheckComplete(self, result):
+        """Handle the result of the update check from the background thread."""
+        if result == UpdateCheckResult.UPDATE_AVAILABLE:
             infoBar = InfoBar.new(
                 icon=InfoBarIcon.SUCCESS,
                 title="An Update is Available",
@@ -295,7 +316,7 @@ class SettingsView(QWidget, Ui_SettingsView):
             push_button.clicked.connect(lambda: QDesktopServices.openUrl(url))
 
             infoBar.addWidget(push_button)
-        elif update_result == UpdateCheckResult.UP_TO_DATE:
+        elif result == UpdateCheckResult.UP_TO_DATE:
             InfoBar.info(
                 title="App is up to date",
                 content="You have the latest version of the app",
@@ -304,7 +325,7 @@ class SettingsView(QWidget, Ui_SettingsView):
                 duration=5000,
                 parent=self,
             )
-        elif update_result == UpdateCheckResult.NETWORK_UNREACHABLE:
+        elif result == UpdateCheckResult.NETWORK_UNREACHABLE:
             InfoBar.error(
                 title="Failed to check for updates",
                 content="Network is unreachable",
