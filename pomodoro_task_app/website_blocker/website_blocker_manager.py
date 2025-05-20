@@ -33,6 +33,22 @@ class FilterWorker(QThread):
             self.operationCompleted.emit(False, str(e))
 
 
+class ProxyWorker(QThread):
+    """Worker thread for proxy operations"""
+
+    def __init__(self, operation, *args, **kwargs):
+        super().__init__()
+        self.operation = operation
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        try:
+            self.operation(*self.args, **self.kwargs)
+        except Exception as e:
+            logger.error(f"Error in ProxyWorker: {e}")
+
+
 class WebsiteBlockerManager(QObject):
     filteringStarted = Signal()
     filteringStopped = Signal()
@@ -55,7 +71,10 @@ class WebsiteBlockerManager(QObject):
 
         self.stop_filtering(delete_proxy=False)
 
-        threading.Thread(target=self.proxy.join).start()
+        # Replace threading.Thread with ProxyWorker
+        proxy_worker = ProxyWorker(self.proxy.join)
+        self.workers.append(proxy_worker)
+        proxy_worker.start()
 
         worker = FilterWorker(self._start_mitmdump, listening_port, joined_addresses, block_type, mitmdump_bin_path)
         worker.operationCompleted.connect(self._on_start_completed)
@@ -91,7 +110,10 @@ class WebsiteBlockerManager(QObject):
         logger.debug("Inside WebsiteBlockerManager.stop_filtering().")
 
         if delete_proxy:
-            threading.Thread(target=self.proxy.delete_proxy).start()
+            # Replace threading.Thread with ProxyWorker
+            proxy_worker = ProxyWorker(self.proxy.delete_proxy)
+            self.workers.append(proxy_worker)
+            proxy_worker.start()
 
         worker = FilterWorker(self._shutdown_mitmdump)
         worker.operationCompleted.connect(self._on_stop_completed)
@@ -141,8 +163,10 @@ class WebsiteBlockerManager(QObject):
 
     def _force_kill_process(self):
         """Run kill_process in a thread to prevent GUI blocking"""
-        thread = threading.Thread(target=kill_process)
-        thread.start()
+        # Replace threading.Thread with ProxyWorker
+        kill_worker = ProxyWorker(kill_process)
+        self.workers.append(kill_worker)
+        kill_worker.start()
         return True
 
     def _on_stop_completed(self, success, message):
