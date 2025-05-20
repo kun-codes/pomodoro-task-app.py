@@ -37,7 +37,7 @@ from tutorial.pomodoroInterfaceTutorial import PomodoroInterfaceTutorial
 from tutorial.taskInterfaceTutorial import TaskInterfaceTutorial
 from tutorial.websiteFilterInterfaceTutorial import WebsiteFilterInterfaceTutorial
 from tutorial.workspaceManagerDialogTutorial import WorkspaceManagerDialogTutorial
-from utils.check_for_updates import checkForUpdates, UpdateChecker
+from utils.check_for_updates import UpdateChecker
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.time_conversion import convert_ms_to_hh_mm_ss
 from views.dialogs.preSetupConfirmationDialog import PreSetupConfirmationDialog
@@ -792,6 +792,16 @@ class MainWindow(PomodoroFluentWindow):
                 self.updateDialog.finished.connect(lambda: self.showTutorial(InterfaceType.TASK_INTERFACE.value))
                 self.updateDialog.show()
         elif result == UpdateCheckResult.UP_TO_DATE:
+            # Show an InfoBar notification just like in settings_view.py
+            InfoBar.info(
+                title="App is up to date",
+                content="You have the latest version of the app",
+                orient=Qt.Orientation.Vertical,
+                isClosable=True,
+                duration=5000,
+                position=InfoBarPosition.TOP_RIGHT,
+                parent=self.window(),
+            )
             self.showTutorial(InterfaceType.TASK_INTERFACE.value)
         elif result == UpdateCheckResult.NETWORK_UNREACHABLE:
             InfoBar.error(
