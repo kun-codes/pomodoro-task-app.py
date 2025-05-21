@@ -13,6 +13,8 @@ from utils.is_nuitka import is_nuitka
 
 def handle_signal(signal, frame):
     if mainWindow:
+        # Properly cleanup the WebsiteBlockerManager
+        mainWindow.website_blocker_manager.cleanup()
         mainWindow.website_blocker_manager.stop_filtering(delete_proxy=True)
     sys.exit(0)
 
