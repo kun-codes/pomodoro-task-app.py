@@ -763,17 +763,6 @@ class MainWindow(PomodoroFluentWindow):
         # Start the update check in a background thread
         self.update_checker.start()
 
-        # Show a small info message to let the user know we're checking for updates
-        InfoBar.info(
-            title="Checking for Updates",
-            content="Checking for application updates...",
-            orient=Qt.Orientation.Vertical,
-            isClosable=True,
-            duration=3000,
-            position=InfoBarPosition.TOP_RIGHT,
-            parent=self.window(),
-        )
-
     def onUpdateCheckComplete(self, result):
         """Handle the result of the update check from the background thread."""
         # The result is now already an UpdateCheckResult enum instance, no conversion needed
@@ -792,16 +781,6 @@ class MainWindow(PomodoroFluentWindow):
                 self.updateDialog.finished.connect(lambda: self.showTutorial(InterfaceType.TASK_INTERFACE.value))
                 self.updateDialog.show()
         elif result == UpdateCheckResult.UP_TO_DATE:
-            # Show an InfoBar notification just like in settings_view.py
-            InfoBar.info(
-                title="App is up to date",
-                content="You have the latest version of the app",
-                orient=Qt.Orientation.Vertical,
-                isClosable=True,
-                duration=5000,
-                position=InfoBarPosition.TOP_RIGHT,
-                parent=self.window(),
-            )
             self.showTutorial(InterfaceType.TASK_INTERFACE.value)
         elif result == UpdateCheckResult.NETWORK_UNREACHABLE:
             InfoBar.error(
