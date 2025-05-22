@@ -60,17 +60,17 @@ jobs:
                     if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
                         wget https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-linux-x86_64.tar.gz
                         tar -xvf mitmproxy-11.0.2-linux-x86_64.tar.gz
-                        cp mitmdump koncentro/mitmdump
+                        cp mitmdump Koncentro/mitmdump
                     elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
                         curl -LO https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-macos-arm64.tar.gz
                         tar -xvf mitmproxy-11.0.2-macos-arm64.tar.gz
-                        cp mitmproxy.app/Contents/MacOS/mitmdump koncentro/mitmdump
+                        cp mitmproxy.app/Contents/MacOS/mitmdump Koncentro/mitmdump
                     elif [[ "${{ matrix.os }}" == "macos-13" ]]; then
                         curl -LO https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-macos-x86_64.tar.gz
                         tar -xvf mitmproxy-11.0.2-macos-x86_64.tar.gz
-                        cp mitmproxy.app/Contents/MacOS/mitmdump koncentro/mitmdump
+                        cp mitmproxy.app/Contents/MacOS/mitmdump Koncentro/mitmdump
                     fi
-                    cd koncentro
+                    cd Koncentro
 
             -   name: Download latest version of mitmproxy (Windows)
                 if: matrix.os == 'windows-latest'
@@ -78,8 +78,8 @@ jobs:
                     cd ..
                     Invoke-WebRequest -Uri "https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-windows-x86_64.zip" -OutFile "mitmproxy-11.0.2-windows-x86_64.zip"
                     Expand-Archive -Path "mitmproxy-11.0.2-windows-x86_64.zip" -DestinationPath .
-                    Copy-Item -Path "mitmdump.exe" -Destination "koncentro\mitmdump.exe"
-                    cd "koncentro"
+                    Copy-Item -Path "mitmdump.exe" -Destination "Koncentro\mitmdump.exe"
+                    cd "Koncentro"
                     
             # Remove problematic brew libs if Intel Mac
             # https://github.com/Nuitka/Nuitka/issues/2853#issuecomment-2119520735
