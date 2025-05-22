@@ -58,7 +58,7 @@ There are four main screens in the app:
 
 ## Known Bugs
 
-- The website blocker doesn't work as expected when there are no websites in the currently selected list (blocklist or allowlist).
+- App doesn't change theme correctly without restarting when OS theme is changed.
 
 ## Credits
 
