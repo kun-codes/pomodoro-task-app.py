@@ -30,7 +30,7 @@ poetry install
 ```
 - Run the app using the command
 ```sh
-poetry run python pomodoro_task_app
+poetry run python koncentro
 ```
 
 ## Usage
