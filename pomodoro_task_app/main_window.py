@@ -37,6 +37,7 @@ from tutorial.pomodoroInterfaceTutorial import PomodoroInterfaceTutorial
 from tutorial.taskInterfaceTutorial import TaskInterfaceTutorial
 from tutorial.websiteFilterInterfaceTutorial import WebsiteFilterInterfaceTutorial
 from tutorial.workspaceManagerDialogTutorial import WorkspaceManagerDialogTutorial
+from utils.detect_windows_version import isWin10OrEarlier
 from utils.check_for_updates import UpdateChecker
 from utils.find_mitmdump_executable import get_mitmdump_path
 from utils.time_conversion import convert_ms_to_hh_mm_ss
@@ -152,18 +153,18 @@ class MainWindow(PomodoroFluentWindow):
         self.tray_menu.addSeparator()
 
         # Timer control actions
-        # context menu of Windows system tray icon is always in light mode for qt apps. Tested on Windows 10, didn't
-        # test on Windows 11 yet
+        # context menu of Windows 10 system tray icon is always in light mode for qt apps.
         self.tray_menu_start_action = self.tray_menu.addAction("Start")
+        dark_mode_condition: bool = is_os_dark_mode and not isWin10OrEarlier()
         self.tray_menu_start_action.setIcon(
-            FluentIcon.PLAY.icon(Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT)
+            FluentIcon.PLAY.icon(Theme.DARK if dark_mode_condition else Theme.LIGHT)
         )
         self.tray_menu_start_action.triggered.connect(lambda: self.pomodoro_interface.pauseResumeButton.click())
 
         self.tray_menu_pause_resume_action = self.tray_menu.addAction("Pause/Resume")
         self.tray_menu_pause_resume_action.setIcon(
             CustomFluentIcon.PLAY_PAUSE.icon(
-                Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT
+                Theme.DARK if dark_mode_condition else Theme.LIGHT
             )
         )
         self.tray_menu_pause_resume_action.triggered.connect(lambda: self.pomodoro_interface.pauseResumeButton.click())
@@ -171,14 +172,14 @@ class MainWindow(PomodoroFluentWindow):
 
         self.tray_menu_stop_action = self.tray_menu.addAction("Stop")
         self.tray_menu_stop_action.setIcon(
-            FluentIcon.CLOSE.icon(Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT)
+            FluentIcon.CLOSE.icon(Theme.DARK if dark_mode_condition else Theme.LIGHT)
         )
         self.tray_menu_stop_action.triggered.connect(lambda: self.pomodoro_interface.stopButton.click())
 
         self.tray_menu_skip_action = self.tray_menu.addAction("Skip")
         self.tray_menu_skip_action.setIcon(
             FluentIcon.CHEVRON_RIGHT.icon(
-                Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT
+                Theme.DARK if dark_mode_condition else Theme.LIGHT
             )
         )
         self.tray_menu_skip_action.triggered.connect(lambda: self.pomodoro_interface.skipButton.click())
@@ -188,7 +189,7 @@ class MainWindow(PomodoroFluentWindow):
         self.tray_menu_quit_action = self.tray_menu.addAction("Quit")
         self.tray_menu_quit_action.setIcon(
             CustomFluentIcon.EXIT.icon(
-                Theme.DARK if is_os_dark_mode and not platform.system() == "Windows" else Theme.LIGHT
+                Theme.DARK if dark_mode_condition else Theme.LIGHT
             )
         )
         self.tray_menu_quit_action.triggered.connect(self.close)
@@ -208,14 +209,13 @@ class MainWindow(PomodoroFluentWindow):
 
     def updateSystemTrayIcon(self):
         logger.debug("Updating system tray icon")
-        # context menu of Windows system tray icon is always in light mode for qt apps. Tested on Windows 10, didn't
-        # test on Windows 11 yet
+        # context menu of Windows 10 system tray icon is always in light mode for qt apps.
         if darkdetect.isDark():
             self.tray.setIcon(self.tray_white_icon)
         else:
             self.tray.setIcon(self.tray_black_icon)
 
-        if platform.system() == "Windows":
+        if isWin10OrEarlier():
             return
 
         if darkdetect.isDark():
