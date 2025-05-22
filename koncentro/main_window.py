@@ -32,7 +32,7 @@ from models.db_tables import TaskType
 from models.task_list_model import TaskListModel
 from models.workspace_list_model import WorkspaceListModel
 from prefabs.customFluentIcon import CustomFluentIcon
-from prefabs.pomodoroFluentWindow import KoncentroFluentWindow
+from prefabs.koncentroFluentWindow import KoncentroFluentWindow
 from resources import logos_rc
 from tutorial.pomodoroInterfaceTutorial import PomodoroInterfaceTutorial
 from tutorial.taskInterfaceTutorial import TaskInterfaceTutorial
