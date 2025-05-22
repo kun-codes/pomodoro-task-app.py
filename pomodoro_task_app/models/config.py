@@ -13,7 +13,7 @@ from constants import (
 from models.db_tables import Workspace
 from prefabs.config.config_item_sql import ConfigItemSQL, RangeConfigItemSQL
 from prefabs.config.qconfig_sql import QConfigSQL, qconfig_custom
-from utils.is_win_11 import isWin11
+from utils.detect_windows_version import isWin11
 
 
 class WorkspaceSettings(QConfigSQL):
