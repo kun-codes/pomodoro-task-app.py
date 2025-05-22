@@ -25,6 +25,7 @@ from constants import (
     UpdateCheckResult,
     URLListType,
     WebsiteFilterType,
+    APPLICATION_NAME,
 )
 from models.config import app_settings, load_workspace_settings, workspace_specific_settings
 from models.db_tables import TaskType
@@ -131,7 +132,7 @@ class MainWindow(PomodoroFluentWindow):
         self.resize(1000, 800)
         # self.resize(715, 650)
         self.setMinimumWidth(715)
-        self.setWindowTitle("Pomodoro Task List App")
+        self.setWindowTitle(APPLICATION_NAME)
         self.setWindowIcon(QIcon(":/logosPrefix/logos/logo.svg"))
 
         self.setMicaEffectEnabled(app_settings.get(app_settings.mica_enabled))
