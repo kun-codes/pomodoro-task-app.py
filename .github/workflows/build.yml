@@ -16,6 +16,14 @@ jobs:
             -   name: Checkout
                 uses: actions/checkout@v4
 
+            # because the repo url is https://github.com/kun-codes/Koncentro so renaming it to lowercase for
+            # below steps to work
+            -   name: Rename repository directory
+                run: |
+                    cd ..
+                    mv Koncentro koncentro
+                    cd koncentro
+
             -   name: Set up Python ${{ matrix.python-version }}
                 uses: actions/setup-python@v5
                 with:
