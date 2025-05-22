@@ -103,13 +103,13 @@ jobs:
                     include-module: |
                         logging.config
                     include-data-files: |
-                        ./koncentro/filter.py=./website_blocker/filter.py
-                        ./koncentro.py=./constants.py
+                        ./koncentro/website_blocker/filter.py=./website_blocker/filter.py
+                        ./koncentro/constants.py=./constants.py
                         ./pyproject.toml=./pyproject.toml
                         ./mitmdump=./mitmdump
                         ./alembic.ini=./alembic.ini
-                        ./koncentro/*.py=./koncentro/migrations/
-                        ./koncentro/versions/*.py=./koncentro/migrations/versions/
+                        ./koncentro/migrations/*.py=./koncentro/migrations/
+                        ./koncentro/migrations/versions/*.py=./koncentro/migrations/versions/
 
             -   name: Build Executable (Windows)
                 if: matrix.os == 'windows-latest'
