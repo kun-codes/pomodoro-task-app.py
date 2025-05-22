@@ -52,17 +52,17 @@ jobs:
                     if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
                         wget https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-linux-x86_64.tar.gz
                         tar -xvf mitmproxy-11.0.2-linux-x86_64.tar.gz
-                        cp mitmdump pomodoro-task-app.py/mitmdump
+                        cp mitmdump koncentro/mitmdump
                     elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
                         curl -LO https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-macos-arm64.tar.gz
                         tar -xvf mitmproxy-11.0.2-macos-arm64.tar.gz
-                        cp mitmproxy.app/Contents/MacOS/mitmdump pomodoro-task-app.py/mitmdump
+                        cp mitmproxy.app/Contents/MacOS/mitmdump koncentro/mitmdump
                     elif [[ "${{ matrix.os }}" == "macos-13" ]]; then
                         curl -LO https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-macos-x86_64.tar.gz
                         tar -xvf mitmproxy-11.0.2-macos-x86_64.tar.gz
-                        cp mitmproxy.app/Contents/MacOS/mitmdump pomodoro-task-app.py/mitmdump
+                        cp mitmproxy.app/Contents/MacOS/mitmdump koncentro/mitmdump
                     fi
-                    cd pomodoro-task-app.py
+                    cd koncentro
 
             -   name: Download latest version of mitmproxy (Windows)
                 if: matrix.os == 'windows-latest'
@@ -70,8 +70,8 @@ jobs:
                     cd ..
                     Invoke-WebRequest -Uri "https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-windows-x86_64.zip" -OutFile "mitmproxy-11.0.2-windows-x86_64.zip"
                     Expand-Archive -Path "mitmproxy-11.0.2-windows-x86_64.zip" -DestinationPath .
-                    Copy-Item -Path "mitmdump.exe" -Destination "pomodoro-task-app.py\mitmdump.exe"
-                    cd "pomodoro-task-app.py"
+                    Copy-Item -Path "mitmdump.exe" -Destination "koncentro\mitmdump.exe"
+                    cd "koncentro"
                     
             # Remove problematic brew libs if Intel Mac
             # https://github.com/Nuitka/Nuitka/issues/2853#issuecomment-2119520735
@@ -87,7 +87,7 @@ jobs:
                 with:
                     nuitka-version: 'main'
                     script-name: |
-                        pomodoro_task_app/__main__.py
+                        koncentro/__main__.py
                     mode: ${{ (matrix.os == 'macos-latest' || matrix.os == 'macos-13') && 'app' || 'standalone' }}
                     enable-plugins: 'pyside6'
                     macos-app-icon: 'assets/logo.icns'
@@ -95,13 +95,13 @@ jobs:
                     include-module: |
                         logging.config
                     include-data-files: |
-                        ./pomodoro_task_app/website_blocker/filter.py=./website_blocker/filter.py
-                        ./pomodoro_task_app/constants.py=./constants.py
+                        ./koncentro/filter.py=./website_blocker/filter.py
+                        ./koncentro.py=./constants.py
                         ./pyproject.toml=./pyproject.toml
                         ./mitmdump=./mitmdump
                         ./alembic.ini=./alembic.ini
-                        ./pomodoro_task_app/migrations/*.py=./pomodoro_task_app/migrations/
-                        ./pomodoro_task_app/migrations/versions/*.py=./pomodoro_task_app/migrations/versions/
+                        ./koncentro/*.py=./koncentro/migrations/
+                        ./koncentro/versions/*.py=./koncentro/migrations/versions/
 
             -   name: Build Executable (Windows)
                 if: matrix.os == 'windows-latest'
@@ -109,7 +109,7 @@ jobs:
                 with:
                     nuitka-version: 'main'
                     script-name: |
-                        pomodoro_task_app\__main__.py
+                        koncentro\__main__.py
                     mode: standalone
                     windows-icon-from-ico: 'assets/logo.ico'
                     mingw64: true
@@ -117,13 +117,13 @@ jobs:
                     include-module: |
                         logging.config
                     include-data-files: |
-                        .\pomodoro_task_app\website_blocker\filter.py=.\website_blocker\filter.py
-                        .\pomodoro_task_app\constants.py=.\constants.py
+                        .\koncentro\website_blocker\filter.py=.\website_blocker\filter.py
+                        .\koncentro\constants.py=.\constants.py
                         .\pyproject.toml=.\pyproject.toml
                         .\mitmdump.exe=.\mitmdump.exe
                         .\alembic.ini=.\alembic.ini
-                        .\pomodoro_task_app\migrations\*.py=.\pomodoro_task_app\migrations\
-                        .\pomodoro_task_app\migrations\versions\*.py=.\pomodoro_task_app\migrations\versions\
+                        .\koncentro\migrations\*.py=.\koncentro\migrations\
+                        .\koncentro\migrations\versions\*.py=.\koncentro\migrations\versions\
 
             -   name: Install tree (MacOS)
                 if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
