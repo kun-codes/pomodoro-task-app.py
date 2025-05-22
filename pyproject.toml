@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pomodoro-task-app-py"
+name = "Koncentro"
 version = "0.1.0"
 description = ""
 authors = ["kun-codes <77796630+throwaway69420-69420@users.noreply.github.com>"]
