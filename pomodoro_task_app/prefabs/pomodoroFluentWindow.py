@@ -21,14 +21,14 @@ class VBoxLayoutInitializer(QWidget):
         self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
 
 
-class PomodoroFluentWindowBase(FluentWindowBase, VBoxLayoutInitializer):
+class KoncentroFluentWindowBase(FluentWindowBase, VBoxLayoutInitializer):
     """Fluent window base class"""
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 
 
-class PomodoroFluentWindow(PomodoroFluentWindowBase, FluentWindow):
+class KoncentroFluentWindow(KoncentroFluentWindowBase, FluentWindow):
     """Fluent window"""
 
     def __init__(self, parent=None):
