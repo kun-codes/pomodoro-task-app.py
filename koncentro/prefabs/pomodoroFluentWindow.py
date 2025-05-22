@@ -7,7 +7,7 @@ from prefabs.bottomBar import BottomBar
 
 class VBoxLayoutInitializer(QWidget):
     """
-    A hack to declare self.vBoxLayout in PomodoroFluentWindowBase before FluentWindowBase's parent classes's __init__
+    A hack to declare self.vBoxLayout in KoncentroFluentWindowBase before FluentWindowBase's parent classes's __init__
     is called
     """
 
