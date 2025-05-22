@@ -4,8 +4,8 @@ from enum import Enum
 from pathlib import Path
 
 # Application
-ORGANIZATION_NAME = "Pomodoro App"
-APPLICATION_NAME = "Pomodoro"
+ORGANIZATION_NAME = "Koncentro"
+APPLICATION_NAME = "Koncentro"
 
 # for pomodoro timer of new workspaces
 WORK_DURATION = 25
@@ -43,8 +43,8 @@ MITMDUMP_COMMAND_WINDOWS = (
 
 BLOCK_HTML_MESSAGE = f"<h1>Website blocked by {APPLICATION_NAME}!</h1>"
 
-UPDATE_CHECK_URL = "https://raw.githubusercontent.com/kun-codes/pomodoro-task-app.py/refs/heads/main/pyproject.toml"
-NEW_RELEASE_URL = "https://github.com/kun-codes/pomodoro-task-app.py/releases/latest"
+UPDATE_CHECK_URL = "https://raw.githubusercontent.com/kun-codes/koncentro/refs/heads/main/pyproject.toml"
+NEW_RELEASE_URL = "https://github.com/kun-codes/koncentro/releases/latest"
 MITMDUMP_SHUTDOWN_URL = f"http://shutdown.{APPLICATION_NAME.lower()}.internal/"
 
 
