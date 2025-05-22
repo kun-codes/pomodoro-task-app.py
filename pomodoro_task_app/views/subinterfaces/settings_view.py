@@ -27,7 +27,7 @@ from prefabs.setting_cards.SwitchSettingCardSQL import SwitchSettingCardSQL
 from ui_py.ui_settings_view import Ui_SettingsView
 from utils.check_for_updates import UpdateChecker
 from utils.get_app_version import get_app_version
-from utils.is_win_11 import isWin11
+from utils.detect_windows_version import isWin11
 
 
 class SettingsView(QWidget, Ui_SettingsView):
