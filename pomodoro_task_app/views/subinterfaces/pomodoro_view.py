@@ -29,6 +29,8 @@ class PomodoroView(QWidget, Ui_PomodoroView):
         self.pauseResumeButton.clicked.connect(self.pauseResumeButtonClicked)
         self.skipButton.clicked.connect(self.skipButtonClicked)
 
+        self.skipButton.setEnabled(False)  # On startup, timer is in NOTHING state so disable skipButton
+
         self.pomodoro_timer_obj = PomodoroTimer()
         self.pomodoro_timer_obj.timerStateChangedSignal.connect(self.initProgressRing)
         self.pomodoro_timer_obj.pomodoro_timer.timeout.connect(self.updateProgressRing)

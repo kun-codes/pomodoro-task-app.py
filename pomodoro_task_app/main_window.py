@@ -245,6 +245,7 @@ class MainWindow(PomodoroFluentWindow):
     def initBottomBar(self):
         self.update_bottom_bar_timer_label()
 
+        self.bottomBar.skipButton.setEnabled(self.pomodoro_interface.skipButton.isEnabled())
         self.bottomBar.pauseResumeButton.setCheckable(True)
         self.bottomBar.pauseResumeButton.setChecked(False)
         self.bottomBar.pauseResumeButton.setIcon(FluentIcon.PLAY)
@@ -323,7 +324,7 @@ class MainWindow(PomodoroFluentWindow):
         self.manage_workspace_dialog.show()
         self.showWorkspaceManagerTutorial()
 
-    def toggleUIElementsBasedOnTimerState(self, timerState):
+    def toggleUIElementsBasedOnTimerState(self, timerState, _):
         logger.warning(f"timerState: {timerState}")
         logger.warning("timerStateChangedSignal emited")
         logger.warning(
@@ -335,10 +336,14 @@ class MainWindow(PomodoroFluentWindow):
             self.settings_interface.pomodoro_settings_group.setDisabled(True)
             workspace_selector_button.setDisabled(True)
             self.settings_interface.proxy_port_card.setDisabled(True)
+            self.pomodoro_interface.skipButton.setEnabled(True)
+            self.bottomBar.skipButton.setEnabled(True)
         else:
             self.settings_interface.pomodoro_settings_group.setDisabled(False)
             workspace_selector_button.setDisabled(False)
             self.settings_interface.proxy_port_card.setDisabled(False)
+            self.pomodoro_interface.skipButton.setEnabled(False)
+            self.bottomBar.skipButton.setEnabled(False)
 
     def toggle_website_filtering(self, timerState):
         if not ConfigValues.ENABLE_WEBSITE_FILTER:
