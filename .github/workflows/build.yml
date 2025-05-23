@@ -81,6 +81,12 @@ jobs:
                   brew remove --force --ignore-dependencies openssl@3
                   brew cleanup openssl@3
 
+            -   name: Ensure directory structure exists
+                if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
+                run: |
+                    mkdir -p build/__main__.app/Contents/MacOS/koncentro/migrations
+                    mkdir -p build/__main__.app/Contents/MacOS/koncentro/migrations/versions
+
             -   name: Build Executable (Linux and MacOS)
                 if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'macos-13'
                 uses: Nuitka/Nuitka-Action@main
