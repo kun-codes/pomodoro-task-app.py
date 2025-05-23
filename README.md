@@ -30,7 +30,7 @@ poetry install
 ```
 - Run the app using the command
 ```sh
-poetry run python koncentro
+poetry run python src
 ```
 
 ## Usage
