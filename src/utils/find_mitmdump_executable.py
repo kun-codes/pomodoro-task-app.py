@@ -1,5 +1,7 @@
+import os
 import platform
 import shutil
+import sys
 from pathlib import Path
 
 from loguru import logger
@@ -9,12 +11,13 @@ from utils.is_nuitka import is_nuitka
 
 def get_mitmdump_path():
     if is_nuitka():
-        # Use the __nuitka_binary_dir from globals to find mitmdump
-        mitmdump_dir = Path(globals().get("__nuitka_binary_dir", "")).resolve()
-        mitmdump_path = mitmdump_dir.joinpath("mitmdump").resolve()
+        # from: https://nuitka.net/user-documentation/common-issue-solutions.html#onefile-finding-files
+        mitmdump_path = os.path.join(os.path.dirname(sys.argv[0]), "mitmdump")
 
         if platform.system() == "Windows":
             mitmdump_path = mitmdump_path.with_suffix(".exe")
+
+        mitmdump_path = Path(mitmdump_path)
 
         if mitmdump_path.exists():
             logger.debug(f"mitmdump path: {mitmdump_path}")
