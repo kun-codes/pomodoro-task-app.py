@@ -103,12 +103,6 @@ jobs:
                         ./alembic.ini=./alembic.ini
                         ./src/migrations/*.py=./src/migrations/
                         ./src/migrations/versions/*.py=./src/migrations/versions/
-            
-            -   name: Debug on build failure
-                if: failure() && (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'macos-13')
-                uses: mxschmitt/action-tmate@v3
-                with:
-                    limit-access-to-actor: true
 
             -   name: Build Executable (Windows)
                 if: matrix.os == 'windows-latest'
@@ -132,6 +126,12 @@ jobs:
                         .\alembic.ini=.\alembic.ini
                         .\src\migrations\*.py=.\src\migrations\
                         .\src\migrations\versions\*.py=.\src\migrations\versions\
+
+            -   name: Debug on build failure
+                if: failure() && (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'macos-13' || matrix.os == 'windows-latest')
+                uses: mxschmitt/action-tmate@v3
+                with:
+                    limit-access-to-actor: true
 
             -   name: Install tree (MacOS)
                 if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
