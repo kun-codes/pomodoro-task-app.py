@@ -24,6 +24,7 @@ def run_alembic_upgrade():
         alembic_ini_path = Path("alembic.ini")
     else:
         alembic_ini_path = Path(__file__).parent.parent / "alembic.ini"
+    print(alembic_ini_path)  # debug step
     alembic_cfg = Config(alembic_ini_path)
     # alembic_cfg.set_main_option("script_location", str(Path(__file__).parent.parent / "migrations"))
     command.upgrade(alembic_cfg, "head")
