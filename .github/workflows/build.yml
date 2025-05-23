@@ -62,7 +62,7 @@ jobs:
                         tar -xvf mitmproxy-11.0.2-macos-x86_64.tar.gz
                         cp mitmproxy.app/Contents/MacOS/mitmdump koncentro/mitmdump
                     fi
-                    cd src
+                    cd koncentro
 
             -   name: Download latest version of mitmproxy (Windows)
                 if: matrix.os == 'windows-latest'
@@ -71,7 +71,7 @@ jobs:
                     Invoke-WebRequest -Uri "https://downloads.mitmproxy.org/11.0.2/mitmproxy-11.0.2-windows-x86_64.zip" -OutFile "mitmproxy-11.0.2-windows-x86_64.zip"
                     Expand-Archive -Path "mitmproxy-11.0.2-windows-x86_64.zip" -DestinationPath .
                     Copy-Item -Path "mitmdump.exe" -Destination "koncentro\mitmdump.exe"
-                    cd "src"
+                    cd "koncentro"
                     
             # Remove problematic brew libs if Intel Mac
             # https://github.com/Nuitka/Nuitka/issues/2853#issuecomment-2119520735
