@@ -81,6 +81,12 @@ jobs:
                   brew remove --force --ignore-dependencies openssl@3
                   brew cleanup openssl@3
 
+            -   name: Setup tmate session for debugging
+                if: (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'macos-13')
+                uses: mxschmitt/action-tmate@v3
+                with:
+                    limit-access-to-actor: true
+
             -   name: Build Executable (Linux and MacOS)
                 if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' || matrix.os == 'macos-13'
                 uses: Nuitka/Nuitka-Action@main
