@@ -1,4 +1,5 @@
 import os.path
+from loguru import logger
 import signal
 import sys
 from pathlib import Path
@@ -14,10 +15,10 @@ from utils.is_nuitka import is_nuitka
 
 def handle_signal(signal, frame):
     if mainWindow:
-        # Properly cleanup the WebsiteBlockerManager
-        mainWindow.website_blocker_manager.cleanup()
-        mainWindow.website_blocker_manager.stop_filtering(delete_proxy=True)
-    sys.exit(0)
+        mainWindow.close()
+
+    app_instance = QApplication.instance()
+    app_instance.quit()
 
 # https://alembic.sqlalchemy.org/en/latest/cookbook.html#building-an-up-to-date-database-from-scratch
 def run_alembic_upgrade():
