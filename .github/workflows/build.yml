@@ -115,7 +115,7 @@ jobs:
                         src\__main__.py
                     mode: standalone
                     windows-icon-from-ico: 'assets/logo.ico'
-                    mingw64: true
+                    msvc: 'latest'
                     enable-plugins: 'pyside6'
                     output-file: 'koncentro'
                     static-libpython: 'yes'
