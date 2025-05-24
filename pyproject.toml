@@ -37,7 +37,6 @@ extend-exclude = [
     "koncentro/ui_py",
     "koncentro/resources",
 ]
-src = ["koncentro"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
