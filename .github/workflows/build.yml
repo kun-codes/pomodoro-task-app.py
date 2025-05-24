@@ -87,7 +87,7 @@ jobs:
                 with:
                     nuitka-version: 'main'
                     script-name: |
-                        koncentro/__main__.py
+                        src/__main__.py
                     mode: ${{ (matrix.os == 'macos-latest' || matrix.os == 'macos-13') && 'app' || 'standalone' }}
                     enable-plugins: 'pyside6'
                     macos-app-icon: 'assets/logo.icns'
@@ -96,13 +96,13 @@ jobs:
                     include-module: |
                         logging.config
                     include-data-files: |
-                        ./koncentro/website_blocker/filter.py=./website_blocker/filter.py
-                        ./koncentro/constants.py=./constants.py
+                        ./src/website_blocker/filter.py=./website_blocker/filter.py
+                        ./src/constants.py=./constants.py
                         ./pyproject.toml=./pyproject.toml
                         ./mitmdump=./mitmdump
                         ./alembic.ini=./alembic.ini
-                        ./koncentro/migrations/*.py=./koncentro/migrations/
-                        ./koncentro/migrations/versions/*.py=./koncentro/migrations/versions/
+                        ./src/migrations/*.py=./src/migrations/
+                        ./src/migrations/versions/*.py=./src/migrations/versions/
 
             -   name: Build Executable (Windows)
                 if: matrix.os == 'windows-latest'
@@ -119,13 +119,13 @@ jobs:
                     include-module: |
                         logging.config
                     include-data-files: |
-                        .\koncentro\website_blocker\filter.py=.\website_blocker\filter.py
-                        .\koncentro\constants.py=.\constants.py
+                        .\src\website_blocker\filter.py=.\website_blocker\filter.py
+                        .\src\constants.py=.\constants.py
                         .\pyproject.toml=.\pyproject.toml
                         .\mitmdump.exe=.\mitmdump.exe
                         .\alembic.ini=.\alembic.ini
-                        .\koncentro\migrations\*.py=.\koncentro\migrations\
-                        .\koncentro\migrations\versions\*.py=.\koncentro\migrations\versions\
+                        .\src\migrations\*.py=.\src\migrations\
+                        .\src\migrations\versions\*.py=.\src\migrations\versions\
 
             -   name: Install tree (MacOS)
                 if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
