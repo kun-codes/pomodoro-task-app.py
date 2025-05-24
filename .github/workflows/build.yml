@@ -118,7 +118,6 @@ jobs:
                     msvc: 'latest'
                     enable-plugins: 'pyside6'
                     output-file: 'koncentro'
-                    static-libpython: 'yes'
                     include-module: |
                         logging.config
                     include-data-files: |
