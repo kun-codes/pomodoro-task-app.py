@@ -121,6 +121,8 @@ jobs:
                     low-memory: 'on'
                     include-module: |
                         logging.config
+                    nofollow-import-to: |
+                        sqlalchemy.dialects.oracle
                     include-data-files: |
                         .\src\website_blocker\filter.py=.\website_blocker\filter.py
                         .\src\constants.py=.\constants.py
