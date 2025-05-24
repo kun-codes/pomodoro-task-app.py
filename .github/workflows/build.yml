@@ -116,6 +116,7 @@ jobs:
                     mingw64: true
                     enable-plugins: 'pyside6'
                     output-file: 'koncentro'
+                    windows-console-mode: disable
                     include-module: |
                         logging.config
                     include-data-files: |
