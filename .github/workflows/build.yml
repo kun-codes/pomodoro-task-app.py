@@ -8,6 +8,7 @@ jobs:
     build:
         runs-on: ${{ matrix.os }}
         strategy:
+            fail-fast: false
             matrix:
                 os: [ubuntu-latest, macos-latest, macos-13, windows-latest]
                 python-version: [3.12]
@@ -93,6 +94,7 @@ jobs:
                     macos-app-icon: 'assets/logo.icns'
                     linux-icon: 'assets/logo.ico'
                     output-file: 'koncentro'
+                    static-libpython: 'yes'
                     include-module: |
                         logging.config
                     include-data-files: |
@@ -116,6 +118,7 @@ jobs:
                     mingw64: true
                     enable-plugins: 'pyside6'
                     output-file: 'koncentro'
+                    static-libpython: 'yes'
                     include-module: |
                         logging.config
                     include-data-files: |
