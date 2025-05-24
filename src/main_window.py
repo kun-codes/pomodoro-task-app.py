@@ -688,6 +688,7 @@ class MainWindow(KoncentroFluentWindow):
     def update_proxy_port(self):
         self.website_blocker_manager.proxy.port = ConfigValues.PROXY_PORT
 
+
     def update_bottom_bar_timer_label(self):
         # check if timer is running
         current_timer_state = self.pomodoro_interface.pomodoro_timer_obj.getTimerState()
