@@ -5,7 +5,7 @@ import darkdetect
 from loguru import logger
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QMenu, QSystemTrayIcon
+from PySide6.QtWidgets import QMenu, QSystemTrayIcon, QApplication
 from qfluentwidgets import (
     FluentIcon,
     InfoBar,
@@ -193,7 +193,7 @@ class MainWindow(KoncentroFluentWindow):
                 Theme.DARK if dark_mode_condition else Theme.LIGHT
             )
         )
-        self.tray_menu_quit_action.triggered.connect(self.close)
+        self.tray_menu_quit_action.triggered.connect(self.quitApplication)
 
         self.tray.setContextMenu(self.tray_menu)
 
@@ -758,7 +758,7 @@ class MainWindow(KoncentroFluentWindow):
         if first_run_dotfile_path.exists():
             first_run_dotfile_path.unlink()
 
-        self.close()
+        self.quitApplication()
 
     def handleUpdates(self):
         # Using the threaded update checker to avoid freezing the GUI
@@ -814,8 +814,14 @@ class MainWindow(KoncentroFluentWindow):
         elif self.updateDialog is not None:
             self.updateDialog.show()
 
+    def quitApplication(self):
+        app_instance = QApplication.instance()
+        app_instance.quit()
+
     def closeEvent(self, event):
         self.website_blocker_manager.stop_filtering(delete_proxy=True)
+        self.website_blocker_manager.cleanup()
         self.themeListener.terminate()
         self.themeListener.deleteLater()
+        logger.debug("Quitting....")
         event.accept()
