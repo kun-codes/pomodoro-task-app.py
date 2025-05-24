@@ -2,7 +2,9 @@
 name = "Koncentro"
 version = "0.1.0"
 description = ""
-authors = ["kun-codes <77796630+throwaway69420-69420@users.noreply.github.com>"]
+authors = [
+    { name = "kun-codes", email = "77796630+throwaway69420-69420@users.noreply.github.com" }
+]
 readme = "README.md"
 dependencies = [
     "python (>=3.12,<3.13)",
