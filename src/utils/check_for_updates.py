@@ -58,7 +58,7 @@ class UpdateChecker(QObject):
                 raise Exception(f"HTTP error occurred: {response.status} {response.reason}")
 
             remote_pyproject = tomllib.loads(response.read().decode("utf-8"))
-            remote_app_version = remote_pyproject["tool"]["poetry"]["version"]
+            remote_app_version = remote_pyproject["project"]["version"]
 
             # Convert versions to semver Version instances for proper comparison
             current_ver = Version.parse(current_app_version)
