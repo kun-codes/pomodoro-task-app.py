@@ -25,13 +25,14 @@ from constants import (
     UpdateCheckResult,
     URLListType,
     WebsiteFilterType,
+    APPLICATION_NAME,
 )
 from models.config import app_settings, load_workspace_settings, workspace_specific_settings
 from models.db_tables import TaskType
 from models.task_list_model import TaskListModel
 from models.workspace_list_model import WorkspaceListModel
 from prefabs.customFluentIcon import CustomFluentIcon
-from prefabs.pomodoroFluentWindow import PomodoroFluentWindow
+from prefabs.koncentroFluentWindow import KoncentroFluentWindow
 from resources import logos_rc
 from tutorial.pomodoroInterfaceTutorial import PomodoroInterfaceTutorial
 from tutorial.taskInterfaceTutorial import TaskInterfaceTutorial
@@ -51,7 +52,7 @@ from views.subinterfaces.website_blocker_view import WebsiteBlockerView
 from website_blocker.website_blocker_manager import WebsiteBlockerManager
 
 
-class MainWindow(PomodoroFluentWindow):
+class MainWindow(KoncentroFluentWindow):
     def __init__(self):
         super().__init__()
         self.initial_launch = True  # this keeps track of whether the window is showing for the first time or not
@@ -131,7 +132,7 @@ class MainWindow(PomodoroFluentWindow):
         self.resize(1000, 800)
         # self.resize(715, 650)
         self.setMinimumWidth(715)
-        self.setWindowTitle("Pomodoro Task List App")
+        self.setWindowTitle(APPLICATION_NAME)
         self.setWindowIcon(QIcon(":/logosPrefix/logos/logo.svg"))
 
         self.setMicaEffectEnabled(app_settings.get(app_settings.mica_enabled))

@@ -1,14 +1,14 @@
-<h1 align="center">pomodoro-task-app.py</h1>
+<h1 align="center">Koncentro</h1>
 <p align="center">Pomodoro todo list app with an integrated website blocker and timeboxing</p>
 
 > [!IMPORTANT]
-> pomodoro-task-app.py assumes that you aren't using a proxy server already since it runs a local proxy server to block websites.
+> Koncentro assumes that you aren't using a proxy server already since it runs a local proxy server to block websites.
 
 ## Features
 
-- **Cross Platform:** pomodoro-task-app.py is cross-platform and can be used on Windows, macOS and Linux.
-- **Website Blocker:** Websites can be blocked using either a blocklist or an allowlist.
-- **Timeboxing:** pomodoro-task-app.py has integrated [timeboxing](https://en.wikipedia.org/wiki/Timeboxing) features.
+- **Cross Platform:** Koncentro is cross-platform and can be used on Windows, macOS and Linux.
+- **Website Filter:** Websites can be filtered using either a blocklist or an allowlist.
+- **Timeboxing:** Koncentro has integrated [timeboxing](https://en.wikipedia.org/wiki/Timeboxing) features.
 
 ## Installation
 
@@ -18,11 +18,11 @@ Currently, there is no installer provided. You can run the app by doing the foll
 - Install [Poetry](https://python-poetry.org/docs/#installing-with-the-official-installer)
 - Clone the repository using the command
 ```sh
-git clone https://github.com/kun-codes/pomodoro-task-app.py.git
+git clone https://github.com/kun-codes/Koncentro.git
 ```
 - Change the directory to the repository
 ```sh
-cd pomodoro-task-app.py
+cd Koncentro
 ```
 - Install the dependencies using poetry
 ```sh
@@ -30,7 +30,7 @@ poetry install
 ```
 - Run the app using the command
 ```sh
-poetry run python pomodoro_task_app
+poetry run python src
 ```
 
 ## Usage
@@ -58,7 +58,7 @@ There are four main screens in the app:
 
 ## Known Bugs
 
-- The website blocker doesn't work as expected when there are no websites in the currently selected list (blocklist or allowlist).
+- App doesn't change theme correctly without restarting when OS theme is changed.
 
 ## Credits
 

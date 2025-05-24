@@ -1,3 +1,4 @@
+import os.path
 import signal
 import sys
 from pathlib import Path
@@ -21,7 +22,8 @@ def handle_signal(signal, frame):
 # https://alembic.sqlalchemy.org/en/latest/cookbook.html#building-an-up-to-date-database-from-scratch
 def run_alembic_upgrade():
     if is_nuitka():
-        alembic_ini_path = Path("alembic.ini")
+        # from: https://nuitka.net/user-documentation/common-issue-solutions.html#onefile-finding-files
+        alembic_ini_path = os.path.join(os.path.dirname(sys.argv[0]), "alembic.ini")
     else:
         alembic_ini_path = Path(__file__).parent.parent / "alembic.ini"
     alembic_cfg = Config(alembic_ini_path)

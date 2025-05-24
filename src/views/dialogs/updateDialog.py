@@ -3,6 +3,8 @@ from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices
 from qfluentwidgets import BodyLabel, MessageBoxBase, SubtitleLabel
 
+from constants import NEW_RELEASE_URL
+
 
 class UpdateDialog(MessageBoxBase):
     def __init__(self, parent=None):
@@ -20,7 +22,7 @@ class UpdateDialog(MessageBoxBase):
         self.yesButton.setText("Yes, download it")
         self.cancelButton.setText("No, maybe later")
 
-        url = QUrl("https://github.com/kun-codes/pomodoro-task-app.py/releases/latest")
+        url = QUrl(NEW_RELEASE_URL)
 
         self.accepted.connect(lambda: QDesktopServices.openUrl(url))
         self.rejected.connect(lambda: logger.debug("User wants to download the update later"))

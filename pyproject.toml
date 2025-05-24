@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pomodoro-task-app-py"
+name = "Koncentro"
 version = "0.1.0"
 description = ""
 authors = ["kun-codes <77796630+throwaway69420-69420@users.noreply.github.com>"]
@@ -31,11 +31,11 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 line-length = 120
 extend-exclude = [
-    "pomodoro_task_app/ui",
-    "pomodoro_task_app/ui_py",
-    "pomodoro_task_app/resources",
+    "koncentro/ui",
+    "koncentro/ui_py",
+    "koncentro/resources",
 ]
-src = ["pomodoro_task_app"]
+src = ["koncentro"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
