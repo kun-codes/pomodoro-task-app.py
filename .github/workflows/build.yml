@@ -110,7 +110,7 @@ jobs:
                 with:
                     nuitka-version: 'main'
                     script-name: |
-                        koncentro\__main__.py
+                        src\__main__.py
                     mode: standalone
                     windows-icon-from-ico: 'assets/logo.ico'
                     mingw64: true
